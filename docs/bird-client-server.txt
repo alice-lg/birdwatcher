@@ -1,0 +1,72 @@
+Here's a small writeup of our findings in BIRD so far.
+
+Barry O'Donovan, INEX - the company behind IXP Manager. Wants to do
+PHP screen scraping of the BIRD client to create an API to BIRD.
+
+His API design:
+
+  https://github.com/inex/birds-eye-design/
+
+  https://github.com/inex/birds-eye-design/blob/master/v4-show-protocols-all
+
+We investigated a better way of doing the API so we don't have to run
+PHP on the routeserver. Is there a specified protocol between the BIRD
+client and daemon? Daniel and I had a look here:
+
+  git://git.nic.cz/bird.git
+
+specifically the branch "client-next" which has seen some action
+regarding the client/server protocol and looked at it. It seems there's
+not much of a formal definition of the protocol.
+
+Client connects with a unix socket through, client.c:server_connect(),
+then they just send whatever commands they get from the CLI and the
+entire command is parsed by the *server*! Replies are prefixed by a
+return code but that's basically it for specification of the replies!
+
+Client connects with a unix socket, client.c:server_connect(), using a
+global variable server_fd for all communication. The Unix socket is
+called something like bird.ctl, typically /var/run/bird.ctl.
+
+A simple
+
+% nc -U /var/run/bird.ctl
+
+gives access to the server directly! However, not a well specified
+protocol. There is, however, client/reply_codes.h:
+
+/*
+Reply codes of BIRD command-line interface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+0xxx    Action suceessfully completed
+1xxx    Table entry
+2xxx    Table heading
+3xxx    Internal messages
+8xxx    Run-time error
+9xxx    Parse-time error
+<space> Continuation
++       Spontaneous printout
+*/
+
+but no real protocol. You have to parse everything after the reply
+codes from the position, no better than screen scraping from the
+client.
+
+An interesting option might be to look for all the response generator
+in the code which returns the replies and instead generate JSON
+directly instead of sending free form text.
+
+All output through the server/client interface is probably done with
+cli_msg() and it seems many of command output is from nest/*.c and
+proto/*.c and sysdep/*.c.
+
+The actual grammar for the CLI commands is done in Bison .y files.
+Look for CF_CLI() to see what functions the actual commands run. Then
+you can go to these command functions and generate, say, JSON as
+output instead of using the more freeform cli_msg().
+
+You might use
+
+% git grep -A 1 "CF_CLI("
+
+to find them all.
