@@ -20,10 +20,12 @@ matches:
       - connection
     expr: '^(\w+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9\-]+)\s+(\w+)\s*$'
     next: "protdescription"
-
+    action: store
+    
   # Description:    Pipe for AS10310 - Yahoo! - VLAN Interface 236
   protdescription:
     fields:
       - desc
     expr: "  Description: (.*)"
-    next: ""
+    next: "getprotocol" # back again for more similar lines
+    action: send # Done here, send it back.

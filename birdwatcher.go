@@ -22,6 +22,7 @@ type Match struct {
 	Expr   string   // The regular expression as a string.
 	Fields []string // The named fields for grouped expressions.
 	Next   string   // The next regular expression in the flow.
+	Action string   // What to do with the stored fields: "store" or "send".
 }
 
 // Compiled regular expression and it's corresponding match data.
