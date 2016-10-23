@@ -60,8 +60,6 @@ func pattern(first string, lines []string) (maplist []map[string]string) {
 				fieldmap[name] = fields[key+1]
 			}
 
-			fmt.Printf("%#v\n", fieldmap)
-
 			if re.Match.Action == "send" {
 				// Finished for this item. Create a new field map and add this to the list.
 				maplist = append(maplist, fieldmap)
