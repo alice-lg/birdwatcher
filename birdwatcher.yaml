@@ -13,11 +13,12 @@ matches:
   # pp_0236_as10310 Pipe     master   up     2016-07-22  => t_0236_as10310
   getprotocol: 
     fields:
-      - name
-      - prot
-      - date
-      - status
-    expr: "^([A-Z][a-z][0-9]*) (.*) .* (.*) (.*)"
+      - protocol
+      - table
+      - state
+      - state_changed
+      - connection
+    expr: '^(\w+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9\-]+)\s+(\w+)\s*$'
     next: "protdescription"
 
   # Description:    Pipe for AS10310 - Yahoo! - VLAN Interface 236
