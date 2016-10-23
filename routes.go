@@ -1,19 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
+	"encoding/json"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
-func Protocols(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	fmt.Fprint(w, "protocols\n")
+func Routes(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	res := make(map[string]interface{})
 
-	lines, err := readLines(conf.Conf.FileName)
-	if err != nil {
-		return
-	}
+	res["api"] = GetApiInfo()
 
-	pattern(conf.Res["getprotocol"], lines)
+	js, _ := json.Marshal(res)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }

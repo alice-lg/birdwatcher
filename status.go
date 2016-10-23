@@ -1,11 +1,18 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
 func Status(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	fmt.Fprint(w, "status\n")
+	res := make(map[string]interface{})
+
+	res["api"] = GetApiInfo()
+
+	js, _ := json.Marshal(res)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }
