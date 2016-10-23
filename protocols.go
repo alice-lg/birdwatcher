@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
+	"fmt"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func Protocols(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -13,10 +15,13 @@ func Protocols(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	lines, err := readLines(conf.Conf.FileName)
 	if err != nil {
+		slog.Err("Couldn't find file: " + conf.Conf.FileName)
 		return
 	}
 
-	pattern(conf.Res["getprotocol"], lines)
+	res["data"] = pattern("getprotocol", lines)
+
+	fmt.Printf(">>>>>>>>>>>>>>>> data: %v\n", res["data"])
 
 	js, _ := json.Marshal(res)
 
