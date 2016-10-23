@@ -7,3 +7,7 @@ Barry O'Donovan's
 
 In the background it (doesn't yet) runs the `birdc` client and sends
 commands and parses the result.
+
+Developed by Daniel and MC from [Netnod](https://www.netnod.se/) in
+two days at the RIPE 73 IXP Tools Hackathon in Madrid, Spain.
+
