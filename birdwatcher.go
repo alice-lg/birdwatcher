@@ -16,7 +16,7 @@ import (
 
 var debug int = 0
 var slog *syslog.Writer // Our syslog connection
-var conf Config
+var conf *Config
 
 type Match struct {
 	Expr   string   // The regular expression as a string.
@@ -52,15 +52,14 @@ func parseconfig(filename string) (conf *Config, err error) {
 		return
 	}
 
-	fileconf := new(FileConfig)
-	if err = yaml.Unmarshal(contents, &fileconf); err != nil {
+	if err = yaml.Unmarshal(contents, &conf.Conf); err != nil {
 		return
 	}
 
 	conf.Res = make(map[string]RE)
 
 	// Build the regexps from the configuration.
-	for key, match := range fileconf.Matches {
+	for key, match := range conf.Conf.Matches {
 		var err error
 		var re RE
 
@@ -102,11 +101,12 @@ func main() {
 
 	slog.Debug("birdwatcher starting")
 
-	conf, err := parseconfig(*configfile)
+	config, err := parseconfig(*configfile)
 	if err != nil {
 		slog.Err("Couldn't parse configuration file: " + err.Error())
 		os.Exit(-1)
 	}
+	conf = config
 
 	fmt.Printf("%v\n", conf)
 
