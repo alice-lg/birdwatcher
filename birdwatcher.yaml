@@ -25,7 +25,7 @@ matches:
   # Description:    Pipe for AS10310 - Yahoo! - VLAN Interface 236
   protdescription:
     fields:
-      - desc
+      - description
     expr: "  Description: (.*)"
     next: "getprotocol" # back again for more similar lines
     action: send # Done here, send it back.
