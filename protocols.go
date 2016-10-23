@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -19,9 +18,7 @@ func Protocols(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	res["data"] = pattern("getprotocol", lines)
-
-	fmt.Printf(">>>>>>>>>>>>>>>> data: %v\n", res["data"])
+	res["protocols"] = pattern("getprotocol", lines)
 
 	js, _ := json.Marshal(res)
 
