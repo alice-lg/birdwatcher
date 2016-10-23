@@ -1,0 +1,2618 @@
+BIRD 1.4.0 ready.
+name     proto    table    state  since       info
+device1  Device   master   up     2015-03-18  
+  Preference:     240
+  Input filter:   ACCEPT
+  Output filter:  REJECT
+  Routes:         0 imported, 0 exported, 0 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              0          0          0          0          0
+    Import withdraws:            0          0        ---          0          0
+    Export updates:              0          0          0        ---          0
+    Export withdraws:            0        ---        ---        ---          0
+
+pp_0109_as42 Pipe     master   up     2015-03-18  => t_0109_as42
+  Description:    Pipe for AS42 - Packet Clearing House DNS - VLAN Interface 109
+  Preference:     70
+  Input filter:   f_import_0109_as42
+  Output filter:  (unnamed)
+  Routes:         35 imported, 41391 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       15230378   15224324          0        785       5269
+    Import withdraws:      6838309          0        ---          0       5234
+    Export updates:       15235332       6054       4945     631190   14593143
+    Export withdraws:      6840173          0        ---       2081    6833075
+
+pb_0109_as42 BGP      t_0109_as42 up     2016-09-30  Established   
+  Description:    RIB for AS42 - Packet Clearing House DNS - VLAN Interface 109
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   1000
+    Action:       restart
+  Routes:         35 imported, 41127 exported, 2590 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             94          0          0          0         94
+    Import withdraws:           59          0        ---          0         59
+    Export updates:        1089442         94          0        ---    1089348
+    Export withdraws:       216076        ---        ---        ---     216017
+  BGP state:          Established
+    Neighbor address: 193.242.111.60
+    Neighbor AS:      42
+    Neighbor ID:      204.61.210.182
+    Neighbor caps:    refresh
+    Session:          external route-server
+    Source address:   193.242.111.8
+    Route limit:      35/1000
+    Hold timer:       124/180
+    Keepalive timer:  39/60
+
+pp_0086_as112 Pipe     master   up     2015-03-18  => t_0086_as112
+  Description:    Pipe for AS112 - AS112 Reverse DNS - VLAN Interface 86
+  Preference:     70
+  Input filter:   f_import_0086_as112
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41424 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14627814   14627786          4          1         23
+    Import withdraws:      6838312          0        ---          0         21
+    Export updates:       14630834         25       3023      29397   14598389
+    Export withdraws:      6840173          0        ---        159    6838288
+
+pb_0086_as112 BGP      t_0086_as112 up     2016-09-01  Established   
+  Description:    RIB for AS112 - AS112 Reverse DNS - VLAN Interface 86
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41160 exported, 148 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              2          0          0          0          2
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        2633949          2          0        ---    2633947
+    Export withdraws:       511271        ---        ---        ---     511271
+  BGP state:          Established
+    Neighbor address: 193.242.111.6
+    Neighbor AS:      112
+    Neighbor ID:      193.242.111.6
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       56/90
+    Keepalive timer:  5/30
+
+pp_0004_as1213 Pipe     master   up     2015-03-18  => t_0004_as1213
+  Description:    Pipe for AS1213 - HEAnet - VLAN Interface 4
+  Preference:     70
+  Input filter:   f_import_0004_as1213
+  Output filter:  (unnamed)
+  Routes:         24 imported, 41402 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14938222   14937135         26        242        819
+    Import withdraws:      6838324          0        ---          0        698
+    Export updates:       14942195       1062       3996     339544   14597593
+    Export withdraws:      6840173          0        ---       1132    6837611
+
+pb_0004_as1213 BGP      t_0004_as1213 up     2016-04-27  Established   
+  Description:    RIB for AS1213 - HEAnet - VLAN Interface 4
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   100
+    Action:       restart
+  Routes:         24 imported, 41146 exported, 1168 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            888          0         36        499        353
+    Import withdraws:          283          0        ---          7        312
+    Export updates:        8261538        320          0        ---    8261218
+    Export withdraws:      2964795        ---        ---        ---    2964511
+  BGP state:          Established
+    Neighbor address: 193.242.111.16
+    Neighbor AS:      1213
+    Neighbor ID:      193.1.238.129
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      24/100
+    Hold timer:       26/45
+    Keepalive timer:  2/15
+
+pp_0034_as2110 Pipe     master   up     2015-03-18  => t_0034_as2110
+  Description:    Pipe for AS2110 - BT Ireland - VLAN Interface 34
+  Preference:     70
+  Input filter:   f_import_0034_as2110
+  Output filter:  (unnamed)
+  Routes:         125 imported, 41299 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       17096271   17083520       1945       6964       3842
+    Import withdraws:      6838812          0        ---       1216       2080
+    Export updates:       17106028      10847      11632    2488983   14594566
+    Export withdraws:      6840173          0        ---       8764    6836227
+
+pb_0034_as2110 BGP      t_0034_as2110 up     2015-12-03  Established   
+  Description:    RIB for AS2110 - BT Ireland - VLAN Interface 34
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   1000
+    Action:       restart
+  Routes:         134 imported, 41092 exported, 5059 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:           3855          0        361       1567       1927
+    Import withdraws:         1000          0        ---        147       1214
+    Export updates:       10504891       1641          0        ---   10503250
+    Export withdraws:      4485007        ---        ---        ---    4484968
+  BGP state:          Established
+    Neighbor address: 193.242.111.17
+    Neighbor AS:      2110
+    Neighbor ID:      193.95.128.130
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      134/1000
+    Hold timer:       83/180
+    Keepalive timer:  17/60
+
+pp_0042_as2128 Pipe     master   up     2015-03-18  => t_0042_as2128
+  Description:    Pipe for AS2128 - INEX - VLAN Interface 42
+  Preference:     70
+  Input filter:   f_import_0042_as2128
+  Output filter:  (unnamed)
+  Routes:         3 imported, 41423 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14633324   14633283          0          3         38
+    Import withdraws:      6838309          0        ---          0          9
+    Export updates:       14636349         41       3024      34910   14598374
+    Export withdraws:      6840173          0        ---        160    6838300
+
+pb_0042_as2128 BGP      t_0042_as2128 up     2016-06-03  Established   
+  Description:    RIB for AS2128 - INEX - VLAN Interface 42
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         3 imported, 41159 exported, 222 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             23          0          0          3         20
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        7217690         20          0        ---    7217670
+    Export withdraws:      2320791        ---        ---        ---    2320794
+  BGP state:          Established
+    Neighbor address: 193.242.111.2
+    Neighbor AS:      2128
+    Neighbor ID:      193.242.111.224
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      3/20
+    Hold timer:       63/90
+    Keepalive timer:  6/30
+
+pp_0077_as2128 Pipe     master   up     2015-03-18  => t_0077_as2128
+  Description:    Pipe for AS2128 - INEX - VLAN Interface 77
+  Preference:     70
+  Input filter:   f_import_0077_as2128
+  Output filter:  (unnamed)
+  Routes:         0 imported, 41426 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14633324   14633324          0          0          0
+    Import withdraws:      6838309          0        ---          0          0
+    Export updates:       14636349          0       3024      34913   14598412
+    Export withdraws:      6840173          0        ---        160    6838309
+
+pb_0077_as2128 BGP      t_0077_as2128 up     2016-10-02  Established   
+  Description:    RIB for AS2128 - INEX - VLAN Interface 77
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         0 imported, 41162 exported, 0 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              0          0          0          0          0
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        1003138          0          0        ---    1003138
+    Export withdraws:       201055        ---        ---        ---     201055
+  BGP state:          Established
+    Neighbor address: 193.242.111.126
+    Neighbor AS:      2128
+    Neighbor ID:      193.242.111.227
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      0/20
+    Hold timer:       123/180
+    Keepalive timer:  23/60
+
+pp_0151_as2906 Pipe     master   up     2015-03-18  => t_0151_as2906
+  Description:    Pipe for AS2906 - Netflix - VLAN Interface 151
+  Preference:     70
+  Input filter:   f_import_0151_as2906
+  Output filter:  (unnamed)
+  Routes:         0 imported, 41367 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14757095   14757080          7          4          4
+    Import withdraws:      6837086          0        ---          1          4
+    Export updates:       14762218          8       5130     160193   14596887
+    Export withdraws:      6840173          0        ---        745    6837081
+
+pb_0151_as2906 BGP      t_0151_as2906 up     2016-05-24  Established   
+  Description:    RIB for AS2906 - Netflix - VLAN Interface 151
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         1 imported, 41112 exported, 1 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              6          0          0          1          5
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        7381740          5          0        ---    7381735
+    Export withdraws:      2447900        ---        ---        ---    2447900
+  BGP state:          Established
+    Neighbor address: 193.242.111.85
+    Neighbor AS:      2906
+    Neighbor ID:      45.57.12.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/50
+    Hold timer:       26/30
+    Keepalive timer:  7/10
+
+pp_0110_as3856 Pipe     master   up     2015-03-18  => t_0110_as3856
+  Description:    Pipe for AS3856 - PCH Route Collector - VLAN Interface 110
+  Preference:     70
+  Input filter:   f_import_0110_as3856
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598405          0          0          7
+    Import withdraws:      6838309          0        ---          0          6
+    Export updates:       14601276          7       2864          0   14598405
+    Export withdraws:      6840173          0        ---          0    6838303
+
+pb_0110_as3856 BGP      t_0110_as3856 up     2016-09-30  Established   
+  Description:    RIB for AS3856 - PCH Route Collector - VLAN Interface 110
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41161 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        1092508          1          0        ---    1092507
+    Export withdraws:       216741        ---        ---        ---     216741
+  BGP state:          Established
+    Neighbor address: 193.242.111.61
+    Neighbor AS:      3856
+    Neighbor ID:      74.80.92.4
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       136/180
+    Keepalive timer:  9/60
+
+pp_0061_as5466 Pipe     master   up     2015-03-18  => t_0061_as5466
+  Description:    Pipe for AS5466 - Eircom Net - VLAN Interface 61
+  Preference:     70
+  Input filter:   f_import_0061_as5466
+  Output filter:  (unnamed)
+  Routes:         54 imported, 41367 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       16036793   16031272       1047       1962       2512
+    Import withdraws:      6838429          0        ---        836       2429
+    Export updates:       16044472       4487       8690    1435477   14595818
+    Export withdraws:      6840173          0        ---       5744    6835823
+
+pb_0061_as5466 BGP      t_0061_as5466 up     2016-05-06  Established   
+  Description:    RIB for AS5466 - Eircom Net - VLAN Interface 61
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   200
+    Action:       restart
+  Routes:         68 imported, 41107 exported, 3715 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            413          0          0        246        167
+    Import withdraws:           89          0        ---          0         89
+    Export updates:        8147447        162          0        ---    8147285
+    Export withdraws:      2898955        ---        ---        ---    2898900
+  BGP state:          Established
+    Neighbor address: 193.242.111.82
+    Neighbor AS:      5466
+    Neighbor ID:      86.43.251.243
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      68/200
+    Hold timer:       72/90
+    Keepalive timer:  17/30
+
+pp_0187_as6939 Pipe     master   up     2015-03-18  => t_0187_as6939
+  Description:    Pipe for AS6939 - Hurricane Electric - VLAN Interface 187
+  Preference:     70
+  Input filter:   f_import_0187_as6939
+  Output filter:  (unnamed)
+  Routes:         39206 imported, 2198 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598175     414326          7          0   14183842
+    Import withdraws:      6838212          0        ---          0    6651238
+    Export updates:       14601276   14183842       3108          0     414326
+    Export withdraws:      6840173          0        ---          0     186967
+
+pb_0187_as6939 BGP      t_0187_as6939 up     2016-06-16  Established   
+  Description:    RIB for AS6939 - Hurricane Electric - VLAN Interface 187
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   110000
+    Action:       restart
+  Routes:         39206 imported, 2015 exported, 2896876 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        7230467          0          0     186696    7043771
+    Import withdraws:      2238841          0        ---          0    2238841
+    Export updates:        7499079    7427086          0        ---      71993
+    Export withdraws:      2151345        ---        ---        ---     502077
+  BGP state:          Established
+    Neighbor address: 193.242.111.69
+    Neighbor AS:      6939
+    Neighbor ID:      216.218.252.215
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      39206/110000
+    Hold timer:       146/180
+    Keepalive timer:  5/60
+
+pp_0023_as8075 Pipe     master   up     2015-03-18  => t_0023_as8075
+  Description:    Pipe for AS8075 - Microsoft - VLAN Interface 23
+  Preference:     70
+  Input filter:   f_import_0023_as8075
+  Output filter:  (unnamed)
+  Routes:         213 imported, 41213 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       15296996   15270792        518       4317      21369
+    Import withdraws:      6838597          0        ---        145      20873
+    Export updates:       15301739      25721       5221     693764   14577033
+    Export withdraws:      6840173          0        ---       2347    6817436
+
+pb_0023_as8075 BGP      t_0023_as8075 up     2016-09-24  Established   
+  Description:    RIB for AS8075 - Microsoft - VLAN Interface 23
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   500
+    Action:       restart
+  Routes:         217 imported, 40949 exported, 15766 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            373          0          0          0        373
+    Import withdraws:          135          0        ---          0        135
+    Export updates:        1438445        373          0        ---    1438072
+    Export withdraws:       288094        ---        ---        ---     287959
+  BGP state:          Established
+    Neighbor address: 193.242.111.28
+    Neighbor AS:      8075
+    Neighbor ID:      207.46.33.48
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      217/500
+    Hold timer:       65/90
+    Keepalive timer:  10/30
+
+pp_0112_as12388 Pipe     master   up     2015-03-18  => t_0112_as12388
+  Description:    Pipe for AS12388 - Cablesurf - VLAN Interface 112
+  Preference:     70
+  Input filter:   f_import_0112_as12388
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598422   14598402         10          0         10
+    Import withdraws:      6838319          0        ---          0          8
+    Export updates:       14601276         10       2864          0   14598402
+    Export withdraws:      6840173          0        ---          0    6838301
+
+pb_0112_as12388 BGP      t_0112_as12388 up     2015-12-03  Established   
+  Description:    RIB for AS12388 - Cablesurf - VLAN Interface 112
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41161 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            3          0        ---          0          3
+    Export updates:       10504758          5          0        ---   10504753
+    Export withdraws:      4484922        ---        ---        ---    4484919
+  BGP state:          Established
+    Neighbor address: 193.242.111.62
+    Neighbor AS:      12388
+    Neighbor ID:      83.220.203.171
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       98/180
+    Keepalive timer:  57/60
+
+pp_0143_as13237 Pipe     master   up     2015-03-18  => t_0143_as13237
+  Description:    Pipe for AS13237 - euNetworks - VLAN Interface 143
+  Preference:     70
+  Input filter:   f_import_0143_as13237
+  Output filter:  (unnamed)
+  Routes:         941 imported, 40482 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       71443710   69160094     277397    1756224     249995
+    Import withdraws:      6927495          0        ---     175822      53863
+    Export updates:       71372273    2006349     205626   54811893   14348405
+    Export withdraws:      6840173          0        ---     202750    6784446
+
+pb_0143_as13237 BGP      t_0143_as13237 up     2016-06-16  Established   
+  Description:    RIB for AS13237 - euNetworks - VLAN Interface 143
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   5000
+    Action:       restart
+  Routes:         1032 imported, 40269 exported, 65951 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:          52936          0          0          0      52936
+    Import withdraws:        24068          0        ---          0      24068
+    Export updates:        7059689      52367          0        ---    7007322
+    Export withdraws:      2218137        ---        ---        ---    2194747
+  BGP state:          Established
+    Neighbor address: 193.242.111.79
+    Neighbor AS:      13237
+    Neighbor ID:      81.209.156.2
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1032/5000
+    Hold timer:       155/180
+    Keepalive timer:  28/60
+
+pp_0099_as15169 Pipe     master   up     2015-03-18  => t_0099_as15169
+  Description:    Pipe for AS15169 - Google - VLAN Interface 99
+  Preference:     70
+  Input filter:   f_import_0099_as15169
+  Output filter:  (unnamed)
+  Routes:         168 imported, 41229 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       15221772   15212761        814       3028       5169
+    Import withdraws:      6838665          0        ---        151       3911
+    Export updates:       15226272       8202       5262     619793   14593015
+    Export withdraws:      6840173          0        ---       2170    6834331
+
+pb_0099_as15169 BGP      t_0099_as15169 up     2016-07-21  Established   
+  Description:    RIB for AS15169 - Google - VLAN Interface 99
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   2000
+    Action:       restart
+  Routes:         175 imported, 40965 exported, 12439 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:           1439          0          0          0       1439
+    Import withdraws:          588          0        ---          0        588
+    Export updates:        5136071       1437          0        ---    5134634
+    Export withdraws:      1202743        ---        ---        ---    1202217
+  BGP state:          Established
+    Neighbor address: 193.242.111.57
+    Neighbor AS:      15169
+    Neighbor ID:      209.85.252.165
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      175/2000
+    Hold timer:       53/90
+    Keepalive timer:  11/30
+
+pp_0105_as15502 Pipe     master   up     2015-03-18  => t_0105_as15502
+  Description:    Pipe for AS15502 - Vodafone Ireland Limited - VLAN Interface 105
+  Preference:     70
+  Input filter:   f_import_0105_as15502
+  Output filter:  (unnamed)
+  Routes:         29 imported, 41476 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14744606   14743528        891         36        151
+    Import withdraws:      6840661          0        ---         97         63
+    Export updates:       14743735        207          0     142403   14601125
+    Export withdraws:      6840173          0        ---          0    6840110
+
+pb_0105_as15502 BGP      t_0105_as15502 up     2016-02-03  Established   
+  Description:    RIB for AS15502 - Vodafone Ireland Limited - VLAN Interface 105
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   100
+    Action:       restart
+  Routes:         41 imported, 41212 exported, 2129 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            866          0          0        572        294
+    Import withdraws:           91          0        ---          0         91
+    Export updates:        9906557        446          0        ---    9906111
+    Export withdraws:      4016294        ---        ---        ---    4016355
+  BGP state:          Established
+    Neighbor address: 193.242.111.43
+    Neighbor AS:      15502
+    Neighbor ID:      213.233.129.103
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      41/100
+    Hold timer:       12/15
+    Keepalive timer:  3/5
+
+pp_0001_as15806 Pipe     master   up     2015-03-18  => t_0001_as15806
+  Description:    Pipe for AS15806 - OGCIO - VLAN Interface 1
+  Preference:     70
+  Input filter:   f_import_0001_as15806
+  Output filter:  (unnamed)
+  Routes:         13 imported, 41413 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598431   14597942         19          0        470
+    Import withdraws:      6838327          0        ---          0        455
+    Export updates:       14601276        470       2864          0   14597942
+    Export withdraws:      6840173          0        ---          0    6837854
+
+pb_0001_as15806 BGP      t_0001_as15806 up     2015-12-03  Established   
+  Description:    RIB for AS15806 - OGCIO - VLAN Interface 1
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         14 imported, 41149 exported, 963 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:           1308          0          0        897        411
+    Import withdraws:          397          0        ---          0        397
+    Export updates:       10504781        411          0        ---   10504370
+    Export withdraws:      4484935        ---        ---        ---    4484896
+  BGP state:          Established
+    Neighbor address: 193.242.111.33
+    Neighbor AS:      15806
+    Neighbor ID:      137.191.224.229
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      14/20
+    Hold timer:       130/180
+    Keepalive timer:  23/60
+
+pp_0021_as16171 Pipe     master   up     2015-03-18  => t_0021_as16171
+  Description:    Pipe for AS16171 - Strencom - VLAN Interface 21
+  Preference:     70
+  Input filter:   f_import_0021_as16171
+  Output filter:  (unnamed)
+  Routes:         3 imported, 41423 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598322          0          0         90
+    Import withdraws:      6838309          0        ---          0         83
+    Export updates:       14601276         90       2864          0   14598322
+    Export withdraws:      6840173          0        ---          0    6838226
+
+pb_0021_as16171 BGP      t_0021_as16171 up     2016-02-10  Established   
+  Description:    RIB for AS16171 - Strencom - VLAN Interface 21
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         3 imported, 41159 exported, 222 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             12          0          0          1         11
+    Import withdraws:            9          0        ---          1          8
+    Export updates:        9594227         14          0        ---    9594213
+    Export withdraws:      3905482        ---        ---        ---    3905493
+  BGP state:          Established
+    Neighbor address: 193.242.111.29
+    Neighbor AS:      16171
+    Neighbor ID:      77.107.253.12
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      3/20
+    Hold timer:       124/180
+    Keepalive timer:  29/60
+
+pp_0096_as20940 Pipe     master   up     2015-03-18  => t_0096_as20940
+  Description:    Pipe for AS20940 - Akamai Technologies - VLAN Interface 96
+  Preference:     70
+  Input filter:   f_import_0096_as20940
+  Output filter:  (unnamed)
+  Routes:         19 imported, 41407 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       34796571   34763089         86      12014      21382
+    Import withdraws:      6838138          0        ---         77      20033
+    Export updates:       34874944      33405      78383   20186311   14576845
+    Export withdraws:      6840173          0        ---      75334    6818105
+
+pb_0096_as20940 BGP      t_0096_as20940 up     2015-12-03  Established   
+  Description:    RIB for AS20940 - Akamai Technologies - VLAN Interface 96
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   500
+    Action:       restart
+  Routes:         19 imported, 41143 exported, 1406 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:          35710          0          0      14712      20998
+    Import withdraws:        19737          0        ---          0      19737
+    Export updates:       10578873      21036          0        ---   10557837
+    Export withdraws:      4484925        ---        ---        ---    4471616
+  BGP state:          Established
+    Neighbor address: 193.242.111.55
+    Neighbor AS:      20940
+    Neighbor ID:      92.123.72.254
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      19/500
+    Hold timer:       104/180
+    Keepalive timer:  8/60
+
+pp_0179_as24637 Pipe     master   up     2015-03-18  => t_0179_as24637
+  Description:    Pipe for AS24637 - Webdiscount - VLAN Interface 179
+  Preference:     70
+  Input filter:   f_import_0179_as24637
+  Output filter:  (unnamed)
+  Routes:         18 imported, 41408 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14837157   14836603          0        127        427
+    Import withdraws:      6838309          0        ---          0        290
+    Export updates:       14840981        554       3820     238622   14597985
+    Export withdraws:      6840173          0        ---        956    6838019
+
+pb_0179_as24637 BGP      t_0179_as24637 up     2015-12-03  Established   
+  Description:    RIB for AS24637 - Webdiscount - VLAN Interface 179
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   200
+    Action:       restart
+  Routes:         18 imported, 41144 exported, 1332 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            464          0          0        201        263
+    Import withdraws:         4758          0        ---       4619        139
+    Export updates:       10504770        263          0        ---   10504507
+    Export withdraws:      4484925        ---        ---        ---    4484786
+  BGP state:          Established
+    Neighbor address: 193.242.111.99
+    Neighbor AS:      24637
+    Neighbor ID:      212.3.67.252
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      18/200
+    Hold timer:       113/180
+    Keepalive timer:  33/60
+
+pp_0011_as25441 Pipe     master   up     2015-03-18  => t_0011_as25441
+  Description:    Pipe for AS25441 - imag!ne - VLAN Interface 11
+  Preference:     70
+  Input filter:   f_import_0011_as25441
+  Output filter:  (unnamed)
+  Routes:         31 imported, 41474 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14700769   14699576        609         48        536
+    Import withdraws:      6840722          0        ---         15        450
+    Export updates:       14700278        608         95      98930   14600645
+    Export withdraws:      6840173          0        ---          0    6839723
+
+pb_0011_as25441 BGP      t_0011_as25441 up     2016-09-28  Established   
+  Description:    RIB for AS25441 - imag!ne - VLAN Interface 11
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         35 imported, 41210 exported, 2275 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             48          0          3          0         45
+    Import withdraws:            4          0        ---          1          6
+    Export updates:        1186137         45          0        ---    1186092
+    Export withdraws:       234912        ---        ---        ---     234906
+  BGP state:          Established
+    Neighbor address: 193.242.111.19
+    Neighbor AS:      25441
+    Neighbor ID:      87.192.46.90
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      35/50
+    Hold timer:       62/90
+    Keepalive timer:  19/30
+
+pp_0038_as26415 Pipe     master   up     2015-03-18  => t_0038_as26415
+  Description:    Pipe for AS26415 - Verisign J Root & com/net - VLAN Interface 38
+  Preference:     70
+  Input filter:   f_import_0038_as26415
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41424 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       18036155   18035645         19        339        152
+    Import withdraws:      6838316          0        ---         10        150
+    Export updates:       18051421        493      15229    3437439   14598260
+    Export withdraws:      6840173          0        ---      12365    6838159
+
+pb_0038_as26415 BGP      t_0038_as26415 up     2016-10-19  Established   
+  Description:    RIB for AS26415 - Verisign J Root & com/net - VLAN Interface 38
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41160 exported, 148 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              2          0          0          0          2
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         105147          2          0        ---     105145
+    Export withdraws:        50005        ---        ---        ---      50007
+  BGP state:          Established
+    Neighbor address: 193.242.111.40
+    Neighbor AS:      26415
+    Neighbor ID:      193.242.111.40
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       143/180
+    Keepalive timer:  16/60
+
+pp_0120_as29644 Pipe     master   up     2015-03-18  => t_0120_as29644
+  Description:    Pipe for AS29644 - Airspeed Telecom - VLAN Interface 120
+  Preference:     70
+  Input filter:   f_import_0120_as29644
+  Output filter:  (unnamed)
+  Routes:         21 imported, 41405 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14893867   14875931       2701        156      15079
+    Import withdraws:      6840972          0        ---         22      15037
+    Export updates:       14894909      15241       3737     292598   14583333
+    Export withdraws:      6840173          0        ---        873    6823272
+
+pb_0120_as29644 BGP      t_0120_as29644 up     2016-02-19  Established   
+  Description:    RIB for AS29644 - Airspeed Telecom - VLAN Interface 120
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   250
+    Action:       restart
+  Routes:         23 imported, 41145 exported, 1260 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            343          0          0          4        339
+    Import withdraws:          309          0        ---          0        309
+    Export updates:        9568054        333          0        ---    9567721
+    Export withdraws:      3889140        ---        ---        ---    3888905
+  BGP state:          Established
+    Neighbor address: 193.242.111.67
+    Neighbor AS:      29644
+    Neighbor ID:      77.75.103.3
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      23/250
+    Hold timer:       67/90
+    Keepalive timer:  20/30
+
+pp_0081_as30900 Pipe     master   up     2015-03-18  => t_0081_as30900
+  Description:    Pipe for AS30900 - Web World Ireland - VLAN Interface 81
+  Preference:     70
+  Input filter:   f_import_0081_as30900
+  Output filter:  (unnamed)
+  Routes:         0 imported, 41426 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14705437   14705221        133          3         80
+    Import withdraws:      6838440          0        ---          1         80
+    Export updates:       14708407         84       3102     106889   14598332
+    Export withdraws:      6840173          0        ---        238    6838229
+
+pb_0081_as30900 BGP      t_0081_as30900 start  2015-11-27  Active        Socket: No route to host
+  Description:    RIB for AS30900 - Web World Ireland - VLAN Interface 81
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         0 imported, 0 exported, 0 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              0          0          0          0          0
+    Import withdraws:            0          0        ---          0          0
+    Export updates:              0          0          0        ---          0
+    Export withdraws:            0        ---        ---        ---          0
+  BGP state:          Active
+    Neighbor address: 193.242.111.51
+    Neighbor AS:      30900
+    Start delay:      1/5
+    Last error:       Socket: No route to host
+
+pp_0147_as31084 Pipe     master   up     2015-03-18  => t_0147_as31084
+  Description:    Pipe for AS31084 - Magrathea - VLAN Interface 147
+  Preference:     70
+  Input filter:   f_import_0147_as31084
+  Output filter:  (unnamed)
+  Routes:         6 imported, 41420 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14631149   14630821         16          4        308
+    Import withdraws:      6838324          0        ---          0        302
+    Export updates:       14634158        313       3024      32717   14598104
+    Export withdraws:      6840173          0        ---        160    6838007
+
+pb_0147_as31084 BGP      t_0147_as31084 up     2015-03-19  Established   
+  Description:    RIB for AS31084 - Magrathea - VLAN Interface 147
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         6 imported, 41156 exported, 444 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            332          0          0          9        323
+    Import withdraws:        24355          0        ---      24038        317
+    Export updates:       14492508        323          0        ---   14492185
+    Export withdraws:      6708802        ---        ---        ---    6708485
+  BGP state:          Established
+    Neighbor address: 193.242.111.83
+    Neighbor AS:      31084
+    Neighbor ID:      87.238.77.77
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      6/20
+    Hold timer:       100/180
+    Keepalive timer:  41/60
+
+pp_0016_as31122 Pipe     master   up     2015-03-18  => t_0016_as31122
+  Description:    Pipe for AS31122 - Viatel - VLAN Interface 16
+  Preference:     70
+  Input filter:   f_import_0016_as31122
+  Output filter:  (unnamed)
+  Routes:         54 imported, 41365 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       15303605   15301182         60       1119       1244
+    Import withdraws:      6838286          0        ---          5       1050
+    Export updates:       15308659       2370       5106     704093   14597090
+    Export withdraws:      6840173          0        ---       2164    6837188
+
+pb_0016_as31122 BGP      t_0016_as31122 up     2015-12-03  Established   
+  Description:    RIB for AS31122 - Viatel - VLAN Interface 16
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   200
+    Action:       restart
+  Routes:         54 imported, 41108 exported, 3437 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            660          0          0        302        358
+    Import withdraws:          296          0        ---          0        296
+    Export updates:       10504794        354          0        ---   10504440
+    Export withdraws:      4484960        ---        ---        ---    4484702
+  BGP state:          Established
+    Neighbor address: 193.242.111.20
+    Neighbor AS:      31122
+    Neighbor ID:      83.147.162.134
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      54/200
+    Hold timer:       142/180
+    Keepalive timer:  3/60
+
+pp_0022_as31641 Pipe     master   up     2015-03-18  => t_0022_as31641
+  Description:    Pipe for AS31641 - Bytel - VLAN Interface 22
+  Preference:     70
+  Input filter:   f_import_0022_as31641
+  Output filter:  (unnamed)
+  Routes:         0 imported, 41505 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14600512   14600398         64          0         50
+    Import withdraws:      6840294          0        ---          0         26
+    Export updates:       14601276         50        828          0   14600398
+    Export withdraws:      6840173          0        ---          0    6840240
+
+pb_0022_as31641 BGP      t_0022_as31641 start  2016-05-31  Connect       Socket: No route to host
+  Description:    RIB for AS31641 - Bytel - VLAN Interface 22
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         0 imported, 0 exported, 0 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              0          0          0          0          0
+    Import withdraws:            0          0        ---          0          0
+    Export updates:              0          0          0        ---          0
+    Export withdraws:            0        ---        ---        ---          0
+  BGP state:          Connect
+    Neighbor address: 193.242.111.27
+    Neighbor AS:      31641
+    Last error:       Socket: No route to host
+
+pp_0100_as34218 Pipe     master   up     2015-03-18  => t_0100_as34218
+  Description:    Pipe for AS34218 - 3 Ireland - VLAN Interface 100
+  Preference:     70
+  Input filter:   f_import_0100_as34218
+  Output filter:  (unnamed)
+  Routes:         23 imported, 41482 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14705968   14705291          2         66        609
+    Import withdraws:      6840269          0        ---          0        332
+    Export updates:       14706157        676        190     104814   14600477
+    Export withdraws:      6840173          0        ---          0    6839936
+
+pb_0100_as34218 BGP      t_0100_as34218 up     2015-12-03  Established   
+  Description:    RIB for AS34218 - 3 Ireland - VLAN Interface 100
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   100
+    Action:       restart
+  Routes:         23 imported, 41218 exported, 1700 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            164          0          0          2        162
+    Import withdraws:           71          0        ---          0         71
+    Export updates:       10506285        162          0        ---   10506123
+    Export withdraws:      4486361        ---        ---        ---    4486372
+  BGP state:          Established
+    Neighbor address: 193.242.111.58
+    Neighbor AS:      34218
+    Neighbor ID:      92.251.255.254
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      23/100
+    Hold timer:       42/90
+    Keepalive timer:  14/30
+
+pp_0026_as34245 Pipe     master   up     2015-03-18  => t_0026_as34245
+  Description:    Pipe for AS34245 - Magnet Networks - VLAN Interface 26
+  Preference:     70
+  Input filter:   f_import_0026_as34245
+  Output filter:  (unnamed)
+  Routes:         10 imported, 41495 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14705973   14705895         58         10         10
+    Import withdraws:      6840266          0        ---         29          0
+    Export updates:       14706426         20        510     105140   14600756
+    Export withdraws:      6840173          0        ---          0    6840266
+
+pb_0026_as34245 BGP      t_0026_as34245 up     2016-10-13  Established   
+  Description:    RIB for AS34245 - Magnet Networks - VLAN Interface 26
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         39 imported, 41208 exported, 769 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             39          0          0          0         39
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         378669         39          0        ---     378630
+    Export withdraws:       104370        ---        ---        ---     104393
+  BGP state:          Established
+    Neighbor address: 193.242.111.32
+    Neighbor AS:      34245
+    Neighbor ID:      85.91.0.8
+    Neighbor caps:    refresh
+    Session:          external route-server
+    Source address:   193.242.111.8
+    Route limit:      39/50
+    Hold timer:       106/180
+    Keepalive timer:  17/60
+
+pp_0035_as34505 Pipe     master   up     2015-03-18  => t_0035_as34505
+  Description:    Pipe for AS34505 - Vistatec - VLAN Interface 35
+  Preference:     70
+  Input filter:   f_import_0035_as34505
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598426   14598409         14          0          3
+    Import withdraws:      6838323          0        ---          0          2
+    Export updates:       14601276          3       2864          0   14598409
+    Export withdraws:      6840173          0        ---          0    6838307
+
+pb_0035_as34505 BGP      t_0035_as34505 up     2016-02-27  Established   
+  Description:    RIB for AS34505 - Vistatec - VLAN Interface 35
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41161 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:        35143          0        ---      35143          0
+    Export updates:        9137130          1          0        ---    9137129
+    Export withdraws:      3516662        ---        ---        ---    3516663
+  BGP state:          Established
+    Neighbor address: 193.242.111.38
+    Neighbor AS:      34505
+    Neighbor ID:      85.159.16.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       130/180
+    Keepalive timer:  40/60
+
+pp_0132_as35226 Pipe     master   up     2015-03-18  => t_0132_as35226
+  Description:    Pipe for AS35226 - Ripple Communications Limited - VLAN Interface 132
+  Preference:     70
+  Input filter:   f_import_0132_as35226
+  Output filter:  (unnamed)
+  Routes:         32 imported, 41394 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14638113   14637765          0          4        344
+    Import withdraws:      6838309          0        ---          0        309
+    Export updates:       14641120        348       3007      39697   14598068
+    Export withdraws:      6840173          0        ---        143    6838000
+
+pb_0132_as35226 BGP      t_0132_as35226 up     2016-07-21  Established   
+  Description:    RIB for AS35226 - Ripple Communications Limited - VLAN Interface 132
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   250
+    Action:       restart
+  Routes:         32 imported, 41158 exported, 296 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            290          0          0          0        290
+    Import withdraws:          255          0        ---          0        255
+    Export updates:        5144540        227          0        ---    5144313
+    Export withdraws:      1203965        ---        ---        ---    1204157
+  BGP state:          Established
+    Neighbor address: 193.242.111.72
+    Neighbor AS:      35226
+    Neighbor ID:      78.143.191.255
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      32/250
+    Hold timer:       72/90
+    Keepalive timer:  20/30
+
+pp_0050_as39093 Pipe     master   up     2015-03-18  => t_0050_as39093
+  Description:    Pipe for AS39093 - WestNet - VLAN Interface 50
+  Preference:     70
+  Input filter:   f_import_0050_as39093
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41424 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598375          0          0         37
+    Import withdraws:      6838309          0        ---          0         35
+    Export updates:       14601276         37       2864          0   14598375
+    Export withdraws:      6840173          0        ---          0    6838274
+
+pb_0050_as39093 BGP      t_0050_as39093 up     2015-12-20  Established   
+  Description:    RIB for AS39093 - WestNet - VLAN Interface 50
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41160 exported, 148 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             15          0          0          4         11
+    Import withdraws:            9          0        ---          0          9
+    Export updates:       10164680         11          0        ---   10164669
+    Export withdraws:      4256098        ---        ---        ---    4256089
+  BGP state:          Established
+    Neighbor address: 193.242.111.46
+    Neighbor AS:      39093
+    Neighbor ID:      88.81.98.18
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       128/180
+    Keepalive timer:  49/60
+
+pp_0031_as39122 Pipe     master   up     2015-03-18  => t_0031_as39122
+  Description:    Pipe for AS39122 - Blacknight - VLAN Interface 31
+  Preference:     70
+  Input filter:   f_import_0031_as39122
+  Output filter:  (unnamed)
+  Routes:         22 imported, 41404 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       15097444   15096916         31        210        287
+    Import withdraws:      6838319          0        ---         12        253
+    Export updates:       15101956        504       4536     498791   14598125
+    Export withdraws:      6840173          0        ---       1672    6838056
+
+pb_0031_as39122 BGP      t_0031_as39122 up     2016-04-29  Established   
+  Description:    RIB for AS39122 - Blacknight - VLAN Interface 31
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   100
+    Action:       restart
+  Routes:         22 imported, 41144 exported, 1314 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            183          0          0         87         96
+    Import withdraws:           74          0        ---          0         74
+    Export updates:        8227868         98          0        ---    8227770
+    Export withdraws:      2947657        ---        ---        ---    2947724
+  BGP state:          Established
+    Neighbor address: 193.242.111.35
+    Neighbor AS:      39122
+    Neighbor ID:      81.17.240.8
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      22/100
+    Hold timer:       67/90
+    Keepalive timer:  5/30
+
+pp_0041_as39233 Pipe     master   up     2015-03-18  => t_0041_as39233
+  Description:    Pipe for AS39233 - Blueface - VLAN Interface 41
+  Preference:     70
+  Input filter:   f_import_0041_as39233
+  Output filter:  (unnamed)
+  Routes:         0 imported, 41426 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598412          0          0          0
+    Import withdraws:      6838309          0        ---          0          0
+    Export updates:       14601276          0       2864          0   14598412
+    Export withdraws:      6840173          0        ---          0    6838309
+
+pb_0041_as39233 BGP      t_0041_as39233 start  2015-03-18  Connect       Socket: No route to host
+  Description:    RIB for AS39233 - Blueface - VLAN Interface 41
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         0 imported, 0 exported, 0 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              0          0          0          0          0
+    Import withdraws:            0          0        ---          0          0
+    Export updates:              0          0          0        ---          0
+    Export withdraws:            0        ---        ---        ---          0
+  BGP state:          Connect
+    Neighbor address: 193.242.111.36
+    Neighbor AS:      39233
+    Last error:       Socket: No route to host
+
+pp_0118_as39319 Pipe     master   up     2015-03-18  => t_0118_as39319
+  Description:    Pipe for AS39319 - Questzones (Europe) Ltd - VLAN Interface 118
+  Preference:     70
+  Input filter:   f_import_0118_as39319
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598394          0          0         18
+    Import withdraws:      6838309          0        ---          0         17
+    Export updates:       14601276         18       2864          0   14598394
+    Export withdraws:      6840173          0        ---          0    6838292
+
+pb_0118_as39319 BGP      t_0118_as39319 up     2016-10-08  Established   
+  Description:    RIB for AS39319 - Questzones (Europe) Ltd - VLAN Interface 118
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41161 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         680900          1          0        ---     680899
+    Export withdraws:       151976        ---        ---        ---     151977
+  BGP state:          Established
+    Neighbor address: 193.242.111.66
+    Neighbor AS:      39319
+    Neighbor ID:      94.199.224.73
+    Neighbor caps:    refresh
+    Session:          external route-server
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       158/180
+    Keepalive timer:  41/60
+
+pp_0040_as39449 Pipe     master   up     2015-03-18  => t_0040_as39449
+  Description:    Pipe for AS39449 - Fastcom Broadband Ltd - VLAN Interface 40
+  Preference:     70
+  Input filter:   f_import_0040_as39449
+  Output filter:  (unnamed)
+  Routes:         5 imported, 41421 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598257          0          0        155
+    Import withdraws:      6838309          0        ---          0        150
+    Export updates:       14601276        155       2864          0   14598257
+    Export withdraws:      6840173          0        ---          0    6838159
+
+pb_0040_as39449 BGP      t_0040_as39449 up     2016-09-12  Established   
+  Description:    RIB for AS39449 - Fastcom Broadband Ltd - VLAN Interface 40
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         5 imported, 41157 exported, 370 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        2055543          5          0        ---    2055538
+    Export withdraws:       422101        ---        ---        ---     422101
+  BGP state:          Established
+    Neighbor address: 193.242.111.41
+    Neighbor AS:      39449
+    Neighbor ID:      193.242.111.41
+    Neighbor caps:    refresh
+    Session:          external route-server
+    Source address:   193.242.111.8
+    Route limit:      5/20
+    Hold timer:       148/180
+    Keepalive timer:  38/60
+
+pp_0044_as41073 Pipe     master   up     2015-03-18  => t_0044_as41073
+  Description:    Pipe for AS41073 - RTE - VLAN Interface 44
+  Preference:     70
+  Input filter:   f_import_0044_as41073
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598394          0          0         18
+    Import withdraws:      6838309          0        ---          0         17
+    Export updates:       14601276         18       2864          0   14598394
+    Export withdraws:      6840173          0        ---          0    6838292
+
+pb_0044_as41073 BGP      t_0044_as41073 up     2016-10-21  Established   
+  Description:    RIB for AS41073 - RTE - VLAN Interface 44
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41161 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:          83804          1          0        ---      83803
+    Export withdraws:        36744        ---        ---        ---      36744
+  BGP state:          Established
+    Neighbor address: 193.242.111.42
+    Neighbor AS:      41073
+    Neighbor ID:      89.207.56.210
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       117/180
+    Keepalive timer:  29/60
+
+pp_0048_as41678 Pipe     master   up     2015-03-18  => t_0048_as41678
+  Description:    Pipe for AS41678 - Tibus - VLAN Interface 48
+  Preference:     70
+  Input filter:   f_import_0048_as41678
+  Output filter:  (unnamed)
+  Routes:         23 imported, 41403 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14893571   14892827        104        216        424
+    Import withdraws:      6838385          0        ---         23        399
+    Export updates:       14897114        643       3643     294840   14597988
+    Export withdraws:      6840173          0        ---        779    6837910
+
+pb_0048_as41678 BGP      t_0048_as41678 up     2015-12-03  Established   
+  Description:    RIB for AS41678 - Tibus - VLAN Interface 48
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         25 imported, 41137 exported, 1704 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:           3053          0          0       2697        356
+    Import withdraws:          331          0        ---          0        331
+    Export updates:       10504658        356          0        ---   10504302
+    Export withdraws:      4484783        ---        ---        ---    4484830
+  BGP state:          Established
+    Neighbor address: 193.242.111.45
+    Neighbor AS:      41678
+    Neighbor ID:      89.185.155.136
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      25/50
+    Hold timer:       129/180
+    Keepalive timer:  56/60
+
+pp_0051_as42310 Pipe     master   up     2015-03-18  => t_0051_as42310
+  Description:    Pipe for AS42310 - IE Domain Registry - VLAN Interface 51
+  Preference:     70
+  Input filter:   f_import_0051_as42310
+  Output filter:  (unnamed)
+  Routes:         10 imported, 41392 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14838782   14838632          3         62         85
+    Import withdraws:      6837613          0        ---          0         38
+    Export updates:       14843297        148       4517     241124   14597508
+    Export withdraws:      6840173          0        ---        834    6837573
+
+pb_0051_as42310 BGP      t_0051_as42310 up     2016-04-26  Established   
+  Description:    RIB for AS42310 - IE Domain Registry - VLAN Interface 51
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         10 imported, 41136 exported, 740 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             24          0          0         10         14
+    Import withdraws:            1          0        ---          0          1
+    Export updates:        8276994         14          0        ---    8276980
+    Export withdraws:      2972698        ---        ---        ---    2972707
+  BGP state:          Established
+    Neighbor address: 193.242.111.47
+    Neighbor AS:      42310
+    Neighbor ID:      193.242.111.47
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      10/20
+    Hold timer:       125/180
+    Keepalive timer:  12/60
+
+pp_0161_as43406 Pipe     master   up     2015-03-18  => t_0161_as43406
+  Description:    Pipe for AS43406 - Lightnet - VLAN Interface 161
+  Preference:     70
+  Input filter:   f_import_0161_as43406
+  Output filter:  (unnamed)
+  Routes:         5 imported, 41500 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14600660   14600498         53          0        109
+    Import withdraws:      6840319          0        ---          0         49
+    Export updates:       14601276        109        669          0   14600498
+    Export withdraws:      6840173          0        ---          0    6840217
+
+pb_0161_as43406 BGP      t_0161_as43406 up     2016-08-29  Established   
+  Description:    RIB for AS43406 - Lightnet - VLAN Interface 161
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         5 imported, 41236 exported, 370 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             19          0          0         11          8
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        2793746         12          0        ---    2793734
+    Export withdraws:       542268        ---        ---        ---     542268
+  BGP state:          Established
+    Neighbor address: 193.242.111.89
+    Neighbor AS:      43406
+    Neighbor ID:      172.21.1.197
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      5/20
+    Hold timer:       113/180
+    Keepalive timer:  30/60
+
+pp_0149_as43531 Pipe     master   up     2015-03-18  => t_0149_as43531
+  Description:    Pipe for AS43531 - Console Network Solutions - VLAN Interface 149
+  Preference:     70
+  Input filter:   f_import_0149_as43531
+  Output filter:  (unnamed)
+  Routes:         4 imported, 41422 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       55006289   54597115     119589     245699      43886
+    Import withdraws:      6853437          0        ---     100144      42403
+    Export updates:       55030766     289739     143900   40042601   14554526
+    Export withdraws:      6840173          0        ---     141036    6795906
+
+pb_0149_as43531 BGP      t_0149_as43531 up     2016-05-24  Established   
+  Description:    RIB for AS43531 - Console Network Solutions - VLAN Interface 149
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   3000
+    Action:       restart
+  Routes:         5 imported, 41158 exported, 297 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        7389254          5          0        ---    7389249
+    Export withdraws:      2449456        ---        ---        ---    2449456
+  BGP state:          Established
+    Neighbor address: 193.242.111.84
+    Neighbor AS:      43531
+    Neighbor ID:      91.196.184.91
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      5/3000
+    Hold timer:       52/90
+    Keepalive timer:  22/30
+
+pp_0133_as43599 Pipe     master   up     2015-03-18  => t_0133_as43599
+  Description:    Pipe for AS43599 - Bluebox Broadband - VLAN Interface 133
+  Preference:     70
+  Input filter:   f_import_0133_as43599
+  Output filter:  (unnamed)
+  Routes:         3 imported, 41423 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598464   14598361         52          0         51
+    Import withdraws:      6838353          0        ---          0         39
+    Export updates:       14601276         51       2864          0   14598361
+    Export withdraws:      6840173          0        ---          0    6838270
+
+pb_0133_as43599 BGP      t_0133_as43599 up     00:10:28    Established   
+  Description:    RIB for AS43599 - Bluebox Broadband - VLAN Interface 133
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         7 imported, 41159 exported, 226 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              7          0          0          0          7
+    Import withdraws:            0          0        ---          0          0
+    Export updates:          47623          7          0        ---      47616
+    Export withdraws:         5411        ---        ---        ---       5411
+  BGP state:          Established
+    Neighbor address: 193.242.111.73
+    Neighbor AS:      43599
+    Neighbor ID:      78.155.225.160
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      7/20
+    Hold timer:       142/180
+    Keepalive timer:  18/60
+
+pp_0156_as44384 Pipe     master   up     2015-03-18  => t_0156_as44384
+  Description:    Pipe for AS44384 - CableComm - VLAN Interface 156
+  Preference:     70
+  Input filter:   f_import_0156_as44384
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14657022   14657009          0          2         11
+    Import withdraws:      6838309          0        ---          0         10
+    Export updates:       14659886         13       2864      58608   14598401
+    Export withdraws:      6840173          0        ---          0    6838299
+
+pb_0156_as44384 BGP      t_0156_as44384 up     2016-05-07  Established   
+  Description:    RIB for AS44384 - CableComm - VLAN Interface 156
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41161 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        8139199          1          0        ---    8139198
+    Export withdraws:      2894588        ---        ---        ---    2894588
+  BGP state:          Established
+    Neighbor address: 193.242.111.87
+    Neighbor AS:      44384
+    Neighbor ID:      92.61.192.138
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       18/30
+    Keepalive timer:  6/10
+
+pp_0167_as44451 Pipe     master   up     2015-03-18  => t_0167_as44451
+  Description:    Pipe for AS44451 - Skytel - VLAN Interface 167
+  Preference:     70
+  Input filter:   f_import_0167_as44451
+  Output filter:  (unnamed)
+  Routes:         4 imported, 41422 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14600426   14600174         49          3        200
+    Import withdraws:      6838356          0        ---          0        173
+    Export updates:       14603401        203       3024       1962   14598212
+    Export withdraws:      6840173          0        ---        160    6838136
+
+pb_0167_as44451 BGP      t_0167_as44451 up     2016-10-19  Established   
+  Description:    RIB for AS44451 - Skytel - VLAN Interface 167
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         4 imported, 41158 exported, 296 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              8          0          0          4          4
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         106542          4          0        ---     106538
+    Export withdraws:        51314        ---        ---        ---      51314
+  BGP state:          Established
+    Neighbor address: 193.242.111.92
+    Neighbor AS:      44451
+    Neighbor ID:      93.92.8.2
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      4/20
+    Hold timer:       109/180
+    Keepalive timer:  15/60
+
+pp_0175_as47580 Pipe     master   up     2015-03-18  => t_0175_as47580
+  Description:    Pipe for AS47580 - SunGard (AS47580) - VLAN Interface 175
+  Preference:     70
+  Input filter:   f_import_0175_as47580
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598377   14598368          0          0          9
+    Import withdraws:      6838274          0        ---          0          8
+    Export updates:       14601276          9       2899          0   14598368
+    Export withdraws:      6840173          0        ---          0    6838266
+
+pb_0175_as47580 BGP      t_0175_as47580 up     2015-12-03  Established   
+  Description:    RIB for AS47580 - SunGard (AS47580) - VLAN Interface 175
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41161 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              2          0          0          1          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:       10504770          1          0        ---   10504769
+    Export withdraws:      4484925        ---        ---        ---    4484925
+  BGP state:          Established
+    Neighbor address: 193.242.111.94
+    Neighbor AS:      47580
+    Neighbor ID:      212.78.224.35
+    Neighbor caps:    refresh
+    Session:          external route-server
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       124/180
+    Keepalive timer:  17/60
+
+pp_0115_as47680 Pipe     master   up     2015-03-18  => t_0115_as47680
+  Description:    Pipe for AS47680 - BBnet - VLAN Interface 115
+  Preference:     70
+  Input filter:   f_import_0115_as47680
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41424 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14730407   14706456          0          6      23945
+    Import withdraws:      6838309          0        ---          0       5303
+    Export updates:       14733751      23951       3344     131989   14574467
+    Export withdraws:      6840173          0        ---        480    6833006
+
+pb_0115_as47680 BGP      t_0115_as47680 up     2016-07-18  Established   
+  Description:    RIB for AS47680 - BBnet - VLAN Interface 115
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41160 exported, 148 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              9          0          0          2          7
+    Import withdraws:            2          0        ---          0          2
+    Export updates:        5278671          7          0        ---    5278664
+    Export withdraws:      1224160        ---        ---        ---    1224158
+  BGP state:          Established
+    Neighbor address: 193.242.111.64
+    Neighbor AS:      47680
+    Neighbor ID:      88.87.177.172
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       87/180
+    Keepalive timer:  8/60
+
+pp_0114_as49567 Pipe     master   up     2015-03-18  => t_0114_as49567
+  Description:    Pipe for AS49567 - Aptus Broadband - VLAN Interface 114
+  Preference:     70
+  Input filter:   f_import_0114_as49567
+  Output filter:  (unnamed)
+  Routes:         3 imported, 41423 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598381          0          0         31
+    Import withdraws:      6838309          0        ---          0         28
+    Export updates:       14601276         31       2864          0   14598381
+    Export withdraws:      6840173          0        ---          0    6838281
+
+pb_0114_as49567 BGP      t_0114_as49567 up     2016-07-22  Established   
+  Description:    RIB for AS49567 - Aptus Broadband - VLAN Interface 114
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         3 imported, 41159 exported, 222 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            2          0        ---          0          2
+    Export updates:        5056655          5          0        ---    5056650
+    Export withdraws:      1186409        ---        ---        ---    1186412
+  BGP state:          Established
+    Neighbor address: 193.242.111.63
+    Neighbor AS:      49567
+    Neighbor ID:      94.198.120.49
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      3/20
+    Hold timer:       53/90
+    Keepalive timer:  14/30
+
+pp_0119_as50088 Pipe     master   up     2015-03-18  => t_0119_as50088
+  Description:    Pipe for AS50088 - Egenera - VLAN Interface 119
+  Preference:     70
+  Input filter:   f_import_0119_as50088
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14627671   14627656          7          1          7
+    Import withdraws:      6838314          0        ---          0          6
+    Export updates:       14630528          8       2864      29251   14598405
+    Export withdraws:      6840173          0        ---          0    6838303
+
+pb_0119_as50088 BGP      t_0119_as50088 up     2016-05-20  Established   
+  Description:    RIB for AS50088 - Egenera - VLAN Interface 119
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41161 exported, 75 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              3          0          0          0          3
+    Import withdraws:            1          0        ---          0          1
+    Export updates:        7418096          3          0        ---    7418093
+    Export withdraws:      2463058        ---        ---        ---    2463057
+  BGP state:          Established
+    Neighbor address: 193.242.111.48
+    Neighbor AS:      50088
+    Neighbor ID:      80.169.58.162
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       13/20
+    Keepalive timer:  2/6
+
+pp_0129_as50326 Pipe     master   up     2015-03-18  => t_0129_as50326
+  Description:    Pipe for AS50326 - IP Telecom - VLAN Interface 129
+  Preference:     70
+  Input filter:   f_import_0129_as50326
+  Output filter:  (unnamed)
+  Routes:         3 imported, 41423 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14638689   14638663          0          1         25
+    Import withdraws:      6838309          0        ---          0         12
+    Export updates:       14641696         26       3007      40276   14598387
+    Export withdraws:      6840173          0        ---        143    6838297
+
+pb_0129_as50326 BGP      t_0129_as50326 up     2016-10-13  Established   
+  Description:    RIB for AS50326 - IP Telecom - VLAN Interface 129
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         3 imported, 41159 exported, 219 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              3          0          0          0          3
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         425787          3          0        ---     425784
+    Export withdraws:       112654        ---        ---        ---     112654
+  BGP state:          Established
+    Neighbor address: 193.242.111.71
+    Neighbor AS:      50326
+    Neighbor ID:      185.101.240.2
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      3/20
+    Hold timer:       53/60
+    Keepalive timer:  9/20
+
+pp_0176_as51677 Pipe     master   up     2015-03-18  => t_0176_as51677
+  Description:    Pipe for AS51677 - Digital Planet - VLAN Interface 176
+  Preference:     70
+  Input filter:   f_import_0176_as51677
+  Output filter:  (unnamed)
+  Routes:         6 imported, 41420 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598510   14598342         98          0         70
+    Import withdraws:      6838395          0        ---          0         57
+    Export updates:       14601276         70       2864          0   14598342
+    Export withdraws:      6840173          0        ---          0    6838252
+
+pb_0176_as51677 BGP      t_0176_as51677 up     2016-07-30  Established   
+  Description:    RIB for AS51677 - Digital Planet - VLAN Interface 176
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         10 imported, 41156 exported, 448 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             10          0          0          0         10
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        4608265         10          0        ---    4608255
+    Export withdraws:      1051719        ---        ---        ---    1051719
+  BGP state:          Established
+    Neighbor address: 193.242.111.97
+    Neighbor AS:      51677
+    Neighbor ID:      10.1.0.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      10/20
+    Hold timer:       136/180
+    Keepalive timer:  48/60
+
+pp_0164_as60277 Pipe     master   up     2015-03-18  => t_0164_as60277
+  Description:    Pipe for AS60277 - Telcom - VLAN Interface 164
+  Preference:     70
+  Input filter:   f_import_0164_as60277
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41425 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14662198   14662148          2          2         46
+    Import withdraws:      6838309          0        ---          0         44
+    Export updates:       14665380         48       3184      63782   14598366
+    Export withdraws:      6840173          0        ---        320    6838265
+
+pb_0164_as60277 BGP      t_0164_as60277 up     2015-12-03  Established   
+  Description:    RIB for AS60277 - Telcom - VLAN Interface 164
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41162 exported, 1 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             44          0          0          1         43
+    Import withdraws:           40          0        ---          0         40
+    Export updates:       10535681         46          0        ---   10535635
+    Export withdraws:      4515811        ---        ---        ---    4515774
+  BGP state:          Established
+    Neighbor address: 193.242.111.90
+    Neighbor AS:      60277
+    Neighbor ID:      185.32.252.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       87/90
+    Keepalive timer:  9/30
+
+pp_0136_as61194 Pipe     master   up     2015-03-18  => t_0136_as61194
+  Description:    Pipe for AS61194 - CTI Global - VLAN Interface 136
+  Preference:     70
+  Input filter:   f_import_0136_as61194
+  Output filter:  (unnamed)
+  Routes:         5 imported, 41421 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598385          0          0         27
+    Import withdraws:      6838309          0        ---          0         22
+    Export updates:       14601276         27       2864          0   14598385
+    Export withdraws:      6840173          0        ---          0    6838287
+
+pb_0136_as61194 BGP      t_0136_as61194 up     2016-03-12  Established   
+  Description:    RIB for AS61194 - CTI Global - VLAN Interface 136
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         5 imported, 41157 exported, 370 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        8888468          5          0        ---    8888463
+    Export withdraws:      3415273        ---        ---        ---    3415278
+  BGP state:          Established
+    Neighbor address: 193.242.111.74
+    Neighbor AS:      61194
+    Neighbor ID:      46.245.208.132
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      5/20
+    Hold timer:       148/180
+    Keepalive timer:  10/60
+
+pp_0182_as61337 Pipe     master   up     2015-03-18  => t_0182_as61337
+  Description:    Pipe for AS61337 - Electronic Communities - VLAN Interface 182
+  Preference:     70
+  Input filter:   f_import_0182_as61337
+  Output filter:  (unnamed)
+  Routes:         43 imported, 41383 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       15286907   15284868        217        713       1109
+    Import withdraws:      6838453          0        ---         50       1046
+    Export updates:       15292767       1841       6058     687565   14597303
+    Export withdraws:      6840173          0        ---       3194    6837263
+
+pb_0182_as61337 BGP      t_0182_as61337 up     2016-05-19  Established   
+  Description:    RIB for AS61337 - Electronic Communities - VLAN Interface 182
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         46 imported, 41118 exported, 3185 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            120          0          0         39         81
+    Import withdraws:           25          0        ---          0         25
+    Export updates:        7455006         81          0        ---    7454925
+    Export withdraws:      2499135        ---        ---        ---    2499112
+  BGP state:          Established
+    Neighbor address: 193.242.111.101
+    Neighbor AS:      61337
+    Neighbor ID:      91.230.243.248
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      46/50
+    Hold timer:       144/180
+    Keepalive timer:  21/60
+
+pp_0173_as62059 Pipe     master   up     2015-03-18  => t_0173_as62059
+  Description:    Pipe for AS62059 - Conway Broadband - VLAN Interface 173
+  Preference:     70
+  Input filter:   f_import_0173_as62059
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41424 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14598412   14598400          0          0         12
+    Import withdraws:      6838309          0        ---          0         10
+    Export updates:       14601276         12       2864          0   14598400
+    Export withdraws:      6840173          0        ---          0    6838299
+
+pb_0173_as62059 BGP      t_0173_as62059 up     2015-10-08  Established   
+  Description:    RIB for AS62059 - Conway Broadband - VLAN Interface 173
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41160 exported, 146 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              2          0          0          0          2
+    Import withdraws:            0          0        ---          0          0
+    Export updates:       11228079          2          0        ---   11228077
+    Export withdraws:      4937325        ---        ---        ---    4937325
+  BGP state:          Established
+    Neighbor address: 193.242.111.95
+    Neighbor AS:      62059
+    Neighbor ID:      31.169.103.127
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       107/180
+    Keepalive timer:  16/60
+
+pp_0174_as62455 Pipe     master   up     2015-03-18  => t_0174_as62455
+  Description:    Pipe for AS62455 - Wicklow Broadband - VLAN Interface 174
+  Preference:     70
+  Input filter:   f_import_0174_as62455
+  Output filter:  (unnamed)
+  Routes:         5 imported, 41421 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14626920   14626742          0          4        174
+    Import withdraws:      6838309          0        ---          0        113
+    Export updates:       14629784        178       2864      28504   14598238
+    Export withdraws:      6840173          0        ---          0    6838196
+
+pb_0174_as62455 BGP      t_0174_as62455 up     2016-09-14  Established   
+  Description:    RIB for AS62455 - Wicklow Broadband - VLAN Interface 174
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         5 imported, 41157 exported, 360 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        1940353          5          0        ---    1940348
+    Export withdraws:       404152        ---        ---        ---     404152
+  BGP state:          Established
+    Neighbor address: 193.242.111.96
+    Neighbor AS:      62455
+    Neighbor ID:      193.242.111.96
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      5/20
+    Hold timer:       124/180
+    Keepalive timer:  12/60
+
+pp_0190_as197853 Pipe     master   up     2015-03-18  => t_0190_as197853
+  Description:    Pipe for AS197853 - Irish Telecom - VLAN Interface 190
+  Preference:     70
+  Input filter:   f_import_0190_as197853
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41503 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14601276   14601268          0          0          8
+    Import withdraws:      6840173          0        ---          0          6
+    Export updates:       14601276          8          0          0   14601268
+    Export withdraws:      6840173          0        ---          0    6840167
+
+pb_0190_as197853 BGP      t_0190_as197853 up     2015-12-03  Established   
+  Description:    RIB for AS197853 - Irish Telecom - VLAN Interface 190
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41239 exported, 148 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              2          0          0          0          2
+    Import withdraws:            0          0        ---          0          0
+    Export updates:       10506246          2          0        ---   10506244
+    Export withdraws:      4486349        ---        ---        ---    4486349
+  BGP state:          Established
+    Neighbor address: 193.242.111.104
+    Neighbor AS:      197853
+    Neighbor ID:      87.192.233.130
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       62/90
+    Keepalive timer:  24/30
+
+pp_0166_as198988 Pipe     master   up     2015-03-18  => t_0166_as198988
+  Description:    Pipe for AS198988 - Wireless Connect - VLAN Interface 166
+  Preference:     70
+  Input filter:   f_import_0166_as198988
+  Output filter:  (unnamed)
+  Routes:         4 imported, 41501 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14770620   14769205         25         27       1363
+    Import withdraws:      6840175          0        ---          0        727
+    Export updates:       14770594       1390          0     169291   14599913
+    Export withdraws:      6840173          0        ---          0    6839446
+
+pb_0166_as198988 BGP      t_0166_as198988 up     2016-10-18  Established   
+  Description:    RIB for AS198988 - Wireless Connect - VLAN Interface 166
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         4 imported, 41237 exported, 296 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         170581          5          0        ---     170576
+    Export withdraws:        71369        ---        ---        ---      71369
+  BGP state:          Established
+    Neighbor address: 193.242.111.91
+    Neighbor AS:      198988
+    Neighbor ID:      5.134.88.2
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      4/20
+    Hold timer:       130/180
+    Keepalive timer:  6/60
+
+pp_0160_as199256 Pipe     master   up     2015-03-18  => t_0160_as199256
+  Description:    Pipe for AS199256 - Host Ireland - VLAN Interface 160
+  Preference:     70
+  Input filter:   f_import_0160_as199256
+  Output filter:  (unnamed)
+  Routes:         18 imported, 41487 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14886770   14885738         10        105        917
+    Import withdraws:      6840179          0        ---          1        840
+    Export updates:       14886761       1023          0     285379   14600359
+    Export withdraws:      6840173          0        ---          0    6839333
+
+pb_0160_as199256 BGP      t_0160_as199256 up     2016-05-19  Established   
+  Description:    RIB for AS199256 - Host Ireland - VLAN Interface 160
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         18 imported, 41223 exported, 1332 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            207          0          0         13        194
+    Import withdraws:          125          0        ---          0        125
+    Export updates:        7527612        233          0        ---    7527379
+    Export withdraws:      2500009        ---        ---        ---    2500001
+  BGP state:          Established
+    Neighbor address: 193.242.111.88
+    Neighbor AS:      199256
+    Neighbor ID:      192.168.180.146
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      18/20
+    Hold timer:       67/90
+    Keepalive timer:  17/30
+
+pp_0137_as10310 Pipe     master   up     2015-04-30  => t_0137_as10310
+  Description:    Pipe for AS10310 - Yahoo! - VLAN Interface 137
+  Preference:     70
+  Input filter:   f_import_0137_as10310
+  Output filter:  (unnamed)
+  Routes:         0 imported, 41426 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       15789233   15789233          0          0          0
+    Import withdraws:      6378914          0        ---          0          0
+    Export updates:       15798271          0       9078    1849835   13939358
+    Export withdraws:      6380778          0        ---       6214    6378914
+
+pb_0137_as10310 BGP      t_0137_as10310 start  2015-04-30  Connect       Socket: No route to host
+  Description:    RIB for AS10310 - Yahoo! - VLAN Interface 137
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   500
+    Action:       restart
+  Routes:         0 imported, 0 exported, 0 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              0          0          0          0          0
+    Import withdraws:            0          0        ---          0          0
+    Export updates:              0          0          0        ---          0
+    Export withdraws:            0        ---        ---        ---          0
+  BGP state:          Connect
+    Neighbor address: 193.242.111.77
+    Neighbor AS:      10310
+    Last error:       Socket: No route to host
+
+pp_0195_as47720 Pipe     master   up     2015-05-14  => t_0195_as47720
+  Description:    Pipe for AS47720 - CIX - VLAN Interface 195
+  Preference:     70
+  Input filter:   f_import_0195_as47720
+  Output filter:  (unnamed)
+  Routes:         21 imported, 41405 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14054415   14051884         15        156       2360
+    Import withdraws:      6323448          0        ---          2        594
+    Export updates:       14058287       2517       3886     241851   13810033
+    Export withdraws:      6325301          0        ---       1022    6322843
+
+pb_0195_as47720 BGP      t_0195_as47720 up     2015-12-03  Established   
+  Description:    RIB for AS47720 - CIX - VLAN Interface 195
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   500
+    Action:       restart
+  Routes:         22 imported, 41142 exported, 1481 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            679          0          0         22        657
+    Import withdraws:          256          0        ---          0        256
+    Export updates:       10504782        599          0        ---   10504183
+    Export withdraws:      4484936        ---        ---        ---    4485088
+  BGP state:          Established
+    Neighbor address: 193.242.111.106
+    Neighbor AS:      47720
+    Neighbor ID:      91.103.0.246
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      22/500
+    Hold timer:       57/90
+    Keepalive timer:  12/30
+
+pp_0154_as8220 Pipe     master   up     2015-05-28  => t_0154_as8220
+  Description:    Pipe for AS8220 - Colt Technology Services - VLAN Interface 154
+  Preference:     70
+  Input filter:   f_import_0154_as8220
+  Output filter:  (unnamed)
+  Routes:         73 imported, 41353 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       40904745   40847186        518      53701       3340
+    Import withdraws:      6223580          0        ---        498       2210
+    Export updates:       41015419      57044     111065   27208715   13638595
+    Export withdraws:      6225432          0        ---     108201    6221358
+
+pb_0154_as8220 BGP      t_0154_as8220 up     2016-09-15  Established   
+  Description:    RIB for AS8220 - Colt Technology Services - VLAN Interface 154
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   4000
+    Action:       restart
+  Routes:         73 imported, 41127 exported, 2590 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            471          0          0        109        362
+    Import withdraws:          264          0        ---          0        264
+    Export updates:        1885240        157          0        ---    1885083
+    Export withdraws:       397148        ---        ---        ---     397082
+  BGP state:          Established
+    Neighbor address: 193.242.111.86
+    Neighbor AS:      8220
+    Neighbor ID:      212.74.91.44
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      73/4000
+    Hold timer:       136/180
+    Keepalive timer:  29/60
+
+pp_0185_as47762 Pipe     master   up     2015-06-19  => t_0185_as47762
+  Description:    Pipe for AS47762 - Magnetic North - VLAN Interface 185
+  Preference:     70
+  Input filter:   f_import_0185_as47762
+  Output filter:  (unnamed)
+  Routes:         3 imported, 41423 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       13412583   13412552          2          1         28
+    Import withdraws:      6096832          0        ---          0         25
+    Export updates:       13415447         31       2864      28448   13384104
+    Export withdraws:      6098696          0        ---          0    6096807
+
+pb_0185_as47762 BGP      t_0185_as47762 up     2015-12-03  Established   
+  Description:    RIB for AS47762 - Magnetic North - VLAN Interface 185
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         3 imported, 41159 exported, 222 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              6          0          0          1          5
+    Import withdraws:            2          0        ---          0          2
+    Export updates:       10494960          5          0        ---   10494955
+    Export withdraws:      4480628        ---        ---        ---    4480631
+  BGP state:          Established
+    Neighbor address: 193.242.111.102
+    Neighbor AS:      47762
+    Neighbor ID:      172.16.254.5
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      3/20
+    Hold timer:       19/30
+    Keepalive timer:  2/10
+
+pp_0194_as13335 Pipe     master   up     2015-07-31  => t_0194_as13335
+  Description:    Pipe for AS13335 - Cloudflare - VLAN Interface 194
+  Preference:     70
+  Input filter:   f_import_0194_as13335
+  Output filter:  (unnamed)
+  Routes:         83 imported, 41422 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       14148605   14138285        282       7051       2987
+    Import withdraws:      5825436          0        ---          5       1983
+    Export updates:       14148397      10110          0    1628829   12509458
+    Export withdraws:      5825438          0        ---          0    5823455
+
+pb_0194_as13335 BGP      t_0194_as13335 up     2015-12-03  Established   
+  Description:    RIB for AS13335 - Cloudflare - VLAN Interface 194
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   500
+    Action:       restart
+  Routes:         83 imported, 41158 exported, 1560 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:           1535          0          0          4       1531
+    Import withdraws:         1448          0        ---          0       1448
+    Export updates:       10506279       1531          0        ---   10504748
+    Export withdraws:      4486357        ---        ---        ---    4484909
+  BGP state:          Established
+    Neighbor address: 193.242.111.76
+    Neighbor AS:      13335
+    Neighbor ID:      162.158.36.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      83/500
+    Hold timer:       74/90
+    Keepalive timer:  19/30
+
+pp_0199_as200562 Pipe     master   up     2015-11-02  => t_0199_as200562
+  Description:    Pipe for AS200562 - Welltel - VLAN Interface 199
+  Preference:     70
+  Input filter:   f_import_0199_as200562
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41504 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       10959393   10959391          0          0          2
+    Import withdraws:      4867789          0        ---          0          1
+    Export updates:       10959393          2          0          0   10959391
+    Export withdraws:      4867789          0        ---          0    4867788
+
+pb_0199_as200562 BGP      t_0199_as200562 up     2015-12-03  Established   
+  Description:    RIB for AS200562 - Welltel - VLAN Interface 199
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   200
+    Action:       restart
+  Routes:         1 imported, 41240 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:       10506279          1          0        ---   10506278
+    Export withdraws:      4486357        ---        ---        ---    4486357
+  BGP state:          Established
+    Neighbor address: 193.242.111.78
+    Neighbor AS:      200562
+    Neighbor ID:      185.75.144.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/200
+    Hold timer:       51/90
+    Keepalive timer:  3/30
+
+pp_0202_as61145 Pipe     master   up     2015-12-15  => t_0202_as61145
+  Description:    Pipe for AS61145 - Real Broadband - VLAN Interface 202
+  Preference:     70
+  Input filter:   f_import_0202_as61145
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41424 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       10428365   10428353          0          1         11
+    Import withdraws:      4489102          0        ---          0          9
+    Export updates:       10430040         12       1675      32910   10395443
+    Export withdraws:      4490538          0        ---        160    4489093
+
+pb_0202_as61145 BGP      t_0202_as61145 up     2016-09-27  Established   
+  Description:    RIB for AS61145 - Real Broadband - VLAN Interface 202
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41160 exported, 148 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              2          0          0          0          2
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        1280852          2          0        ---    1280850
+    Export withdraws:       260026        ---        ---        ---     260026
+  BGP state:          Established
+    Neighbor address: 193.242.111.93
+    Neighbor AS:      61145
+    Neighbor ID:      185.8.112.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       143/180
+    Keepalive timer:  4/60
+
+pp_0206_as15533 Pipe     master   up     2015-12-18  => t_0206_as15533
+  Description:    Pipe for AS15533 - SunGard (AS15533) - VLAN Interface 206
+  Preference:     70
+  Input filter:   f_import_0206_as15533
+  Output filter:  (unnamed)
+  Routes:         7 imported, 41419 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:       10462907   10461861        994         26         26
+    Import withdraws:      4387171          0        ---          0         19
+    Export updates:       10464207         52       2294     179476   10282385
+    Export withdraws:      4387613          0        ---        779    4386158
+
+pb_0206_as15533 BGP      t_0206_as15533 up     2016-09-06  Established   
+  Description:    RIB for AS15533 - SunGard (AS15533) - VLAN Interface 206
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   250
+    Action:       restart
+  Routes:         7 imported, 41155 exported, 518 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              7          0          0          0          7
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        2389901          7          0        ---    2389894
+    Export withdraws:       470031        ---        ---        ---     470038
+  BGP state:          Established
+    Neighbor address: 193.242.111.110
+    Neighbor AS:      15533
+    Neighbor ID:      212.84.40.2
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      7/250
+    Hold timer:       75/90
+    Keepalive timer:  24/30
+
+pp_0201_as199346 Pipe     master   up     2016-02-15  => t_0201_as199346
+  Description:    Pipe for AS199346 - Kerry Broadband - VLAN Interface 201
+  Preference:     70
+  Input filter:   f_import_0201_as199346
+  Output filter:  (unnamed)
+  Routes:         2 imported, 41503 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        9687172    9687152          0          0         20
+    Import withdraws:      4011381          0        ---          0          9
+    Export updates:        9687172         20          0          0    9687152
+    Export withdraws:      4011381          0        ---          0    4011372
+
+pb_0201_as199346 BGP      t_0201_as199346 up     2016-06-05  Established   
+  Description:    RIB for AS199346 - Kerry Broadband - VLAN Interface 201
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         2 imported, 41237 exported, 148 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          2          3
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        7187272          5          0        ---    7187267
+    Export withdraws:      2306322        ---        ---        ---    2306324
+  BGP state:          Established
+    Neighbor address: 193.242.111.109
+    Neighbor AS:      199346
+    Neighbor ID:      185.12.159.241
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      2/20
+    Hold timer:       130/180
+    Keepalive timer:  43/60
+
+pp_0209_as199203 Pipe     master   up     2016-03-03  => t_0209_as199203
+  Description:    Pipe for AS199203 - IAC Search and Media Europe - VLAN Interface 209
+  Preference:     70
+  Input filter:   f_import_0209_as199203
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41504 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        9199037    9199036          0          0          1
+    Import withdraws:      3596998          0        ---          0          0
+    Export updates:        9199037          1          0      35506    9163530
+    Export withdraws:      3596998          0        ---          0    3596998
+
+pb_0209_as199203 BGP      t_0209_as199203 up     2016-03-07  Established   
+  Description:    RIB for AS199203 - IAC Search and Media Europe - VLAN Interface 209
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         1 imported, 41240 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        9022664          1          0        ---    9022663
+    Export withdraws:      3464364        ---        ---        ---    3464365
+  BGP state:          Established
+    Neighbor address: 193.242.111.111
+    Neighbor AS:      199203
+    Neighbor ID:      185.23.45.3
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/20
+    Hold timer:       60/90
+    Keepalive timer:  5/30
+
+pp_0217_as43192 Pipe     master   up     2016-03-21  => t_0217_as43192
+  Description:    Pipe for AS43192 - Integrated Media Solutions - VLAN Interface 217
+  Preference:     70
+  Input filter:   f_import_0217_as43192
+  Output filter:  (unnamed)
+  Routes:         15 imported, 41411 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        9152308    9151641         35        104        528
+    Import withdraws:      3446727          0        ---          7        482
+    Export updates:        9154900        634       2623     283326    8868317
+    Export withdraws:      3447829          0        ---       1428    3446231
+
+pb_0217_as43192 BGP      t_0217_as43192 up     2016-09-24  Established   
+  Description:    RIB for AS43192 - Integrated Media Solutions - VLAN Interface 217
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         15 imported, 41149 exported, 962 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:             36          0          0         14         22
+    Import withdraws:            7          0        ---          0          7
+    Export updates:        1391347         19          0        ---    1391328
+    Export withdraws:       278963        ---        ---        ---     278964
+  BGP state:          Established
+    Neighbor address: 193.242.111.113
+    Neighbor AS:      43192
+    Neighbor ID:      100.64.15.2
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      15/50
+    Hold timer:       22/30
+    Keepalive timer:  4/10
+
+pp_0234_as48142 Pipe     master   up     2016-06-02  => t_0234_as48142
+  Description:    Pipe for AS48142 - permaNET - VLAN Interface 234
+  Preference:     70
+  Input filter:   f_import_0234_as48142
+  Output filter:  (unnamed)
+  Routes:         28 imported, 41398 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        7328715    7324621       1976          0       2118
+    Import withdraws:      2430859          0        ---          0       1736
+    Export updates:        7327593       2118        854          0    7324621
+    Export withdraws:      2429658          0        ---          0    2427147
+
+pb_0234_as48142 BGP      t_0234_as48142 up     2016-09-19  Established   
+  Description:    RIB for AS48142 - permaNET - VLAN Interface 234
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         28 imported, 41133 exported, 2072 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            117          0          0         36         81
+    Import withdraws:           50          0        ---          0         50
+    Export updates:        1672808         82          0        ---    1672726
+    Export withdraws:       327392        ---        ---        ---     327445
+  BGP state:          Established
+    Neighbor address: 193.242.111.115
+    Neighbor AS:      48142
+    Neighbor ID:      194.88.240.59
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      28/50
+    Hold timer:       122/180
+    Keepalive timer:  17/60
+
+pp_0237_as203754 Pipe     master   up     2016-06-29  => t_0237_as203754
+  Description:    Pipe for AS203754 - Phone Pulse - VLAN Interface 237
+  Preference:     70
+  Input filter:   f_import_0237_as203754
+  Output filter:  (unnamed)
+  Routes:         1 imported, 41504 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        6851498    6851497          0          0          1
+    Import withdraws:      2041031          0        ---          0          0
+    Export updates:        6851498          1          0          0    6851497
+    Export withdraws:      2041031          0        ---          0    2041031
+
+pb_0237_as203754 BGP      t_0237_as203754 up     2016-06-29  Established   
+  Description:    RIB for AS203754 - Phone Pulse - VLAN Interface 237
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   50
+    Action:       restart
+  Routes:         1 imported, 41239 exported, 74 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              1          0          0          0          1
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        6742206          2          0        ---    6742204
+    Export withdraws:      1931721        ---        ---        ---    1931722
+  BGP state:          Established
+    Neighbor address: 193.242.111.59
+    Neighbor AS:      203754
+    Neighbor ID:      193.242.111.59
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      1/50
+    Hold timer:       76/90
+    Keepalive timer:  2/30
+
+pp_0236_as10310 Pipe     master   up     2016-07-22  => t_0236_as10310
+  Description:    Pipe for AS10310 - Yahoo! - VLAN Interface 236
+  Preference:     70
+  Input filter:   f_import_0236_as10310
+  Output filter:  (unnamed)
+  Routes:         45 imported, 41381 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        5600547    5599976         36        432        103
+    Import withdraws:      1291377          0        ---         29         18
+    Export updates:        5602451        535       1940     437728    5162248
+    Export withdraws:      1291828          0        ---       1406    1291355
+
+pb_0236_as10310 BGP      t_0236_as10310 up     2016-07-26  Established   
+  Description:    RIB for AS10310 - Yahoo! - VLAN Interface 236
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   500
+    Action:       restart
+  Routes:         48 imported, 41117 exported, 3333 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            110          0          0          0        110
+    Import withdraws:           22          0        ---          0         22
+    Export updates:        4862323        110          0        ---    4862213
+    Export withdraws:      1153682        ---        ---        ---    1153660
+  BGP state:          Established
+    Neighbor address: 193.242.111.65
+    Neighbor AS:      10310
+    Neighbor ID:      66.196.65.5
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      48/500
+    Hold timer:       71/90
+    Keepalive timer:  18/30
+
+pp_0083_as44212 Pipe     master   up     2016-08-24  => t_0083_as44212
+  Description:    Pipe for AS44212 - Net1 - VLAN Interface 83
+  Preference:     70
+  Input filter:   f_import_0083_as44212
+  Output filter:  (unnamed)
+  Routes:         6 imported, 41420 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        3158753    3158693          0          0         60
+    Import withdraws:       682897          0        ---          0         54
+    Export updates:        3159249         60        494          2    3158693
+    Export withdraws:       683312          0        ---          0     682843
+
+pb_0083_as44212 BGP      t_0083_as44212 up     2016-09-28  Established   
+  Description:    RIB for AS44212 - Net1 - VLAN Interface 83
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         6 imported, 41156 exported, 444 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              6          0          0          0          6
+    Import withdraws:            0          0        ---          0          0
+    Export updates:        1215838         12          0        ---    1215826
+    Export withdraws:       243882        ---        ---        ---     243882
+  BGP state:          Established
+    Neighbor address: 193.242.111.53
+    Neighbor AS:      44212
+    Neighbor ID:      185.84.11.1
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      6/20
+    Hold timer:       125/180
+    Keepalive timer:  31/60
+
+pp_0127_as42227 Pipe     master   up     2016-08-25  => t_0127_as42227
+  Description:    Pipe for AS42227 - Airwire - VLAN Interface 127
+  Preference:     70
+  Input filter:   f_import_0127_as42227
+  Output filter:  (unnamed)
+  Routes:         5 imported, 41500 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:        3115870    3115858          0          0         12
+    Import withdraws:       675671          0        ---          0          7
+    Export updates:        3115870         12          0          0    3115858
+    Export withdraws:       675671          0        ---          0     675664
+
+pb_0127_as42227 BGP      t_0127_as42227 up     2016-10-09  Established   
+  Description:    RIB for AS42227 - Airwire - VLAN Interface 127
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  ACCEPT
+  Import limit:   20
+    Action:       restart
+  Routes:         5 imported, 41236 exported, 365 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:              5          0          0          0          5
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         592095          5          0        ---     592090
+    Export withdraws:       136358        ---        ---        ---     136362
+  BGP state:          Established
+    Neighbor address: 193.242.111.54
+    Neighbor AS:      42227
+    Neighbor ID:      195.222.111.204
+    Neighbor caps:    refresh AS4
+    Session:          external route-server AS4
+    Source address:   193.242.111.8
+    Route limit:      5/20
+    Hold timer:       131/180
+    Keepalive timer:  48/60
+
