@@ -113,7 +113,7 @@ func main() {
 
 	r := httprouter.New()
 	r.GET("/status", Status)
-	r.GET("/routes", Routes)
+	r.GET("/routes/protocol/:protocol", ProtoRoutes)
 	r.GET("/protocols", Protocols)
 
 	log.Fatal(http.ListenAndServe(":29184", r))
