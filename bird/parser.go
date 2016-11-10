@@ -230,3 +230,9 @@ func parseRoutesCount(input []byte) Parsed {
 
 	return res
 }
+
+func parseBgp(input string) Parsed {
+  res := Parsed{}
+
+  return res
+}

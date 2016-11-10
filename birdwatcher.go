@@ -112,9 +112,18 @@ func main() {
 	fmt.Printf("%v\n", conf)
 
 	r := httprouter.New()
-	r.GET("/status", Status)
-	r.GET("/routes/protocol/:protocol", ProtoRoutes)
-	r.GET("/protocols", Protocols)
+	r.GET("/status", Status) // done
+  r.GET("/protocols/bgp", Bgp)
+  r.GET("/symbols", Symbols) // done
+  r.GET("/symbols/tables", SymbolTables) //done
+  r.GET("/symbols/protocols", SymbolProtocols) // done
+	r.GET("/routes/protocol/:protocol", ProtoRoutes) //done
+	r.GET("/routes/table/:table", TableRoutes) //done
+  r.GET("/routes/count/protocol/:protocol", ProtoCount) //done
+  r.GET("/routes/count/table/:table", TableCount) // done
+  r.GET("/route/net/:net", RouteNet) // done
+  r.GET("/route/net/:net/table/:table", RouteNetTable) // done
+	r.GET("/protocols", Protocols) // done
 
 	log.Fatal(http.ListenAndServe(":29184", r))
 }
