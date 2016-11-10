@@ -12,7 +12,7 @@ func Status(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	res["api"] = GetApiInfo()
 
-  _ = bird.Status()
+  res["status"] = bird.Status()
 
 	js, _ := json.Marshal(res)
 

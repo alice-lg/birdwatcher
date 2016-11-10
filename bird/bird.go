@@ -11,65 +11,65 @@ func Run(args string) ([]byte, error) {
   return exec.Command("birdc", argsList...).Output()
 }
 
-func RunAndParse(cmd string, parser func([]byte)([]Parsed)) []Parsed {
+func RunAndParse(cmd string, parser func([]byte)(Parsed)) Parsed {
   out, err := Run(cmd)
 
   if err != nil {
     // ignore errors for now
-    return []Parsed{}
+    return Parsed{}
   }
 
   return parser(out)
 }
 
-func Status() []Parsed {
+func Status() Parsed {
   return RunAndParse("status", parseStatus)
 }
 
-func Protocols() []Parsed {
+func Protocols() Parsed {
   return RunAndParse("protocols all", parseProtocols)
 }
 
-func Symbols() []Parsed {
+func Symbols() Parsed {
   return RunAndParse("symbols", parseSymbols)
 }
 
-func RoutesProto(protocol string) []Parsed {
+func RoutesProto(protocol string) Parsed {
   return RunAndParse("route protocol " + protocol + " all",
                      parseRoutes)
 }
 
-func RoutesProtoCount(protocol string) []Parsed {
+func RoutesProtoCount(protocol string) Parsed {
   return RunAndParse("route protocol " + protocol + " count",
                      parseRoutesCount)
 }
 
-func RoutesExport(protocol string) []Parsed {
+func RoutesExport(protocol string) Parsed {
   return RunAndParse("route export " + protocol + " all",
                      parseRoutes)
 }
 
-func RoutesExportCount(protocol string) []Parsed {
+func RoutesExportCount(protocol string) Parsed {
   return RunAndParse("route export " + protocol + " count",
                      parseRoutesCount)
 }
 
-func RoutesTable(table string) []Parsed {
+func RoutesTable(table string) Parsed {
   return RunAndParse("route table " + table + " all",
                      parseRoutes)
 }
 
-func RoutesTableCount(table string) []Parsed {
+func RoutesTableCount(table string) Parsed {
   return RunAndParse("route table " + table + " count",
                      parseRoutesCount)
 }
 
-func RoutesLookupTable(net string, table string) []Parsed {
+func RoutesLookupTable(net string, table string) Parsed {
   return RunAndParse("route for " + net + " table " + table + " all",
                      parseRoutes)
 }
 
-func RoutesLookupProtocol(net string, protocol string) []Parsed {
+func RoutesLookupProtocol(net string, protocol string) Parsed {
   return RunAndParse("route for " + net + " protocol " + protocol + " all",
                      parseRoutes)
 }
