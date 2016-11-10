@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
+	"github.com/mchackorg/birdwatcher/bird"
 	"net/http"
-  "github.com/mchackorg/birdwatcher/bird"
 )
 
 func Status(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -12,7 +12,7 @@ func Status(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	res["api"] = GetApiInfo()
 
-  res["status"] = bird.Status()
+	res["status"] = bird.Status()
 
 	js, _ := json.Marshal(res)
 

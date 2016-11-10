@@ -8,14 +8,22 @@ import (
 
 type Parsed map[string]interface{}
 
-func getLines(input []byte) []string {
+func emptyLine(line string) bool {
+	return len(strings.TrimSpace(line)) == 0
+}
+
+func getLinesUnfiltered(input []byte) []string {
 	line_sep := regexp.MustCompile(`((\r?\n)|(\r\n?))`)
-	lines := line_sep.Split(string(input), -1)
+	return line_sep.Split(string(input), -1)
+}
+
+func getLines(input []byte) []string {
+	lines := getLinesUnfiltered(input)
 
 	var filtered []string
 
 	for _, line := range lines {
-		if len(strings.TrimSpace(line)) > 0 {
+		if !emptyLine(line) {
 			filtered = append(filtered, line)
 		}
 	}
@@ -37,6 +45,7 @@ func parseStatus(input []byte) Parsed {
 	current_server_rx := regexp.MustCompile(`^Current\sserver\stime\sis\s([0-9\-]+)\s([0-9\:]+)\s*$`)
 	last_reboot_rx := regexp.MustCompile(`^Last\sreboot\son\s([0-9\-]+)\s([0-9\:]+)\s*$`)
 	last_reconfig_rx := regexp.MustCompile(`^Last\sreconfiguration\son\s([0-9\-]+)\s([0-9\:]+)\s*$`)
+
 	for _, line := range lines {
 		if start_line_rx.MatchString(line) {
 			res["version"] = start_line_rx.FindStringSubmatch(line)[1]
@@ -56,7 +65,24 @@ func parseStatus(input []byte) Parsed {
 }
 
 func parseProtocols(input []byte) Parsed {
-	return Parsed{}
+	res := Parsed{}
+	protocols := []string{}
+	lines := getLinesUnfiltered(input)
+
+	proto := ""
+	for _, line := range lines {
+		if emptyLine(line) {
+			if !emptyLine(proto) {
+				protocols = append(protocols, proto)
+			}
+			proto = ""
+		} else {
+			proto += (line + "\n")
+		}
+	}
+
+	res["protocols"] = protocols
+	return res
 }
 
 func parseSymbols(input []byte) Parsed {

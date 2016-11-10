@@ -6,7 +6,7 @@ import (
 )
 
 func Run(args string) ([]byte, error) {
-	args = "show" + args
+	args = "show " + args
 	argsList := strings.Split(args, " ")
 	return exec.Command("birdc", argsList...).Output()
 }

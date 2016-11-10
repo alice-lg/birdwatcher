@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/mchackorg/birdwatcher/bird"
 )
 
 func Protocols(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -12,13 +13,7 @@ func Protocols(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	res["api"] = GetApiInfo()
 
-	lines, err := readLines(conf.Conf.FileName)
-	if err != nil {
-		slog.Err("Couldn't find file: " + conf.Conf.FileName)
-		return
-	}
-
-	res["protocols"] = pattern("getprotocol", lines)
+	res["protocols"] = bird.Protocols()["protocols"]
 
 	js, _ := json.Marshal(res)
 
