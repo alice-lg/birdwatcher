@@ -65,7 +65,7 @@ func parseStatus(input []byte) Parsed {
 			res["message"] = line
 		}
 	}
-	return res
+	return Parsed{"status": res}
 }
 
 func parseProtocols(input []byte) Parsed {
@@ -105,7 +105,7 @@ func parseSymbols(input []byte) Parsed {
 		}
 	}
 
-	return res
+	return Parsed{"symbols": res}
 }
 
 func mainRouteDetail(groups []string, route Parsed) Parsed {
