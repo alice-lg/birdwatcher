@@ -26,7 +26,7 @@ func Bgp(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	res["api"] = GetApiInfo()
 
-	res["protocols"] = bird.ProtocolsBgp()["protocols"]
+	res["protocols"] = bird.ProtocolsBgp()
 
 	js, _ := json.Marshal(res)
 

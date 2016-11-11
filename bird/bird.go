@@ -3,7 +3,6 @@ package bird
 import (
 	"os/exec"
 	"strings"
-  "regexp"
 )
 
 func Run(args string) ([]byte, error) {
@@ -32,16 +31,14 @@ func Protocols() Parsed {
 }
 
 func ProtocolsBgp() Parsed {
-  protocols := Protocols()
+  protocols := Protocols()["protocols"].([]string)
 
   bgpProto := Parsed{}
-  bgp_rx := regexp.MustCompile(`^(\w+)\s+BGP\s+.*`)
 
   for _, v := range protocols {
-    vs := v.(string)
-    if bgp_rx.MatchString(vs) {
-      key := bgp_rx.FindStringSubmatch(vs)[1]
-      bgpProto[key] = parseBgp(vs)
+    if strings.Contains(v, " BGP ") {
+      key := strings.Split(v, " ")[0]
+      bgpProto[key] = parseBgp(v)
     }
   }
 
