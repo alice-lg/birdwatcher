@@ -1,4 +1,4 @@
-package main
+package endpoints
 
 type TimeInfo struct {
 	Date         string `json:"date"`

@@ -2,128 +2,39 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"io/ioutil"
 	"log"
-	"log/syslog"
 	"net/http"
-	"os"
-	"regexp"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/mchackorg/birdwatcher/endpoints"
 )
 
-var debug int = 0
-var slog *syslog.Writer // Our syslog connection
-var conf *Config
-
-type Match struct {
-	Expr   string   // The regular expression as a string.
-	Fields []string // The named fields for grouped expressions.
-	Next   string   // The next regular expression in the flow.
-	Action string   // What to do with the stored fields: "store" or "send".
-}
-
-// Compiled regular expression and it's corresponding match data.
-type RE struct {
-	RE    *regexp.Regexp
-	Match Match
-}
-
-// The configuration found in the configuration file.
-type FileConfig struct {
-	Matches  map[string]Match // All our regular expressions and related data.
-	Listen   string           // Listen to this address:port for HTTP.
-	FileName string           // File to look for patterns
-
-}
-
-type Config struct {
-	Conf FileConfig
-	Res  map[string]RE
-}
-
-// Parse the configuration file. Returns the configuration.
-func parseconfig(filename string) (conf *Config, err error) {
-	conf = new(Config)
-
-	contents, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return
-	}
-
-	if err = yaml.Unmarshal(contents, &conf.Conf); err != nil {
-		return
-	}
-
-	conf.Res = make(map[string]RE)
-
-	// Build the regexps from the configuration.
-	for key, match := range conf.Conf.Matches {
-		var err error
-		var re RE
-
-		re.Match = match
-		re.RE, err = regexp.Compile(match.Expr)
-		if err != nil {
-			slog.Err("Couldn't compile re: " + match.Expr)
-			os.Exit(-1)
-		}
-
-		// Check that the number of capturing groups matches the number of expected fields.
-		lengroups := len(re.RE.SubexpNames()) - 1
-		lenfields := len(re.Match.Fields)
-
-		if lengroups != lenfields {
-			line := fmt.Sprintf("Number of capturing groups (%v) not equal to number of fields (%v): %s", lengroups, lenfields, re.Match.Expr)
-			slog.Err(line)
-			os.Exit(-1)
-		}
-
-		conf.Res[key] = re
-	}
-
-	return
+func makeRouter() *httprouter.Router {
+	r := httprouter.New()
+	r.GET("/status", endpoints.Endpoint(endpoints.Status))
+	r.GET("/protocols/bgp", endpoints.Endpoint(endpoints.Bgp))
+	r.GET("/symbols", endpoints.Endpoint(endpoints.Symbols))
+	r.GET("/symbols/tables", endpoints.Endpoint(endpoints.SymbolTables))
+	r.GET("/symbols/protocols", endpoints.Endpoint(endpoints.SymbolProtocols))
+	r.GET("/routes/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoRoutes))
+	r.GET("/routes/table/:table", endpoints.Endpoint(endpoints.TableRoutes))
+	r.GET("/routes/count/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoCount))
+	r.GET("/routes/count/table/:table", endpoints.Endpoint(endpoints.TableCount))
+	r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
+	r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
+	r.GET("/protocols", endpoints.Endpoint(endpoints.Protocols))
+	return r
 }
 
 func main() {
-	var configfile = flag.String("config", "birdwatcher.yaml", "Path to configuration file")
-	var flagdebug = flag.Int("debug", 0, "Be more verbose")
+	port := flag.String("port",
+		"29184",
+		"The port the birdwatcher should run on")
 	flag.Parse()
 
-	debug = *flagdebug
+	r := makeRouter()
 
-	slog, err := syslog.New(syslog.LOG_ERR, "birdwatcher")
-	if err != nil {
-		fmt.Printf("Couldn't open syslog")
-		os.Exit(-1)
-	}
-
-	slog.Debug("birdwatcher starting")
-
-	config, err := parseconfig(*configfile)
-	if err != nil {
-		slog.Err("Couldn't parse configuration file: " + err.Error())
-		os.Exit(-1)
-	}
-	conf = config
-
-	fmt.Printf("%v\n", conf)
-
-	r := httprouter.New()
-	r.GET("/status", Status) // done
-	r.GET("/protocols/bgp", Bgp)
-	r.GET("/symbols", Symbols)                            // done
-	r.GET("/symbols/tables", SymbolTables)                //done
-	r.GET("/symbols/protocols", SymbolProtocols)          // done
-	r.GET("/routes/protocol/:protocol", ProtoRoutes)      //done
-	r.GET("/routes/table/:table", TableRoutes)            //done
-	r.GET("/routes/count/protocol/:protocol", ProtoCount) //done
-	r.GET("/routes/count/table/:table", TableCount)       // done
-	r.GET("/route/net/:net", RouteNet)                    // done
-	r.GET("/route/net/:net/table/:table", RouteNetTable)  // done
-	r.GET("/protocols", Protocols)                        // done
-
-	log.Fatal(http.ListenAndServe(":29184", r))
+  realPort :=strings.Join([]string{":", *port}, "")
+	log.Fatal(http.ListenAndServe(realPort, r))
 }

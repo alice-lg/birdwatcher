@@ -42,7 +42,7 @@ func ProtocolsBgp() Parsed {
 		}
 	}
 
-	return bgpProto
+	return Parsed{"protocols": bgpProto}
 }
 
 func Symbols() Parsed {
