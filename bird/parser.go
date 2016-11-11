@@ -116,7 +116,7 @@ func mainRouteDetail(groups []string, route Parsed) Parsed {
 	route["age"] = groups[5]
 	route["learnt_from"] = groups[6]
 	route["primary"] = groups[7] == "*"
-  route["metric"] = parseInt(groups[8])
+	route["metric"] = parseInt(groups[8])
 	return route
 }
 

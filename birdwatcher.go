@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/mchackorg/birdwatcher/bird"
 	"github.com/mchackorg/birdwatcher/endpoints"
 )
 
@@ -31,7 +32,12 @@ func main() {
 	port := flag.String("port",
 		"29184",
 		"The port the birdwatcher should run on")
+	birdc := flag.String("birdc",
+		"birdc",
+		"The birdc command to use (for IPv6, use birdc6)")
 	flag.Parse()
+
+	bird.BirdCmd = *birdc
 
 	r := makeRouter()
 

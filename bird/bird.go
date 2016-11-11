@@ -5,10 +5,12 @@ import (
 	"strings"
 )
 
+var BirdCmd string
+
 func Run(args string) ([]byte, error) {
 	args = "show " + args
 	argsList := strings.Split(args, " ")
-	return exec.Command("birdc", argsList...).Output()
+	return exec.Command(BirdCmd, argsList...).Output()
 }
 
 func RunAndParse(cmd string, parser func([]byte) Parsed) Parsed {
