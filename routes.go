@@ -67,15 +67,14 @@ func RouteNet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.Write(js)
 }
 
-
 func RouteNetTable(w http.ResponseWriter,
-                   r *http.Request,
-                   ps httprouter.Params) {
+	r *http.Request,
+	ps httprouter.Params) {
 	res := make(map[string]interface{})
 
 	res["api"] = GetApiInfo()
 	res["routes"] = bird.RoutesLookupTable(ps.ByName("net"),
-                                         ps.ByName("table"))
+		ps.ByName("table"))
 
 	js, _ := json.Marshal(res)
 

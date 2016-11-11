@@ -32,7 +32,7 @@ func getLinesFromString(input string) []string {
 }
 
 func getLines(input []byte) []string {
-  return getLinesFromString(string(input))
+	return getLinesFromString(string(input))
 }
 
 func specialLine(line string) bool {
@@ -238,216 +238,216 @@ func parseRoutesCount(input []byte) Parsed {
 // Will snake_case a value like that:
 // I am a Weird stRiNg -> i_am_a_weird_string
 func treatKey(key string) string {
-  spaces := regexp.MustCompile(`\s+`)
-  key = spaces.ReplaceAllString(key, "_")
-  return strings.ToLower(key)
+	spaces := regexp.MustCompile(`\s+`)
+	key = spaces.ReplaceAllString(key, "_")
+	return strings.ToLower(key)
 }
 
 func parseBgp(input string) Parsed {
-  res := Parsed{}
-  lines := getLinesFromString(input)
-  route_changes := Parsed{}
+	res := Parsed{}
+	lines := getLinesFromString(input)
+	route_changes := Parsed{}
 
-  bgp_rx := regexp.MustCompile(`^([\w\.]+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2})\s*(\w+)?.*$`)
-  num_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
-  str_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
-  routes_rx := regexp.MustCompile(`^\s+Routes:\s+(\d+)\s+imported,\s+(\d+)\s+filtered,\s+(\d+)\s+exported,\s+(\d+)\s+preferred\s*$`)
-  imp_updates_rx := regexp.MustCompile(`^\s+Import updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$`)
-  imp_withdraws_rx := regexp.MustCompile(`^\s+Import withdraws:\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s+(\d+)\s*$`)
-  exp_updates_rx := regexp.MustCompile(`^\s+Export updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s*$`)
-  exp_withdraws_rx := regexp.MustCompile(`^\s+Export withdraws:\s+(\d+)(\s+\-\-\-)+\s+(\d+)\s*$`)
-  for _, line := range lines {
-    if bgp_rx.MatchString(line) {
-      groups := bgp_rx.FindStringSubmatch(line)
+	bgp_rx := regexp.MustCompile(`^([\w\.]+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2})\s*(\w+)?.*$`)
+	num_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
+	str_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
+	routes_rx := regexp.MustCompile(`^\s+Routes:\s+(\d+)\s+imported,\s+(\d+)\s+filtered,\s+(\d+)\s+exported,\s+(\d+)\s+preferred\s*$`)
+	imp_updates_rx := regexp.MustCompile(`^\s+Import updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$`)
+	imp_withdraws_rx := regexp.MustCompile(`^\s+Import withdraws:\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s+(\d+)\s*$`)
+	exp_updates_rx := regexp.MustCompile(`^\s+Export updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s*$`)
+	exp_withdraws_rx := regexp.MustCompile(`^\s+Export withdraws:\s+(\d+)(\s+\-\-\-)+\s+(\d+)\s*$`)
+	for _, line := range lines {
+		if bgp_rx.MatchString(line) {
+			groups := bgp_rx.FindStringSubmatch(line)
 
-      res["protocol"]      = groups[1]
-      res["bird_protocol"] = "BGP"
-      res["table"]         = groups[2]
-      res["state"]         = groups[3]
-      res["state_changed"] = groups[4]
-      res["connection"]    = groups[5]
-    } else if routes_rx.MatchString(line) {
-      routes := Parsed{}
-      groups := routes_rx.FindStringSubmatch(line)
+			res["protocol"] = groups[1]
+			res["bird_protocol"] = "BGP"
+			res["table"] = groups[2]
+			res["state"] = groups[3]
+			res["state_changed"] = groups[4]
+			res["connection"] = groups[5]
+		} else if routes_rx.MatchString(line) {
+			routes := Parsed{}
+			groups := routes_rx.FindStringSubmatch(line)
 
-      imported, err := strconv.ParseInt(groups[1], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      filtered, err := strconv.ParseInt(groups[2], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      exported, err := strconv.ParseInt(groups[3], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      preferred, err := strconv.ParseInt(groups[4], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
+			imported, err := strconv.ParseInt(groups[1], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			filtered, err := strconv.ParseInt(groups[2], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			exported, err := strconv.ParseInt(groups[3], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			preferred, err := strconv.ParseInt(groups[4], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
 
-      routes["imported"]  = imported
-      routes["filtered"]  = filtered
-      routes["exported"]  = exported
-      routes["preferred"] = preferred
+			routes["imported"] = imported
+			routes["filtered"] = filtered
+			routes["exported"] = exported
+			routes["preferred"] = preferred
 
-      res["routes"] = routes
-    } else if imp_updates_rx.MatchString(line) {
-      updates := Parsed{}
-      groups := imp_updates_rx.FindStringSubmatch(line)
+			res["routes"] = routes
+		} else if imp_updates_rx.MatchString(line) {
+			updates := Parsed{}
+			groups := imp_updates_rx.FindStringSubmatch(line)
 
-      received, err := strconv.ParseInt(groups[1], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      rejected, err := strconv.ParseInt(groups[2], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      filtered, err := strconv.ParseInt(groups[3], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      ignored, err := strconv.ParseInt(groups[4], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      accepted, err := strconv.ParseInt(groups[5], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
+			received, err := strconv.ParseInt(groups[1], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			rejected, err := strconv.ParseInt(groups[2], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			filtered, err := strconv.ParseInt(groups[3], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			ignored, err := strconv.ParseInt(groups[4], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			accepted, err := strconv.ParseInt(groups[5], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
 
-      updates["received"] = received
-      updates["rejected"] = rejected
-      updates["filtered"] = filtered
-      updates["ignored"]  = ignored
-      updates["accepted"] = accepted
+			updates["received"] = received
+			updates["rejected"] = rejected
+			updates["filtered"] = filtered
+			updates["ignored"] = ignored
+			updates["accepted"] = accepted
 
-      route_changes["import_updates"] = updates
-    } else if imp_withdraws_rx.MatchString(line) {
-      updates := Parsed{}
-      groups := imp_withdraws_rx.FindStringSubmatch(line)
+			route_changes["import_updates"] = updates
+		} else if imp_withdraws_rx.MatchString(line) {
+			updates := Parsed{}
+			groups := imp_withdraws_rx.FindStringSubmatch(line)
 
-      received, err := strconv.ParseInt(groups[1], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      rejected, err := strconv.ParseInt(groups[2], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      filtered, err := strconv.ParseInt(groups[3], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      accepted, err := strconv.ParseInt(groups[4], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
+			received, err := strconv.ParseInt(groups[1], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			rejected, err := strconv.ParseInt(groups[2], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			filtered, err := strconv.ParseInt(groups[3], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			accepted, err := strconv.ParseInt(groups[4], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
 
-      updates["received"] = received
-      updates["rejected"] = rejected
-      updates["filtered"] = filtered
-      updates["accepted"] = accepted
+			updates["received"] = received
+			updates["rejected"] = rejected
+			updates["filtered"] = filtered
+			updates["accepted"] = accepted
 
-      route_changes["import_withdraws"] = updates
-    } else if exp_updates_rx.MatchString(line) {
-      updates := Parsed{}
-      groups := exp_updates_rx.FindStringSubmatch(line)
+			route_changes["import_withdraws"] = updates
+		} else if exp_updates_rx.MatchString(line) {
+			updates := Parsed{}
+			groups := exp_updates_rx.FindStringSubmatch(line)
 
-      received, err := strconv.ParseInt(groups[1], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      rejected, err := strconv.ParseInt(groups[2], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      ignored, err := strconv.ParseInt(groups[3], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      accepted, err := strconv.ParseInt(groups[4], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
+			received, err := strconv.ParseInt(groups[1], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			rejected, err := strconv.ParseInt(groups[2], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			ignored, err := strconv.ParseInt(groups[3], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			accepted, err := strconv.ParseInt(groups[4], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
 
-      updates["received"] = received
-      updates["rejected"] = rejected
-      updates["ignored"] = ignored
-      updates["accepted"] = accepted
+			updates["received"] = received
+			updates["rejected"] = rejected
+			updates["ignored"] = ignored
+			updates["accepted"] = accepted
 
-      route_changes["export_updates"] = updates
-    } else if exp_withdraws_rx.MatchString(line) {
-      updates := Parsed{}
-      groups := exp_withdraws_rx.FindStringSubmatch(line)
+			route_changes["export_updates"] = updates
+		} else if exp_withdraws_rx.MatchString(line) {
+			updates := Parsed{}
+			groups := exp_withdraws_rx.FindStringSubmatch(line)
 
-      received, err := strconv.ParseInt(groups[1], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
-      accepted, err := strconv.ParseInt(groups[3], 10, 64)
-      if err != nil {
-        // ignore for now
-        continue
-      }
+			received, err := strconv.ParseInt(groups[1], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
+			accepted, err := strconv.ParseInt(groups[3], 10, 64)
+			if err != nil {
+				// ignore for now
+				continue
+			}
 
-      updates["received"] = received
-      updates["accepted"] = accepted
+			updates["received"] = received
+			updates["accepted"] = accepted
 
-      route_changes["export_withdraws"] = updates
-    } else if num_val_rx.MatchString(line) {
-      groups := num_val_rx.FindStringSubmatch(line)
+			route_changes["export_withdraws"] = updates
+		} else if num_val_rx.MatchString(line) {
+			groups := num_val_rx.FindStringSubmatch(line)
 
-      key := treatKey(groups[1])
-      val, err := strconv.ParseInt(groups[2], 10, 64)
+			key := treatKey(groups[1])
+			val, err := strconv.ParseInt(groups[2], 10, 64)
 
-      if err != nil {
-        // ignore for now
-        continue
-      }
+			if err != nil {
+				// ignore for now
+				continue
+			}
 
-      res[key] = val
-    } else if str_val_rx.MatchString(line) {
-      groups := str_val_rx.FindStringSubmatch(line)
+			res[key] = val
+		} else if str_val_rx.MatchString(line) {
+			groups := str_val_rx.FindStringSubmatch(line)
 
-      key := treatKey(groups[1])
+			key := treatKey(groups[1])
 
-      res[key] = groups[2]
-    }
-  }
+			res[key] = groups[2]
+		}
+	}
 
-  res["route_changes"] = route_changes
+	res["route_changes"] = route_changes
 
-  if _, ok := res["routes"]; !ok {
-    routes := Parsed{}
+	if _, ok := res["routes"]; !ok {
+		routes := Parsed{}
 
-    routes["accepted"]  = 0
-    routes["filtered"]  = 0
-    routes["exported"]  = 0
-    routes["preferred"] = 0
+		routes["accepted"] = 0
+		routes["filtered"] = 0
+		routes["exported"] = 0
+		routes["preferred"] = 0
 
-    res["routes"] = routes
-  }
+		res["routes"] = routes
+	}
 
-  return res
+	return res
 }

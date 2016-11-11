@@ -31,18 +31,18 @@ func Protocols() Parsed {
 }
 
 func ProtocolsBgp() Parsed {
-  protocols := Protocols()["protocols"].([]string)
+	protocols := Protocols()["protocols"].([]string)
 
-  bgpProto := Parsed{}
+	bgpProto := Parsed{}
 
-  for _, v := range protocols {
-    if strings.Contains(v, " BGP ") {
-      key := strings.Split(v, " ")[0]
-      bgpProto[key] = parseBgp(v)
-    }
-  }
+	for _, v := range protocols {
+		if strings.Contains(v, " BGP ") {
+			key := strings.Split(v, " ")[0]
+			bgpProto[key] = parseBgp(v)
+		}
+	}
 
-  return bgpProto
+	return bgpProto
 }
 
 func Symbols() Parsed {

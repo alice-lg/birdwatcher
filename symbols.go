@@ -21,8 +21,8 @@ func Symbols(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func SymbolTables(w http.ResponseWriter,
-                  r *http.Request,
-                  ps httprouter.Params) {
+	r *http.Request,
+	ps httprouter.Params) {
 	res := make(map[string]interface{})
 
 	res["api"] = GetApiInfo()
@@ -36,8 +36,8 @@ func SymbolTables(w http.ResponseWriter,
 }
 
 func SymbolProtocols(w http.ResponseWriter,
-                     r *http.Request,
-                     ps httprouter.Params) {
+	r *http.Request,
+	ps httprouter.Params) {
 	res := make(map[string]interface{})
 
 	res["api"] = GetApiInfo()
