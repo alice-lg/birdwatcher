@@ -8,15 +8,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func Endpoint(wrapped func(httprouter.Params) bird.Parsed) httprouter.Handle {
+func Endpoint(wrapped func(httprouter.Params) (bird.Parsed, bool)) httprouter.Handle {
 	return func(w http.ResponseWriter,
 		r *http.Request,
 		ps httprouter.Params) {
 		res := make(map[string]interface{})
 
-		res["api"] = GetApiInfo()
-
-		ret := wrapped(ps)
+		ret, from_cache := wrapped(ps)
+		res["api"] = GetApiInfo(from_cache)
 
 		for k, v := range ret {
 			res[k] = v

@@ -5,14 +5,16 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func Symbols(ps httprouter.Params) bird.Parsed {
+func Symbols(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.Symbols()
 }
 
-func SymbolTables(ps httprouter.Params) bird.Parsed {
-	return bird.Parsed{"symbols": bird.Symbols()["routing table"]}
+func SymbolTables(ps httprouter.Params) (bird.Parsed, bool) {
+  val, from_cache := bird.Symbols()
+	return bird.Parsed{"symbols": val["routing table"]}, from_cache
 }
 
-func SymbolProtocols(ps httprouter.Params) bird.Parsed {
-	return bird.Parsed{"symbols": bird.Symbols()["protocols"]}
+func SymbolProtocols(ps httprouter.Params) (bird.Parsed, bool) {
+  val, from_cache := bird.Symbols()
+	return bird.Parsed{"symbols": val["protocols"]}, from_cache
 }

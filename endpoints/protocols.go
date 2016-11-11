@@ -5,10 +5,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func Protocols(ps httprouter.Params) bird.Parsed {
+func Protocols(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.Protocols()
 }
 
-func Bgp(ps httprouter.Params) bird.Parsed {
+func Bgp(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.ProtocolsBgp()
 }

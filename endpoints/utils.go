@@ -17,12 +17,11 @@ type APIInfo struct {
 	CacheStatus     CacheStatus `json:"cache_status"`
 }
 
-func GetApiInfo() *APIInfo {
+func GetApiInfo(from_cache bool) *APIInfo {
 	ai := &APIInfo{}
 
-	/* Dummy data until we implement caching */
 	ai.Version = "1.0"
-	ai.ResultFromCache = false
+  ai.ResultFromCache = from_cache
 
 	return ai
 }
