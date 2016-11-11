@@ -8,23 +8,23 @@ import (
 	"github.com/mchackorg/birdwatcher/bird"
 )
 
-func Endpoint(wrapped func(httprouter.Params) (bird.Parsed)) httprouter.Handle {
-  return func(w http.ResponseWriter,
-              r *http.Request,
-              ps httprouter.Params) {
-	  res := make(map[string]interface{})
+func Endpoint(wrapped func(httprouter.Params) bird.Parsed) httprouter.Handle {
+	return func(w http.ResponseWriter,
+		r *http.Request,
+		ps httprouter.Params) {
+		res := make(map[string]interface{})
 
-	  res["api"] = GetApiInfo()
+		res["api"] = GetApiInfo()
 
-    ret := wrapped(ps)
+		ret := wrapped(ps)
 
-    for k, v := range ret {
-	    res[k] = v
-    }
+		for k, v := range ret {
+			res[k] = v
+		}
 
-	  js, _ := json.Marshal(res)
+		js, _ := json.Marshal(res)
 
-	  w.Header().Set("Content-Type", "application/json")
-	  w.Write(js)
-  }
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
 }

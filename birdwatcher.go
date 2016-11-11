@@ -35,6 +35,6 @@ func main() {
 
 	r := makeRouter()
 
-  realPort :=strings.Join([]string{":", *port}, "")
+	realPort := strings.Join([]string{":", *port}, "")
 	log.Fatal(http.ListenAndServe(realPort, r))
 }

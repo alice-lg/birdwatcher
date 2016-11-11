@@ -167,8 +167,8 @@ func parseRoutes(input []byte) Parsed {
 			groups = append([]string{first}, groups...)
 			route = mainRouteDetail(groups, route)
 		} else if type_rx.MatchString(line) {
-			route["type"] = strings.Split(type_rx.FindStringSubmatch(line)[1],
-				" ")
+			submatch := type_rx.FindStringSubmatch(line)[1]
+			route["type"] = strings.Split(submatch, " ")
 		} else if bgp_rx.MatchString(line) {
 			groups := bgp_rx.FindStringSubmatch(line)
 			bgp := Parsed{}
@@ -223,7 +223,8 @@ func parseRoutesCount(input []byte) Parsed {
 		}
 
 		if count_rx.MatchString(line) {
-			i, err := strconv.ParseInt(count_rx.FindStringSubmatch(line)[1], 10, 64)
+			count := count_rx.FindStringSubmatch(line)[1]
+			i, err := strconv.ParseInt(count, 10, 64)
 			if err != nil {
 				// ignore for now
 				continue
@@ -243,6 +244,14 @@ func treatKey(key string) string {
 	return strings.ToLower(key)
 }
 
+func parseInt(from string) int64 {
+	val, err := strconv.ParseInt(from, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return val
+}
+
 func parseBgp(input string) Parsed {
 	res := Parsed{}
 	lines := getLinesFromString(input)
@@ -255,7 +264,7 @@ func parseBgp(input string) Parsed {
 	imp_updates_rx := regexp.MustCompile(`^\s+Import updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$`)
 	imp_withdraws_rx := regexp.MustCompile(`^\s+Import withdraws:\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s+(\d+)\s*$`)
 	exp_updates_rx := regexp.MustCompile(`^\s+Export updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s*$`)
-	exp_withdraws_rx := regexp.MustCompile(`^\s+Export withdraws:\s+(\d+)(\s+\-\-\-)+\s+(\d+)\s*$`)
+	exp_withdraws_rx := regexp.MustCompile(`^\s+Export withdraws:\s+(\d+)(\s+\-\-\-){2}\s+(\d+)\s*$`)
 	for _, line := range lines {
 		if bgp_rx.MatchString(line) {
 			groups := bgp_rx.FindStringSubmatch(line)
@@ -270,163 +279,57 @@ func parseBgp(input string) Parsed {
 			routes := Parsed{}
 			groups := routes_rx.FindStringSubmatch(line)
 
-			imported, err := strconv.ParseInt(groups[1], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			filtered, err := strconv.ParseInt(groups[2], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			exported, err := strconv.ParseInt(groups[3], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			preferred, err := strconv.ParseInt(groups[4], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-
-			routes["imported"] = imported
-			routes["filtered"] = filtered
-			routes["exported"] = exported
-			routes["preferred"] = preferred
+			routes["imported"] = parseInt(groups[1])
+			routes["filtered"] = parseInt(groups[2])
+			routes["exported"] = parseInt(groups[3])
+			routes["preferred"] = parseInt(groups[4])
 
 			res["routes"] = routes
 		} else if imp_updates_rx.MatchString(line) {
 			updates := Parsed{}
 			groups := imp_updates_rx.FindStringSubmatch(line)
 
-			received, err := strconv.ParseInt(groups[1], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			rejected, err := strconv.ParseInt(groups[2], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			filtered, err := strconv.ParseInt(groups[3], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			ignored, err := strconv.ParseInt(groups[4], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			accepted, err := strconv.ParseInt(groups[5], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-
-			updates["received"] = received
-			updates["rejected"] = rejected
-			updates["filtered"] = filtered
-			updates["ignored"] = ignored
-			updates["accepted"] = accepted
+			updates["received"] = parseInt(groups[1])
+			updates["rejected"] = parseInt(groups[2])
+			updates["filtered"] = parseInt(groups[3])
+			updates["ignored"] = parseInt(groups[4])
+			updates["accepted"] = parseInt(groups[5])
 
 			route_changes["import_updates"] = updates
 		} else if imp_withdraws_rx.MatchString(line) {
 			updates := Parsed{}
 			groups := imp_withdraws_rx.FindStringSubmatch(line)
 
-			received, err := strconv.ParseInt(groups[1], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			rejected, err := strconv.ParseInt(groups[2], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			filtered, err := strconv.ParseInt(groups[3], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			accepted, err := strconv.ParseInt(groups[4], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-
-			updates["received"] = received
-			updates["rejected"] = rejected
-			updates["filtered"] = filtered
-			updates["accepted"] = accepted
+			updates["received"] = parseInt(groups[1])
+			updates["rejected"] = parseInt(groups[2])
+			updates["filtered"] = parseInt(groups[3])
+			updates["accepted"] = parseInt(groups[4])
 
 			route_changes["import_withdraws"] = updates
 		} else if exp_updates_rx.MatchString(line) {
 			updates := Parsed{}
 			groups := exp_updates_rx.FindStringSubmatch(line)
 
-			received, err := strconv.ParseInt(groups[1], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			rejected, err := strconv.ParseInt(groups[2], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			ignored, err := strconv.ParseInt(groups[3], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			accepted, err := strconv.ParseInt(groups[4], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-
-			updates["received"] = received
-			updates["rejected"] = rejected
-			updates["ignored"] = ignored
-			updates["accepted"] = accepted
+			updates["received"] = parseInt(groups[1])
+			updates["rejected"] = parseInt(groups[2])
+			updates["ignored"] = parseInt(groups[3])
+			updates["accepted"] = parseInt(groups[4])
 
 			route_changes["export_updates"] = updates
 		} else if exp_withdraws_rx.MatchString(line) {
 			updates := Parsed{}
 			groups := exp_withdraws_rx.FindStringSubmatch(line)
 
-			received, err := strconv.ParseInt(groups[1], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			accepted, err := strconv.ParseInt(groups[3], 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-
-			updates["received"] = received
-			updates["accepted"] = accepted
+			updates["received"] = parseInt(groups[1])
+			updates["accepted"] = parseInt(groups[3])
 
 			route_changes["export_withdraws"] = updates
 		} else if num_val_rx.MatchString(line) {
 			groups := num_val_rx.FindStringSubmatch(line)
 
 			key := treatKey(groups[1])
-			val, err := strconv.ParseInt(groups[2], 10, 64)
 
-			if err != nil {
-				// ignore for now
-				continue
-			}
-
-			res[key] = val
+			res[key] = parseInt(groups[2])
 		} else if str_val_rx.MatchString(line) {
 			groups := str_val_rx.FindStringSubmatch(line)
 
