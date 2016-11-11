@@ -184,8 +184,8 @@ func parseRoutes(input []byte) Parsed {
 						min := parseInt(com_groups[2])
 						communities = append(communities, []int64{maj, min})
 					}
-					bgp["communities"] = communities
 				}
+				bgp["communities"] = communities
 			} else {
 				bgp[groups[1]] = groups[2]
 			}
