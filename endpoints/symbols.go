@@ -10,11 +10,11 @@ func Symbols(ps httprouter.Params) (bird.Parsed, bool) {
 }
 
 func SymbolTables(ps httprouter.Params) (bird.Parsed, bool) {
-  val, from_cache := bird.Symbols()
+	val, from_cache := bird.Symbols()
 	return bird.Parsed{"symbols": val["routing table"]}, from_cache
 }
 
 func SymbolProtocols(ps httprouter.Params) (bird.Parsed, bool) {
-  val, from_cache := bird.Symbols()
+	val, from_cache := bird.Symbols()
 	return bird.Parsed{"symbols": val["protocols"]}, from_cache
 }

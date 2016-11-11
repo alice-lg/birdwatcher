@@ -21,7 +21,7 @@ func GetApiInfo(from_cache bool) *APIInfo {
 	ai := &APIInfo{}
 
 	ai.Version = "1.0"
-  ai.ResultFromCache = from_cache
+	ai.ResultFromCache = from_cache
 
 	return ai
 }

@@ -3,31 +3,30 @@ package bird
 import (
 	"os/exec"
 	"strings"
-  "time"
-  "sync"
+	"sync"
+	"time"
 )
 
 var BirdCmd string
 
-var Cache = struct{
-  sync.RWMutex
-  m map[string]Parsed
+var Cache = struct {
+	sync.RWMutex
+	m map[string]Parsed
 }{m: make(map[string]Parsed)}
 
 func fromCache(key string) (Parsed, bool) {
-  Cache.RLock()
-  val, ok := Cache.m[key]
-  Cache.RUnlock()
-  return val, ok
+	Cache.RLock()
+	val, ok := Cache.m[key]
+	Cache.RUnlock()
+	return val, ok
 }
 
 func toCache(key string, val Parsed) {
-  val["ttl"] = time.Now().Add(5 * time.Minute)
-  Cache.Lock()
-  Cache.m[key] = val
-  Cache.Unlock()
+	val["ttl"] = time.Now().Add(5 * time.Minute)
+	Cache.Lock()
+	Cache.m[key] = val
+	Cache.Unlock()
 }
-
 
 func Run(args string) ([]byte, error) {
 	args = "show " + args
@@ -36,9 +35,9 @@ func Run(args string) ([]byte, error) {
 }
 
 func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
-  if val, ok := fromCache(cmd); ok {
-    return val, true
-  }
+	if val, ok := fromCache(cmd); ok {
+		return val, true
+	}
 
 	out, err := Run(cmd)
 
@@ -48,8 +47,8 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 	}
 
 	parsed := parser(out)
-  toCache(cmd, parsed)
-  return parsed, false
+	toCache(cmd, parsed)
+	return parsed, false
 }
 
 func Status() (Parsed, bool) {
@@ -62,7 +61,7 @@ func Protocols() (Parsed, bool) {
 
 func ProtocolsBgp() (Parsed, bool) {
 	p, from_cache := Protocols()
-  protocols := p["protocols"].([]string)
+	protocols := p["protocols"].([]string)
 
 	bgpProto := Parsed{}
 
