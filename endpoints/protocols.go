@@ -1,8 +1,8 @@
 package endpoints
 
 import (
+	"github.com/ecix/birdwatcher/bird"
 	"github.com/julienschmidt/httprouter"
-	"github.com/mchackorg/birdwatcher/bird"
 )
 
 func Protocols(ps httprouter.Params) bird.Parsed {

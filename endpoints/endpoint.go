@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/ecix/birdwatcher/bird"
 	"github.com/julienschmidt/httprouter"
-	"github.com/mchackorg/birdwatcher/bird"
 )
 
 func Endpoint(wrapped func(httprouter.Params) bird.Parsed) httprouter.Handle {

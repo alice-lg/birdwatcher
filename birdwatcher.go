@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ecix/birdwatcher/endpoints"
 	"github.com/julienschmidt/httprouter"
-	"github.com/mchackorg/birdwatcher/endpoints"
 )
 
 func makeRouter() *httprouter.Router {
