@@ -116,11 +116,7 @@ func mainRouteDetail(groups []string, route Parsed) Parsed {
 	route["age"] = groups[5]
 	route["learnt_from"] = groups[6]
 	route["primary"] = groups[7] == "*"
-	if val, err := strconv.ParseInt(groups[8], 10, 64); err != nil {
-		route["metric"] = 0
-	} else {
-		route["metric"] = val
-	}
+  route["metric"] = parseInt(groups[8])
 	return route
 }
 
@@ -184,14 +180,8 @@ func parseRoutes(input []byte) Parsed {
 				for _, community := range strings.Split(groups[2], " ") {
 					if community_rx.MatchString(community) {
 						com_groups := community_rx.FindStringSubmatch(community)
-						maj, err := strconv.ParseInt(com_groups[1], 10, 64)
-						if err != nil {
-							continue
-						}
-						min, err := strconv.ParseInt(com_groups[2], 10, 64)
-						if err != nil {
-							continue
-						}
+						maj := parseInt(com_groups[1])
+						min := parseInt(com_groups[2])
 						communities = append(communities, []int64{maj, min})
 					}
 					bgp["communities"] = communities
@@ -224,12 +214,7 @@ func parseRoutesCount(input []byte) Parsed {
 
 		if count_rx.MatchString(line) {
 			count := count_rx.FindStringSubmatch(line)[1]
-			i, err := strconv.ParseInt(count, 10, 64)
-			if err != nil {
-				// ignore for now
-				continue
-			}
-			res["routes"] = i
+			res["routes"] = parseInt(count)
 		}
 	}
 
