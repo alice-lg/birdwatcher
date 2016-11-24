@@ -80,41 +80,41 @@ func Symbols() (Parsed, bool) {
 }
 
 func RoutesProto(protocol string) (Parsed, bool) {
-	return RunAndParse("route protocol "+protocol+" all",
+	return RunAndParse("route protocol '"+protocol+"' all",
 		parseRoutes)
 }
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
-	return RunAndParse("route protocol "+protocol+" count",
+	return RunAndParse("route protocol '"+protocol+"' count",
 		parseRoutesCount)
 }
 
 func RoutesExport(protocol string) (Parsed, bool) {
-	return RunAndParse("route export "+protocol+" all",
+	return RunAndParse("route export '"+protocol+"' all",
 		parseRoutes)
 }
 
 func RoutesExportCount(protocol string) (Parsed, bool) {
-	return RunAndParse("route export "+protocol+" count",
+	return RunAndParse("route export '"+protocol+"' count",
 		parseRoutesCount)
 }
 
 func RoutesTable(table string) (Parsed, bool) {
-	return RunAndParse("route table "+table+" all",
+	return RunAndParse("route table '"+table+"' all",
 		parseRoutes)
 }
 
 func RoutesTableCount(table string) (Parsed, bool) {
-	return RunAndParse("route table "+table+" count",
+	return RunAndParse("route table '"+table+"' count",
 		parseRoutesCount)
 }
 
 func RoutesLookupTable(net string, table string) (Parsed, bool) {
-	return RunAndParse("route for "+net+" table "+table+" all",
+	return RunAndParse("route for '"+net+"' table '"+table+"' all",
 		parseRoutes)
 }
 
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
-	return RunAndParse("route for "+net+" protocol "+protocol+" all",
+	return RunAndParse("route for '"+net+"' protocol '"+protocol+"' all",
 		parseRoutes)
 }
