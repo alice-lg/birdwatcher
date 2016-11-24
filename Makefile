@@ -9,7 +9,7 @@ ARCH=amd64
 APP_VERSION=$(shell cat VERSION)
 VERSION=$(APP_VERSION)_$(shell git rev-parse --short HEAD)
 
-BUILD_SERVER=""
+BUILD_SERVER=''
 
 DIST=DIST/
 REMOTE_DIST=$(PROG)-$(DIST)
@@ -35,6 +35,11 @@ osx:
 linux:
 	GOARCH=$(ARCH) GOOS=linux go build -o $(PROG)-linux-$(ARCH)
 
+
+build_server:
+ifeq ($(BUILD_SERVER), '')
+	$(error BUILD_SERVER not configured)
+endif
 
 dist: clean linux
 
@@ -62,7 +67,7 @@ rpm: dist
 	mv $(RPM) $(LOCAL_RPMS)
 
 
-remote_rpm: dist
+remote_rpm: build_server dist
 	# Copy distribution to build server
 	ssh $(BUILD_SERVER) -- rm -rf $(REMOTE_DIST)
 	scp -r $(DIST) $(BUILD_SERVER):$(REMOTE_DIST)
@@ -73,18 +78,9 @@ remote_rpm: dist
 	scp $(BUILD_SERVER):$(RPM) $(LOCAL_RPMS)/.
 
 
-staging: linux
-	scp $(PROG)-linux-$(ARCH) snmp0.ber.ecix.net:.	
-
-
 clean:
 	rm -f $(PROG)-osx-$(ARCH)
 	rm -f $(PROG)-linux-$(ARCH)
 	rm -rf $(DIST)
 
-
-build_server:
-ifeq ($(BUILD_SERVER), '')
-	$(error BUILD_SERVER not configured)
-endif
 
