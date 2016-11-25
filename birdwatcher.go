@@ -38,6 +38,7 @@ func main() {
 	flag.Parse()
 
 	bird.BirdCmd = *birdc
+	bird.InstallRateLimitReset()
 
 	r := makeRouter()
 

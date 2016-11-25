@@ -9,6 +9,9 @@ import (
 
 var BirdCmd string
 
+var rateLimit = 0
+var MAX_RATE = 5
+
 var Cache = struct {
 	sync.RWMutex
 	m map[string]Parsed
@@ -34,9 +37,33 @@ func Run(args string) ([]byte, error) {
 	return exec.Command(BirdCmd, argsList...).Output()
 }
 
+func InstallRateLimitReset() {
+	go func() {
+		c := time.Tick(time.Second)
+
+		for _ = range c {
+			rateLimit = 0
+		}
+	}()
+}
+
+func checkRateLimit() bool {
+	if rateLimit > MAX_RATE {
+		return false
+	}
+
+	rateLimit += 1
+
+	return true
+}
+
 func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 	if val, ok := fromCache(cmd); ok {
 		return val, true
+	}
+
+	if !checkRateLimit() {
+		return nil, false
 	}
 
 	out, err := Run(cmd)
