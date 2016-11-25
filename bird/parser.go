@@ -127,7 +127,7 @@ func parseRoutes(input []byte) Parsed {
 	routes := []Parsed{}
 
 	route := Parsed{}
-	start_def_rx := regexp.MustCompile(`^([0-9a-f\.\:\/]+)\s+via\s+([0-9a-f\.\:]+)\s+on\s+(\w+)\s+\[(\w+)\s+([0-9\-\:]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
+	start_def_rx := regexp.MustCompile(`^([0-9a-f\.\:\/]+)\s+via\s+([0-9a-f\.\:]+)\s+on\s+(\w+)\s+\[([\w\.]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*`)
 	second_rx := regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+(\w+)\s+\[(\w+)\s+([0-9\-\:]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
 	type_rx := regexp.MustCompile(`^\s+Type:\s+(.*)\s*$`)
 	bgp_rx := regexp.MustCompile(`^\s+BGP.(\w+):\s+(\w+)\s*$`)
@@ -186,6 +186,8 @@ func parseRoutes(input []byte) Parsed {
 					}
 				}
 				bgp["communities"] = communities
+			} else if groups[1] == "as_path" {
+				bgp["as_path"] = strings.Split(groups[2], " ")
 			} else {
 				bgp[groups[1]] = groups[2]
 			}
