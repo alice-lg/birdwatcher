@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/ecix/birdwatcher/endpoints"
@@ -33,8 +34,15 @@ func makeRouter() *httprouter.Router {
 func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	// General Info
 	log.Println("Starting Birdwatcher")
-	log.Println("     Using:", birdConf.BirdCmd)
-	log.Println("    Listen:", birdConf.Listen)
+	log.Println("       Using:", birdConf.BirdCmd)
+	log.Println("      Listen:", birdConf.Listen)
+
+	// Endpoint Info
+	if len(conf.Server.AllowFrom) == 0 {
+		log.Println("   AllowFrom: ALL")
+	} else {
+		log.Println("   AllowFrom:", strings.Join(conf.Server.AllowFrom, ", "))
+	}
 }
 
 func main() {
@@ -60,8 +68,9 @@ func main() {
 
 	PrintServiceInfo(conf, birdConf)
 
-	// Configure client
+	// Configuration
 	bird.Conf = birdConf
+	endpoints.Conf = conf.Server
 
 	// Make server
 	r := makeRouter()

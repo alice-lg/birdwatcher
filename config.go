@@ -4,22 +4,20 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/BurntSushi/toml"
 	"github.com/imdario/mergo"
 
 	"github.com/ecix/birdwatcher/bird"
+	"github.com/ecix/birdwatcher/endpoints"
 )
 
 type Config struct {
-	Server ServerConfig
+	Server endpoints.ServerConfig
 
 	Status bird.StatusConfig
 	Bird   bird.BirdConfig
 	Bird6  bird.BirdConfig
-}
-
-type ServerConfig struct {
-	AllowFrom []string `toml:"allow_from"`
 }
 
 // Try to load configfiles as specified in the files
