@@ -43,9 +43,9 @@ func main() {
 
 	// Load configurations
 	conf, err := LoadConfigs([]string{
-		"./etc/birdwatcher/birdwatcher.conf",
-		"/etc/birdwatcher/birdwatcher.conf",
-		"./etc/birdwatcher/birdwatcher.local.conf",
+		"./etc/ecix/birdwatcher.conf",
+		"/etc/ecix/birdwatcher.conf",
+		"./etc/ecix/birdwatcher.local.conf",
 	})
 
 	if err != nil {
