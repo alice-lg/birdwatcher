@@ -7,6 +7,7 @@ import (
 
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/ecix/birdwatcher/endpoints"
+
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -29,7 +30,7 @@ func makeRouter() *httprouter.Router {
 
 // Print service information like, listen address,
 // access restrictions and configuration flags
-func PrintServiceInfo(conf *Config, birdConf BirdConfig) {
+func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	// General Info
 	log.Println("Starting Birdwatcher")
 	log.Println("     Using:", birdConf.BirdCmd)
@@ -60,7 +61,7 @@ func main() {
 	PrintServiceInfo(conf, birdConf)
 
 	// Configure client
-	bird.BirdCmd = birdConf.BirdCmd
+	bird.Conf = birdConf
 
 	// Make server
 	r := makeRouter()

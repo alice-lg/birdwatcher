@@ -6,30 +6,20 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/imdario/mergo"
+
+	"github.com/ecix/birdwatcher/bird"
 )
 
 type Config struct {
 	Server ServerConfig
-	Status StatusConfig
-	Bird   BirdConfig
-	Bird6  BirdConfig
+
+	Status bird.StatusConfig
+	Bird   bird.BirdConfig
+	Bird6  bird.BirdConfig
 }
 
 type ServerConfig struct {
 	AllowFrom []string `toml:"allow_from"`
-}
-
-type StatusConfig struct {
-	ReconfigTimestampSource string `toml:"reconfig_timestamp_source"`
-	ReconfigTimestampMatch  string `toml:"reconfig_timestamp_match"`
-
-	FilteredFields []string `toml:"filtered_fields"`
-}
-
-type BirdConfig struct {
-	Listen         string
-	ConfigFilename string `toml:"config"`
-	BirdCmd        string `toml:"birdc"`
 }
 
 // Try to load configfiles as specified in the files

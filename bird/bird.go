@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var BirdCmd string
+var Conf BirdConfig
 
 var Cache = struct {
 	sync.RWMutex
@@ -31,7 +31,7 @@ func toCache(key string, val Parsed) {
 func Run(args string) ([]byte, error) {
 	args = "show " + args
 	argsList := strings.Split(args, " ")
-	return exec.Command(BirdCmd, argsList...).Output()
+	return exec.Command(Conf.BirdCmd, argsList...).Output()
 }
 
 func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
