@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/ecix/birdwatcher/endpoints"
@@ -63,8 +62,7 @@ func main() {
 	// Configure client
 	bird.BirdCmd = birdConf.BirdCmd
 
+	// Make server
 	r := makeRouter()
-
-	realPort := strings.Join([]string{":", "23022"}, "")
-	log.Fatal(http.ListenAndServe(realPort, r))
+	log.Fatal(http.ListenAndServe(birdConf.Listen, r))
 }
