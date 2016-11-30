@@ -5,3 +5,5 @@ birdwatcher
 birdwatcher-*
 
 DIST/
+
+etc/ecix
