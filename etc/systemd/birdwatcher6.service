@@ -1,0 +1,11 @@
+
+[Unit]
+Description=Birdwatcher (IPv6)
+After=network.target
+
+[Service]
+ExecStart=/opt/ecix/birdwatcher/bin/birdwatcher-linux-amd64 -6
+
+[Install]
+WantedBy=multi-user.target
+

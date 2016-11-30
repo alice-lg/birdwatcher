@@ -44,12 +44,12 @@ endif
 dist: clean linux
 
 	mkdir -p $(DIST)opt/ecix/birdwatcher/bin
-	mkdir -p $(DIST)etc/init
+	mkdir -p $(DIST)etc/systemd
 	mkdir -p $(DIST)etc/ecix
 
 
 	# Copy config and startup script
-	cp etc/init/* DIST/etc/init/.
+	cp etc/systemd/* DIST/etc/systemd/.
 	cp etc/ecix/* DIST/etc/ecix/.
 	rm -f DIST/etc/ecix/*.local.*
 
