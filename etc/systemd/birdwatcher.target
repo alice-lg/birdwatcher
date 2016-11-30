@@ -1,6 +1,0 @@
-[Unit]
-Wants=birdwatcher4.service birdwatcher6.service
-
-[Install]
-WantedBy=multi-user.target
-

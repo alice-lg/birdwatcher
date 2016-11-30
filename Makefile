@@ -11,6 +11,8 @@ VERSION=$(APP_VERSION)_$(shell git rev-parse --short HEAD)
 
 BUILD_SERVER=''
 
+SYSTEM_INIT=systemd
+
 DIST=DIST/
 REMOTE_DIST=$(PROG)-$(DIST)
 
@@ -44,12 +46,20 @@ endif
 dist: clean linux
 
 	mkdir -p $(DIST)opt/ecix/birdwatcher/bin
-	mkdir -p $(DIST)etc/systemd
 	mkdir -p $(DIST)etc/ecix
+
+ifeq ($(SYSTEM_INIT), systemd)
+	# Installing systemd services
+	mkdir -p $(DIST)usr/lib/systemd/system/
+	cp install/systemd/* $(DIST)usr/lib/systemd/system/.
+else
+	# Installing upstart configuration
+	mkdir -p $(DIST)/etc/init/
+	cp install/upstart/init/* $(DIST)etc/init/.
+endif
 
 
 	# Copy config and startup script
-	cp etc/systemd/* DIST/etc/systemd/.
 	cp etc/ecix/* DIST/etc/ecix/.
 	rm -f DIST/etc/ecix/*.local.*
 
