@@ -60,6 +60,7 @@ rpm: dist
 
 	# Create RPM from dist
 	fpm -s dir -t rpm -n $(PROG) -v $(VERSION) -C $(DIST) \
+		--config-files /etc/ecix/birdwatcher.conf \
 		opt/ etc/
 
 	mv $(RPM) $(LOCAL_RPMS)
@@ -73,6 +74,7 @@ remote_rpm: build_server dist
 	ssh $(BUILD_SERVER) -- rm -rf $(REMOTE_DIST)
 	scp -r $(DIST) $(BUILD_SERVER):$(REMOTE_DIST)
 	ssh $(BUILD_SERVER) -- fpm -s dir -t rpm -n $(PROG) -v $(VERSION) -C $(REMOTE_DIST) \
+		--config-files /etc/ecix/birdwatcher.conf \
 		opt/ etc/
 
 	# Get rpm from server
