@@ -28,19 +28,43 @@ func makeRouter() *httprouter.Router {
 	return r
 }
 
+// Print service information like, listen address,
+// access restrictions and configuration flags
+func PrintServiceInfo(conf *Config, birdConf BirdConfig) {
+	// General Info
+	log.Println("Starting Birdwatcher")
+	log.Println("     Using:", birdConf.BirdCmd)
+	log.Println("    Listen:", birdConf.Listen)
+}
+
 func main() {
-	port := flag.String("port",
-		"29184",
-		"The port the birdwatcher should run on")
-	birdc := flag.String("birdc",
-		"birdc",
-		"The birdc command to use (for IPv6, use birdc6)")
+	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	flag.Parse()
 
-	bird.BirdCmd = *birdc
+	// Load configurations
+	conf, err := LoadConfigs([]string{
+		"./etc/birdwatcher/birdwatcher.conf",
+		"/etc/birdwatcher/birdwatcher.conf",
+		"./etc/birdwatcher/birdwatcher.local.conf",
+	})
+
+	if err != nil {
+		log.Fatal("Loading birdwatcher configuration failed:", err)
+	}
+
+	// Get config according to flags
+	birdConf := conf.Bird
+	if *bird6 {
+		birdConf = conf.Bird6
+	}
+
+	PrintServiceInfo(conf, birdConf)
+
+	// Configure client
+	bird.BirdCmd = birdConf.BirdCmd
 
 	r := makeRouter()
 
-	realPort := strings.Join([]string{":", *port}, "")
+	realPort := strings.Join([]string{":", "23022"}, "")
 	log.Fatal(http.ListenAndServe(realPort, r))
 }
