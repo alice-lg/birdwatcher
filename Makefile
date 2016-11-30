@@ -56,8 +56,6 @@ dist: clean linux
 rpm: dist
 
 	# Clear tmp failed build (if any)
-	rm -f $(RPM)
-	rm -fr $(LOCAL_RPMS)
 	mkdir $(LOCAL_RPMS)
 
 	# Create RPM from dist
@@ -68,6 +66,9 @@ rpm: dist
 
 
 remote_rpm: build_server dist
+
+	mkdir -p $(LOCAL_RPMS)
+
 	# Copy distribution to build server
 	ssh $(BUILD_SERVER) -- rm -rf $(REMOTE_DIST)
 	scp -r $(DIST) $(BUILD_SERVER):$(REMOTE_DIST)
