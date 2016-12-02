@@ -7,7 +7,8 @@ import (
 	"time"
 )
 
-var Conf BirdConfig
+var ClientConf BirdConfig
+var StatusConf StatusConfig
 
 var Cache = struct {
 	sync.RWMutex
@@ -31,7 +32,7 @@ func toCache(key string, val Parsed) {
 func Run(args string) ([]byte, error) {
 	args = "show " + args
 	argsList := strings.Split(args, " ")
-	return exec.Command(Conf.BirdCmd, argsList...).Output()
+	return exec.Command(ClientConf.BirdCmd, argsList...).Output()
 }
 
 func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
@@ -52,7 +53,30 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 }
 
 func Status() (Parsed, bool) {
-	return RunAndParse("status", parseStatus)
+	birdStatus, ok := RunAndParse("status", parseStatus)
+
+	// Last Reconfig Timestamp source:
+	var lastReconfig string
+	switch StatusConf.ReconfigTimestampSource {
+	case "bird":
+		lastReconfig = birdStatus["last_reconfig"].(string)
+		break
+	case "config_modified":
+		lastReconfig = lastReconfigTimestampFromFileStat(
+			ClientConf.ConfigFilename,
+		)
+	case "config_regex":
+		lastReconfig = lastReconfigTimestampFromFileContent(
+			ClientConf.ConfigFilename,
+			StatusConf.ReconfigTimestampMatch,
+		)
+	}
+
+	birdStatus["lastReconfig"] = lastReconfig
+
+	// Filter fields
+
+	return birdStatus, ok
 }
 
 func Protocols() (Parsed, bool) {

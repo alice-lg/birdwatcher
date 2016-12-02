@@ -69,7 +69,8 @@ func main() {
 	PrintServiceInfo(conf, birdConf)
 
 	// Configuration
-	bird.Conf = birdConf
+	bird.ClientConf = birdConf
+	bird.StatusConf = conf.Status
 	endpoints.Conf = conf.Server
 
 	// Make server
