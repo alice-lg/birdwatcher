@@ -6,7 +6,7 @@ type StatusConfig struct {
 	ReconfigTimestampSource string `toml:"reconfig_timestamp_source"`
 	ReconfigTimestampMatch  string `toml:"reconfig_timestamp_match"`
 
-	FilteredFields []string `toml:"filtered_fields"`
+	FilterFields []string `toml:"filter_fields"`
 }
 
 type BirdConfig struct {

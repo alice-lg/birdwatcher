@@ -75,6 +75,9 @@ func Status() (Parsed, bool) {
 	birdStatus["lastReconfig"] = lastReconfig
 
 	// Filter fields
+	for _, field := range StatusConf.FilterFields {
+		birdStatus[field] = nil
+	}
 
 	return birdStatus, ok
 }
