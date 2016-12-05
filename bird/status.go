@@ -35,11 +35,7 @@ func lastReconfigTimestampFromFileContent(filename string, regex string) string 
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		txt := scanner.Text()
-		fmt.Println("---------")
-		fmt.Println(txt)
-
-		matches := rx.FindStringSubmatch(txt)
+		matches := rx.FindStringSubmatch(scanner.Text())
 		if len(matches) > 0 {
 			return matches[1]
 		}

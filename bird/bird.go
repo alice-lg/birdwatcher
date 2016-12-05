@@ -54,7 +54,7 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 
 func Status() (Parsed, bool) {
 	birdStatus, ok := RunAndParse("status", parseStatus)
-	status := birdStatus["status"].(map[string]interface{})
+	status := birdStatus["status"].(Parsed)
 
 	// Last Reconfig Timestamp source:
 	var lastReconfig string
