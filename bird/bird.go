@@ -54,12 +54,13 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 
 func Status() (Parsed, bool) {
 	birdStatus, ok := RunAndParse("status", parseStatus)
+	status := birdStatus["status"].(map[string]interface{})
 
 	// Last Reconfig Timestamp source:
 	var lastReconfig string
 	switch StatusConf.ReconfigTimestampSource {
 	case "bird":
-		lastReconfig = birdStatus["last_reconfig"].(string)
+		lastReconfig = status["last_reconfig"].(string)
 		break
 	case "config_modified":
 		lastReconfig = lastReconfigTimestampFromFileStat(
@@ -72,12 +73,14 @@ func Status() (Parsed, bool) {
 		)
 	}
 
-	birdStatus["last_reconfig"] = lastReconfig
+	status["last_reconfig"] = lastReconfig
 
 	// Filter fields
 	for _, field := range StatusConf.FilterFields {
-		birdStatus[field] = nil
+		status[field] = nil
 	}
+
+	birdStatus["status"] = status
 
 	return birdStatus, ok
 }
