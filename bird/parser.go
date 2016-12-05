@@ -244,7 +244,7 @@ func parseBgp(input string) Parsed {
 	lines := getLinesFromString(input)
 	route_changes := Parsed{}
 
-	bgp_rx := regexp.MustCompile(`^([\w\.]+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2})\s*(\w+)?.*$`)
+	bgp_rx := regexp.MustCompile(`^([\w\.:]+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2})\s*(\w+)?.*$`)
 	num_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
 	str_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
 	routes_rx := regexp.MustCompile(`^\s+Routes:\s+(\d+)\s+imported,\s+(\d+)\s+filtered,\s+(\d+)\s+exported,\s+(\d+)\s+preferred\s*$`)

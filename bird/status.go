@@ -24,6 +24,8 @@ func lastReconfigTimestampFromFileStat(filename string) string {
 func lastReconfigTimestampFromFileContent(filename string, regex string) string {
 	rx := regexp.MustCompile(regex)
 
+	fmt.Println("Using regex:", regex)
+
 	// Read config file linewise
 	file, err := os.Open(filename)
 	if err != nil {
@@ -33,7 +35,11 @@ func lastReconfigTimestampFromFileContent(filename string, regex string) string 
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		matches := rx.FindStringSubmatch(scanner.Text())
+		txt := scanner.Text()
+		fmt.Println("---------")
+		fmt.Println(txt)
+
+		matches := rx.FindStringSubmatch(txt)
 		if len(matches) > 0 {
 			return matches[1]
 		}

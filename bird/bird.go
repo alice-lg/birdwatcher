@@ -72,7 +72,7 @@ func Status() (Parsed, bool) {
 		)
 	}
 
-	birdStatus["lastReconfig"] = lastReconfig
+	birdStatus["last_reconfig"] = lastReconfig
 
 	// Filter fields
 	for _, field := range StatusConf.FilterFields {
