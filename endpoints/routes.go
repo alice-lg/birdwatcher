@@ -1,12 +1,18 @@
 package endpoints
 
 import (
+	"fmt"
+
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/julienschmidt/httprouter"
 )
 
 func ProtoRoutes(ps httprouter.Params) (bird.Parsed, bool) {
-	return bird.RoutesProto(ps.ByName("protocol"))
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesProto(protocol)
 }
 
 func TableRoutes(ps httprouter.Params) (bird.Parsed, bool) {
