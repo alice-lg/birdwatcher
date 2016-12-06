@@ -17,11 +17,10 @@ func ValidateLength(value string, maxLength int) error {
 }
 
 func ValidateCharset(value string, alphabet string) error {
-	for i := 0; i < len(value); i++ {
-		c := value[i]
+	for _, check := range value {
 		ok := false
-		for j := 0; j < len(alphabet); j++ {
-			if alphabet[j] == c {
+		for _, char := range alphabet {
+			if char == check {
 				ok = true
 				break
 			}
