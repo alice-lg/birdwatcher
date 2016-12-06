@@ -20,7 +20,11 @@ func TableRoutes(ps httprouter.Params) (bird.Parsed, bool) {
 }
 
 func ProtoCount(ps httprouter.Params) (bird.Parsed, bool) {
-	return bird.RoutesProtoCount(ps.ByName("protocol"))
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesProtoCount(protocol)
 }
 
 func TableCount(ps httprouter.Params) (bird.Parsed, bool) {
