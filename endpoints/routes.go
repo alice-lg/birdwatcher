@@ -15,6 +15,14 @@ func ProtoRoutes(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesProto(protocol)
 }
 
+func RoutesFiltered(ps httprouter.Params) (bird.Parsed, bool) {
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesFiltered(protocol)
+}
+
 func TableRoutes(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesTable(ps.ByName("table"))
 }

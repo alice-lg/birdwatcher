@@ -119,6 +119,10 @@ func RoutesProtoCount(protocol string) (Parsed, bool) {
 		parseRoutesCount)
 }
 
+func RoutesFiltered(protocol string) (Parsed, bool) {
+	return RunAndParse("route protocol '"+protocol+"' filtered", parseRoutes)
+}
+
 func RoutesExport(protocol string) (Parsed, bool) {
 	return RunAndParse("route export '"+protocol+"' all",
 		parseRoutes)
