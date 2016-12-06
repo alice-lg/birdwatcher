@@ -70,7 +70,7 @@ endif
 rpm: dist
 
 	# Clear tmp failed build (if any)
-	mkdir $(LOCAL_RPMS)
+	mkdir -p $(LOCAL_RPMS)
 
 	# Create RPM from dist
 	fpm -s dir -t rpm -n $(PROG) -v $(VERSION) -C $(DIST) \
