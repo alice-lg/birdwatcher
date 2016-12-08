@@ -32,18 +32,24 @@ func ValidateCharset(value string, alphabet string) error {
 	return nil
 }
 
-func ValidateProtocolParam(value string) (string, error) {
-
+func ValidateLengthAndCharset(value string, maxLength int, alphabet string) (string, error) {
 	// Check length
-	if err := ValidateLength(value, 80); err != nil {
+	if err := ValidateLength(value, maxLength); err != nil {
 		return "", err
 	}
 
 	// Check input
-	allowed := "ID_AS:.abcdef1234567890"
-	if err := ValidateCharset(value, allowed); err != nil {
+	if err := ValidateCharset(value, alphabet); err != nil {
 		return "", err
 	}
 
 	return value, nil
+}
+
+func ValidateProtocolParam(value string) (string, error) {
+	return ValidateLengthAndCharset(value, 80, "ID_AS:.abcdef1234567890")
+}
+
+func ValidatePrefixParam(value string) (string, error) {
+	return ValidateLengthAndCharset(value, 80, "1234567890abcdef.:/")
 }

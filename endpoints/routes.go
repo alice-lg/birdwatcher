@@ -23,6 +23,14 @@ func RoutesFiltered(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesFiltered(protocol)
 }
 
+func RoutesPrefixed(ps httprouter.Params) (bird.Parsed, bool) {
+	prefix, err := ValidatePrefixParam(ps.ByName("prefix"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesPrefixed(prefix)
+}
+
 func TableRoutes(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesTable(ps.ByName("table"))
 }
