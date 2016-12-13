@@ -14,3 +14,9 @@ type BirdConfig struct {
 	ConfigFilename string `toml:"config"`
 	BirdCmd        string `toml:"birdc"`
 }
+
+type RateLimitConfig struct {
+	Reqs    int `toml:"requests_per_minute"`
+	Max     int `toml:"requests_per_minute"`
+	Enabled bool
+}

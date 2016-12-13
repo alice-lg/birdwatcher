@@ -93,6 +93,7 @@ func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	flag.Parse()
 
+	bird.InstallRateLimitReset()
 	// Load configurations
 	conf, err := LoadConfigs([]string{
 		"./etc/ecix/birdwatcher.conf",
@@ -115,6 +116,7 @@ func main() {
 	// Configuration
 	bird.ClientConf = birdConf
 	bird.StatusConf = conf.Status
+	bird.RateLimitConf.Conf = conf.Ratelimit
 	endpoints.Conf = conf.Server
 
 	// Make server

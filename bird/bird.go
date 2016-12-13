@@ -9,6 +9,10 @@ import (
 
 var ClientConf BirdConfig
 var StatusConf StatusConfig
+var RateLimitConf struct {
+	sync.RWMutex
+	Conf RateLimitConfig
+}
 
 var Cache = struct {
 	sync.RWMutex
@@ -35,9 +39,47 @@ func Run(args string) ([]byte, error) {
 	return exec.Command(ClientConf.BirdCmd, argsList...).Output()
 }
 
+func InstallRateLimitReset() {
+	go func() {
+		c := time.Tick(time.Second)
+
+		for _ = range c {
+			RateLimitConf.Lock()
+			RateLimitConf.Conf.Reqs = 0
+			RateLimitConf.Unlock()
+		}
+	}()
+}
+
+func checkRateLimit() bool {
+	RateLimitConf.RLock()
+	check := !RateLimitConf.Conf.Enabled
+	RateLimitConf.RUnlock()
+	if check {
+		return true
+	}
+
+	RateLimitConf.RLock()
+	check = RateLimitConf.Conf.Reqs > RateLimitConf.Conf.Max
+	RateLimitConf.RUnlock()
+	if check {
+		return false
+	}
+
+	RateLimitConf.Lock()
+	RateLimitConf.Conf.Reqs += 1
+	RateLimitConf.Unlock()
+
+	return true
+}
+
 func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 	if val, ok := fromCache(cmd); ok {
 		return val, true
+	}
+
+	if !checkRateLimit() {
+		return nil, false
 	}
 
 	out, err := Run(cmd)
