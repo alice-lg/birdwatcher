@@ -7,7 +7,8 @@ import (
 	"time"
 )
 
-var BirdCmd string
+var ClientConf BirdConfig
+var StatusConf StatusConfig
 
 var rateLimit = 0
 var MAX_RATE = 5
@@ -34,7 +35,7 @@ func toCache(key string, val Parsed) {
 func Run(args string) ([]byte, error) {
 	args = "show " + args
 	argsList := strings.Split(args, " ")
-	return exec.Command(BirdCmd, argsList...).Output()
+	return exec.Command(ClientConf.BirdCmd, argsList...).Output()
 }
 
 func InstallRateLimitReset() {
@@ -79,7 +80,36 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 }
 
 func Status() (Parsed, bool) {
-	return RunAndParse("status", parseStatus)
+	birdStatus, ok := RunAndParse("status", parseStatus)
+	status := birdStatus["status"].(Parsed)
+
+	// Last Reconfig Timestamp source:
+	var lastReconfig string
+	switch StatusConf.ReconfigTimestampSource {
+	case "bird":
+		lastReconfig = status["last_reconfig"].(string)
+		break
+	case "config_modified":
+		lastReconfig = lastReconfigTimestampFromFileStat(
+			ClientConf.ConfigFilename,
+		)
+	case "config_regex":
+		lastReconfig = lastReconfigTimestampFromFileContent(
+			ClientConf.ConfigFilename,
+			StatusConf.ReconfigTimestampMatch,
+		)
+	}
+
+	status["last_reconfig"] = lastReconfig
+
+	// Filter fields
+	for _, field := range StatusConf.FilterFields {
+		status[field] = nil
+	}
+
+	birdStatus["status"] = status
+
+	return birdStatus, ok
 }
 
 func Protocols() (Parsed, bool) {
@@ -106,6 +136,10 @@ func Symbols() (Parsed, bool) {
 	return RunAndParse("symbols", parseSymbols)
 }
 
+func RoutesPrefixed(prefix string) (Parsed, bool) {
+	return RunAndParse("route all '"+prefix+"'", parseRoutes)
+}
+
 func RoutesProto(protocol string) (Parsed, bool) {
 	return RunAndParse("route protocol '"+protocol+"' all",
 		parseRoutes)
@@ -114,6 +148,10 @@ func RoutesProto(protocol string) (Parsed, bool) {
 func RoutesProtoCount(protocol string) (Parsed, bool) {
 	return RunAndParse("route protocol '"+protocol+"' count",
 		parseRoutesCount)
+}
+
+func RoutesFiltered(protocol string) (Parsed, bool) {
+	return RunAndParse("route protocol '"+protocol+"' filtered", parseRoutes)
 }
 
 func RoutesExport(protocol string) (Parsed, bool) {

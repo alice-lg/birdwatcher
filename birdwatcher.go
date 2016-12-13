@@ -8,40 +8,117 @@ import (
 
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/ecix/birdwatcher/endpoints"
+
 	"github.com/julienschmidt/httprouter"
 )
 
-func makeRouter() *httprouter.Router {
+func isModuleEnabled(module string, modulesEnabled []string) bool {
+	for _, enabled := range modulesEnabled {
+		if enabled == module {
+			return true
+		}
+	}
+	return false
+}
+
+func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
+	whitelist := config.ModulesEnabled
+
 	r := httprouter.New()
-	r.GET("/status", endpoints.Endpoint(endpoints.Status))
-	r.GET("/protocols/bgp", endpoints.Endpoint(endpoints.Bgp))
-	r.GET("/symbols", endpoints.Endpoint(endpoints.Symbols))
-	r.GET("/symbols/tables", endpoints.Endpoint(endpoints.SymbolTables))
-	r.GET("/symbols/protocols", endpoints.Endpoint(endpoints.SymbolProtocols))
-	r.GET("/routes/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoRoutes))
-	r.GET("/routes/table/:table", endpoints.Endpoint(endpoints.TableRoutes))
-	r.GET("/routes/count/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoCount))
-	r.GET("/routes/count/table/:table", endpoints.Endpoint(endpoints.TableCount))
-	r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
-	r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
-	r.GET("/protocols", endpoints.Endpoint(endpoints.Protocols))
+	if isModuleEnabled("status", whitelist) {
+		r.GET("/status", endpoints.Endpoint(endpoints.Status))
+	}
+	if isModuleEnabled("protocols", whitelist) {
+		r.GET("/protocols", endpoints.Endpoint(endpoints.Protocols))
+	}
+	if isModuleEnabled("protocols_bgp", whitelist) {
+		r.GET("/protocols/bgp", endpoints.Endpoint(endpoints.Bgp))
+	}
+	if isModuleEnabled("symbols", whitelist) {
+		r.GET("/symbols", endpoints.Endpoint(endpoints.Symbols))
+	}
+	if isModuleEnabled("symbols_tables", whitelist) {
+		r.GET("/symbols/tables", endpoints.Endpoint(endpoints.SymbolTables))
+	}
+	if isModuleEnabled("symbols_protocols", whitelist) {
+		r.GET("/symbols/protocols", endpoints.Endpoint(endpoints.SymbolProtocols))
+	}
+	if isModuleEnabled("routes_protocol", whitelist) {
+		r.GET("/routes/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoRoutes))
+	}
+	if isModuleEnabled("routes_table", whitelist) {
+		r.GET("/routes/table/:table", endpoints.Endpoint(endpoints.TableRoutes))
+	}
+	if isModuleEnabled("routes_count_protocol", whitelist) {
+		r.GET("/routes/count/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoCount))
+	}
+	if isModuleEnabled("routes_count_table", whitelist) {
+		r.GET("/routes/count/table/:table", endpoints.Endpoint(endpoints.TableCount))
+	}
+	if isModuleEnabled("routes_filtered", whitelist) {
+		r.GET("routes/filtered/:protocol", endpoints.Endpoint(endpoints.RoutesFiltered))
+	}
+	if isModuleEnabled("routes_prefixed", whitelist) {
+		r.GET("routes/prefix/:prefix", endpoints.Endpoint(endpoints.RoutesPrefixed))
+	}
+	if isModuleEnabled("route_net", whitelist) {
+		r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
+		r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
+	}
 	return r
 }
 
+// Print service information like, listen address,
+// access restrictions and configuration flags
+func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
+	// General Info
+	log.Println("Starting Birdwatcher")
+	log.Println("            Using:", birdConf.BirdCmd)
+	log.Println("           Listen:", birdConf.Listen)
+
+	// Endpoint Info
+	if len(conf.Server.AllowFrom) == 0 {
+		log.Println("        AllowFrom: ALL")
+	} else {
+		log.Println("        AllowFrom:", strings.Join(conf.Server.AllowFrom, ", "))
+	}
+
+	log.Println("   ModulesEnabled:")
+	for _, m := range conf.Server.ModulesEnabled {
+		log.Println("       -", m)
+	}
+}
+
 func main() {
-	port := flag.String("port",
-		"29184",
-		"The port the birdwatcher should run on")
-	birdc := flag.String("birdc",
-		"birdc",
-		"The birdc command to use (for IPv6, use birdc6)")
+	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	flag.Parse()
 
-	bird.BirdCmd = *birdc
 	bird.InstallRateLimitReset()
+	// Load configurations
+	conf, err := LoadConfigs([]string{
+		"./etc/ecix/birdwatcher.conf",
+		"/etc/ecix/birdwatcher.conf",
+		"./etc/ecix/birdwatcher.local.conf",
+	})
 
-	r := makeRouter()
+	if err != nil {
+		log.Fatal("Loading birdwatcher configuration failed:", err)
+	}
 
-	realPort := strings.Join([]string{":", *port}, "")
-	log.Fatal(http.ListenAndServe(realPort, r))
+	// Get config according to flags
+	birdConf := conf.Bird
+	if *bird6 {
+		birdConf = conf.Bird6
+	}
+
+	PrintServiceInfo(conf, birdConf)
+
+	// Configuration
+	bird.ClientConf = birdConf
+	bird.StatusConf = conf.Status
+	endpoints.Conf = conf.Server
+
+	// Make server
+	r := makeRouter(conf.Server)
+	log.Fatal(http.ListenAndServe(birdConf.Listen, r))
 }

@@ -1,12 +1,34 @@
 package endpoints
 
 import (
+	"fmt"
+
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/julienschmidt/httprouter"
 )
 
 func ProtoRoutes(ps httprouter.Params) (bird.Parsed, bool) {
-	return bird.RoutesProto(ps.ByName("protocol"))
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesProto(protocol)
+}
+
+func RoutesFiltered(ps httprouter.Params) (bird.Parsed, bool) {
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesFiltered(protocol)
+}
+
+func RoutesPrefixed(ps httprouter.Params) (bird.Parsed, bool) {
+	prefix, err := ValidatePrefixParam(ps.ByName("prefix"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesPrefixed(prefix)
 }
 
 func TableRoutes(ps httprouter.Params) (bird.Parsed, bool) {
@@ -14,7 +36,11 @@ func TableRoutes(ps httprouter.Params) (bird.Parsed, bool) {
 }
 
 func ProtoCount(ps httprouter.Params) (bird.Parsed, bool) {
-	return bird.RoutesProtoCount(ps.ByName("protocol"))
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesProtoCount(protocol)
 }
 
 func TableCount(ps httprouter.Params) (bird.Parsed, bool) {
