@@ -116,6 +116,7 @@ func main() {
 	// Configuration
 	bird.ClientConf = birdConf
 	bird.StatusConf = conf.Status
+	bird.RateLimitConf.Conf = conf.Ratelimit
 	endpoints.Conf = conf.Server
 
 	// Make server

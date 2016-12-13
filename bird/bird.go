@@ -9,7 +9,10 @@ import (
 
 var ClientConf BirdConfig
 var StatusConf StatusConfig
-var rateLimitConf RateLimitConfig
+var RateLimitConf struct {
+	sync.Mutex
+	Conf RateLimitConfig
+}
 
 var Cache = struct {
 	sync.RWMutex
@@ -41,21 +44,25 @@ func InstallRateLimitReset() {
 		c := time.Tick(time.Second)
 
 		for _ = range c {
-			rateLimitConf.Reqs = 0
+			RateLimitConf.Lock()
+			RateLimitConf.Conf.Reqs = 0
+			RateLimitConf.Unlock()
 		}
 	}()
 }
 
 func checkRateLimit() bool {
-	if !rateLimitConf.Enabled {
+	if !RateLimitConf.Conf.Enabled {
 		return true
 	}
 
-	if rateLimitConf.Reqs > rateLimitConf.Max {
+	if RateLimitConf.Conf.Reqs > RateLimitConf.Conf.Max {
 		return false
 	}
 
-	rateLimitConf.Reqs += 1
+	RateLimitConf.Lock()
+	RateLimitConf.Conf.Reqs += 1
+	RateLimitConf.Unlock()
 
 	return true
 }
