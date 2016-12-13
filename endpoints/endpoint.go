@@ -52,10 +52,10 @@ func Endpoint(wrapped func(httprouter.Params) (bird.Parsed, bool)) httprouter.Ha
 		res := make(map[string]interface{})
 
 		ret, from_cache := wrapped(ps)
-    if ret == nil {
-      w.WriteHeader(http.StatusTooManyRequests)
-      return
-    }
+		if ret == nil {
+			w.WriteHeader(http.StatusTooManyRequests)
+			return
+		}
 		res["api"] = GetApiInfo(from_cache)
 
 		for k, v := range ret {
