@@ -45,7 +45,7 @@ func InstallRateLimitReset() {
 
 		for _ = range c {
 			RateLimitConf.Lock()
-			RateLimitConf.Conf.Reqs = 0
+			RateLimitConf.Conf.Reqs = RateLimitConf.Conf.Max
 			RateLimitConf.Unlock()
 		}
 	}()
@@ -60,14 +60,14 @@ func checkRateLimit() bool {
 	}
 
 	RateLimitConf.RLock()
-	check = RateLimitConf.Conf.Reqs > RateLimitConf.Conf.Max
+	check = RateLimitConf.Conf.Reqs < 1
 	RateLimitConf.RUnlock()
 	if check {
 		return false
 	}
 
 	RateLimitConf.Lock()
-	RateLimitConf.Conf.Reqs += 1
+	RateLimitConf.Conf.Reqs -= 1
 	RateLimitConf.Unlock()
 
 	return true
