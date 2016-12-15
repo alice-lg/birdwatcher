@@ -12,6 +12,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type endpoint func(*http.Request, httprouter.Params) (bird.Parsed, bool)
+
 var Conf ServerConfig
 
 func CheckAccess(req *http.Request) error {
@@ -38,7 +40,7 @@ func CheckAccess(req *http.Request) error {
 	return fmt.Errorf("%s is not allowed to access this service.", ip)
 }
 
-func Endpoint(wrapped func(httprouter.Params) (bird.Parsed, bool)) httprouter.Handle {
+func Endpoint(wrapped endpoint) httprouter.Handle {
 	return func(w http.ResponseWriter,
 		r *http.Request,
 		ps httprouter.Params) {
@@ -51,7 +53,7 @@ func Endpoint(wrapped func(httprouter.Params) (bird.Parsed, bool)) httprouter.Ha
 
 		res := make(map[string]interface{})
 
-		ret, from_cache := wrapped(ps)
+		ret, from_cache := wrapped(r, ps)
 		if ret == nil {
 			w.WriteHeader(http.StatusTooManyRequests)
 			return

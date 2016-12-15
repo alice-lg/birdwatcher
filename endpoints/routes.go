@@ -2,12 +2,13 @@ package endpoints
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/julienschmidt/httprouter"
 )
 
-func ProtoRoutes(ps httprouter.Params) (bird.Parsed, bool) {
+func ProtoRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
@@ -15,7 +16,7 @@ func ProtoRoutes(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesProto(protocol)
 }
 
-func RoutesFiltered(ps httprouter.Params) (bird.Parsed, bool) {
+func RoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
@@ -23,19 +24,25 @@ func RoutesFiltered(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesFiltered(protocol)
 }
 
-func RoutesPrefixed(ps httprouter.Params) (bird.Parsed, bool) {
-	prefix, err := ValidatePrefixParam(ps.ByName("prefix"))
+func RoutesPrefixed(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	qs := r.URL.Query()
+	prefixl := qs["prefix"]
+	if len(prefixl) != 1 {
+		return bird.Parsed{"error": "need a prefix as single query parameter"}, false
+	}
+
+	prefix, err := ValidatePrefixParam(prefixl[0])
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 	return bird.RoutesPrefixed(prefix)
 }
 
-func TableRoutes(ps httprouter.Params) (bird.Parsed, bool) {
+func TableRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesTable(ps.ByName("table"))
 }
 
-func ProtoCount(ps httprouter.Params) (bird.Parsed, bool) {
+func ProtoCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
@@ -43,14 +50,14 @@ func ProtoCount(ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesProtoCount(protocol)
 }
 
-func TableCount(ps httprouter.Params) (bird.Parsed, bool) {
+func TableCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesTable(ps.ByName("table"))
 }
 
-func RouteNet(ps httprouter.Params) (bird.Parsed, bool) {
+func RouteNet(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesLookupTable(ps.ByName("net"), "master")
 }
 
-func RouteNetTable(ps httprouter.Params) (bird.Parsed, bool) {
+func RouteNetTable(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesLookupTable(ps.ByName("net"), ps.ByName("table"))
 }
