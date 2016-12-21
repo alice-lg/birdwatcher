@@ -23,6 +23,15 @@ func fromCache(key string) (Parsed, bool) {
 	Cache.RLock()
 	val, ok := Cache.m[key]
 	Cache.RUnlock()
+	if !ok {
+		return nil, false
+	}
+
+	ttl, correct := val["ttl"].(time.Time)
+	if !correct || ttl.Before(time.Now()) {
+		return nil, false
+	}
+
 	return val, ok
 }
 
