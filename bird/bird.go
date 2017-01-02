@@ -69,7 +69,7 @@ func checkRateLimit() bool {
 	}
 
 	RateLimitConf.RLock()
-	check = RateLimitConf.Conf.Reqs < 1
+	check = RateLimitConf.Conf.Reqs > 1
 	RateLimitConf.RUnlock()
 	if check {
 		return false
@@ -105,6 +105,9 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 
 func Status() (Parsed, bool) {
 	birdStatus, ok := RunAndParse("status", parseStatus)
+	if birdStatus == nil {
+		return birdStatus, ok
+	}
 	status := birdStatus["status"].(Parsed)
 
 	// Last Reconfig Timestamp source:
@@ -142,6 +145,9 @@ func Protocols() (Parsed, bool) {
 
 func ProtocolsBgp() (Parsed, bool) {
 	p, from_cache := Protocols()
+	if p == nil {
+		return p, from_cache
+	}
 	protocols := p["protocols"].([]string)
 
 	bgpProto := Parsed{}
