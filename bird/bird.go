@@ -69,7 +69,7 @@ func checkRateLimit() bool {
 	}
 
 	RateLimitConf.RLock()
-	check = RateLimitConf.Conf.Reqs > 1
+	check = RateLimitConf.Conf.Reqs < 1
 	RateLimitConf.RUnlock()
 	if check {
 		return false
