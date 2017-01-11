@@ -17,6 +17,23 @@ Running `make linux` will create a Linux executable (by default for
 `amd64`, but that is configurable by providing the `ARCH` argument
 to the Makefile).
 
+### Building an RPM
+
+Building RPMs is supported through [fpm](https://github.com/jordansissel/fpm).
+If you have `fpm` installed locally, you can run `make rpm`
+to create a RPM in the folder `RPMS`. If you have a remote
+build server with `fpm` installed, you can build and fetch
+an RPM with `make remote_rpm BUILD_SERVER=<buildserver_url>`
+(requires SSH access).
+
+### Deployment
+
+If you want to deploy `birdwatcher` on a system that uses
+RPMs, you should be able to install it after following the
+instructions on [building an RPM](#building-an-rpm).
+
+We do not currently support other deployment methods.
+
 ## Configuration
 
 An example config with sane defaults is provided in
