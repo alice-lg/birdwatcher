@@ -5,6 +5,18 @@ Barry O'Donovan's
 [birds-eye](https://github.com/inex/birds-eye-design/) to
 [the BIRD routing daemon](http://bird.network.cz/).
 
+## Why
+
+The [INEX implementation](https://github.com/inex/birdseye) of
+birdseye runs PHP, which is not always desirable (and performant)
+in a routeserver setting. By using Go, we are able to work with
+regular binaries, which means deployment and maintenance might be
+more convenient.
+
+Our version also has a few more capabilities, as you will
+discover when looking at [the modules section](https://github.com/ecix/birdwatcher/blob/master/etc/ecix/birdwatcher.conf)
+of the config.
+
 ## Installation
 
 You will need to have go installed to build the package.
@@ -42,14 +54,6 @@ You should be able to use it out of the box. If you need
 to change it, it is well-commented and hopefully intuitive.
 If you do not know how to configure it, please consider opening
 [an issue](https://github.com/ecix/birdwatcher/issues/new).
-
-## Why
-
-The [INEX implementation](https://github.com/inex/birdseye) of
-birdseye runs PHP, which is not always desirable (and performant)
-in a routeserver setting. By using Go, we are able to work with
-regular binaries, which means deployment and maintenance might be
-more convenient.
 
 ## How
 
