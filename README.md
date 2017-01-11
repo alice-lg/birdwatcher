@@ -12,6 +12,20 @@ Running `go get github.com/ecix/birdwatcher` will give you
 a binary. You might need to cross-compile it for your
 bird-running servive (`GOARCH` and `GOOS` are your friends).
 
+We provide a Makefile for more advanced compilation/configuration.
+Running `make linux` will create a Linux executable (by default for
+`amd64`, but that is configurable by providing the `ARCH` argument
+to the Makefile).
+
+## Configuration
+
+An example config with sane defaults is provided in
+[etc/ecix/birdwatcher.conf](https://github.com/ecix/birdwatcher/blob/master/etc/ecix/birdwatcher.conf).
+You should be able to use it out of the box. If you need
+to change it, it is well-commented and hopefully intuitive.
+If you do not know how to configure it, please consider opening
+[an issue](https://github.com/ecix/birdwatcher/issues/new).
+
 ## Why
 
 The [INEX implementation](https://github.com/inex/birdseye) of
