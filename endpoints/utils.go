@@ -17,10 +17,13 @@ type APIInfo struct {
 	CacheStatus     CacheStatus `json:"cache_status"`
 }
 
+// go generate does not work in subdirectories. Beautious.
+var VERSION string
+
 func GetApiInfo(from_cache bool) *APIInfo {
 	ai := &APIInfo{}
 
-	ai.Version = "1.0"
+	ai.Version = VERSION
 	ai.ResultFromCache = from_cache
 
 	return ai

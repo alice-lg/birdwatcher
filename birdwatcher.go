@@ -12,6 +12,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+//go:generate versionize
+var VERSION = "1.7.5"
+
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
 		if enabled == module {
@@ -93,6 +96,7 @@ func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	flag.Parse()
 
+	endpoints.VERSION = VERSION
 	bird.InstallRateLimitReset()
 	// Load configurations
 	conf, err := LoadConfigs([]string{
