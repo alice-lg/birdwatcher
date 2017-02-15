@@ -70,3 +70,10 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		w.Write(js)
 	}
 }
+
+func Version(version string) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(version))
+	}
+}

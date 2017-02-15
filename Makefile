@@ -1,4 +1,3 @@
-
 #
 # Ecix Birdseye Makefile
 #

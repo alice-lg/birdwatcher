@@ -13,7 +13,7 @@ import (
 )
 
 //go:generate versionize
-var VERSION = "1.7.5"
+var VERSION = "1.7.7"
 
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
@@ -29,6 +29,7 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 
 	r := httprouter.New()
 	if isModuleEnabled("status", whitelist) {
+		r.GET("/version", endpoints.Version(VERSION))
 		r.GET("/status", endpoints.Endpoint(endpoints.Status))
 	}
 	if isModuleEnabled("protocols", whitelist) {
@@ -67,6 +68,9 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("route_net", whitelist) {
 		r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
 		r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
+	}
+	if isModuleEnabled("routes_peer", whitelist) {
+		r.GET("/routes/peer", endpoints.Endpoint(endpoints.RoutesPeer))
 	}
 	return r
 }

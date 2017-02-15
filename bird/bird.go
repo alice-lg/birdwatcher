@@ -213,3 +213,7 @@ func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
 	return RunAndParse("route for '"+net+"' protocol '"+protocol+"' all",
 		parseRoutes)
 }
+
+func RoutesPeer(peer string) (Parsed, bool) {
+	return RunAndParse("route export '"+peer+"'", parseRoutes)
+}
