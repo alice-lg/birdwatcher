@@ -46,9 +46,9 @@ func parseStatus(input []byte) Parsed {
 
 	start_line_rx := regexp.MustCompile(`^BIRD\s([0-9\.]+)\s*$`)
 	router_id_rx := regexp.MustCompile(`^Router\sID\sis\s([0-9\.]+)\s*$`)
-	current_server_rx := regexp.MustCompile(`^Current\sserver\stime\sis\s([0-9\-]+)\s([0-9\:]+)\s*$`)
-	last_reboot_rx := regexp.MustCompile(`^Last\sreboot\son\s([0-9\-]+)\s([0-9\:]+)\s*$`)
-	last_reconfig_rx := regexp.MustCompile(`^Last\sreconfiguration\son\s([0-9\-]+)\s([0-9\:]+)\s*$`)
+	current_server_rx := regexp.MustCompile(`^Current\sserver\stime\sis\s([0-9\-]+\s[0-9\:]+)\s*$`)
+	last_reboot_rx := regexp.MustCompile(`^Last\sreboot\son\s([0-9\-]+\s[0-9\:]+)\s*$`)
+	last_reconfig_rx := regexp.MustCompile(`^Last\sreconfiguration\son\s([0-9\-]+\s[0-9\:]+)\s*$`)
 
 	for _, line := range lines {
 		if start_line_rx.MatchString(line) {
