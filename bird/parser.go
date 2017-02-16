@@ -132,6 +132,7 @@ func parseRoutes(input []byte) Parsed {
 	type_rx := regexp.MustCompile(`^\s+Type:\s+(.*)\s*$`)
 	bgp_rx := regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)
 	community_rx := regexp.MustCompile(`^\((\d+),(\d+)\)`)
+	large_community_rx := regexp.MustCompile(`^\((\d+),(\d+),(\d+)\)`)
 	for _, line := range lines {
 		if specialLine(line) || (len(route) == 0 && emptyLine(line)) {
 			continue
@@ -186,6 +187,18 @@ func parseRoutes(input []byte) Parsed {
 					}
 				}
 				bgp["communities"] = communities
+			} else if groups[1] == "large_community" {
+				communities := [][]int64{}
+				for _, community := range strings.Split(groups[2], " ") {
+					if large_community_rx.MatchString(community) {
+						com_groups := large_community_rx.FindStringSubmatch(community)
+						maj := parseInt(com_groups[1])
+						min := parseInt(com_groups[2])
+						pat := parseInt(com_groups[3])
+						communities = append(communities, []int64{maj, min, pat})
+					}
+				}
+				bgp["large_communities"] = communities
 			} else if groups[1] == "as_path" {
 				bgp["as_path"] = strings.Split(groups[2], " ")
 			} else {
