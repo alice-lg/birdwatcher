@@ -159,7 +159,8 @@ func ProtocolsBgp() (Parsed, bool) {
 		}
 	}
 
-	return Parsed{"protocols": bgpProto}, from_cache
+
+	return Parsed{"protocols": bgpProto, "ttl": p["ttl"]}, from_cache
 }
 
 func Symbols() (Parsed, bool) {
