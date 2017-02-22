@@ -59,7 +59,7 @@ func LoadConfigs(configFiles []string) (*Config, error) {
 func ConfigOptions(filename string) []string {
 	return []string{
 		strings.Join([]string{"/", filename}, ""),
-		filename,
+		strings.Join([]string{"./", filename}, ""),
 		strings.Replace(filename, ".conf", ".local.conf", 1),
 	}
 }
