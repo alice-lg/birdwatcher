@@ -16,7 +16,7 @@ type BirdConfig struct {
 }
 
 type RateLimitConfig struct {
-	Reqs    int `toml:"requests_per_minute"`
+	Reqs    int
 	Max     int `toml:"requests_per_minute"`
 	Enabled bool
 }

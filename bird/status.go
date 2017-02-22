@@ -24,8 +24,6 @@ func lastReconfigTimestampFromFileStat(filename string) string {
 func lastReconfigTimestampFromFileContent(filename string, regex string) string {
 	rx := regexp.MustCompile(regex)
 
-	fmt.Println("Using regex:", regex)
-
 	// Read config file linewise
 	file, err := os.Open(filename)
 	if err != nil {

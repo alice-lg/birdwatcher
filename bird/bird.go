@@ -23,6 +23,15 @@ func fromCache(key string) (Parsed, bool) {
 	Cache.RLock()
 	val, ok := Cache.m[key]
 	Cache.RUnlock()
+	if !ok {
+		return nil, false
+	}
+
+	ttl, correct := val["ttl"].(time.Time)
+	if !correct || ttl.Before(time.Now()) {
+		return nil, false
+	}
+
 	return val, ok
 }
 
@@ -96,6 +105,9 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 
 func Status() (Parsed, bool) {
 	birdStatus, ok := RunAndParse("status", parseStatus)
+	if birdStatus == nil {
+		return birdStatus, ok
+	}
 	status := birdStatus["status"].(Parsed)
 
 	// Last Reconfig Timestamp source:
@@ -133,6 +145,9 @@ func Protocols() (Parsed, bool) {
 
 func ProtocolsBgp() (Parsed, bool) {
 	p, from_cache := Protocols()
+	if p == nil {
+		return p, from_cache
+	}
 	protocols := p["protocols"].([]string)
 
 	bgpProto := Parsed{}
@@ -144,7 +159,8 @@ func ProtocolsBgp() (Parsed, bool) {
 		}
 	}
 
-	return Parsed{"protocols": bgpProto}, from_cache
+
+	return Parsed{"protocols": bgpProto, "ttl": p["ttl"]}, from_cache
 }
 
 func Symbols() (Parsed, bool) {
@@ -197,4 +213,8 @@ func RoutesLookupTable(net string, table string) (Parsed, bool) {
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
 	return RunAndParse("route for '"+net+"' protocol '"+protocol+"' all",
 		parseRoutes)
+}
+
+func RoutesPeer(peer string) (Parsed, bool) {
+	return RunAndParse("route export '"+peer+"'", parseRoutes)
 }

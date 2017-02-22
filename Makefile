@@ -1,4 +1,3 @@
-
 #
 # Ecix Birdseye Makefile
 #
@@ -99,5 +98,3 @@ clean:
 	rm -f $(PROG)-osx-$(ARCH)
 	rm -f $(PROG)-linux-$(ARCH)
 	rm -rf $(DIST)
-
-

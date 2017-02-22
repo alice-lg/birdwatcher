@@ -61,3 +61,17 @@ func RouteNet(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 func RouteNetTable(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesLookupTable(ps.ByName("net"), ps.ByName("table"))
 }
+
+func RoutesPeer(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	qs := r.URL.Query()
+	peerl := qs["peer"]
+	if len(peerl) != 1 {
+		return bird.Parsed{"error": "need a peer as single query parameter"}, false
+	}
+
+	peer, err := ValidateProtocolParam(peerl[0])
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesPeer(peer)
+}

@@ -12,6 +12,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+//go:generate versionize
+var VERSION = "1.7.8"
+
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
 		if enabled == module {
@@ -26,6 +29,7 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 
 	r := httprouter.New()
 	if isModuleEnabled("status", whitelist) {
+		r.GET("/version", endpoints.Version(VERSION))
 		r.GET("/status", endpoints.Endpoint(endpoints.Status))
 	}
 	if isModuleEnabled("protocols", whitelist) {
@@ -65,6 +69,9 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 		r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
 		r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
 	}
+	if isModuleEnabled("routes_peer", whitelist) {
+		r.GET("/routes/peer", endpoints.Endpoint(endpoints.RoutesPeer))
+	}
 	return r
 }
 
@@ -93,6 +100,7 @@ func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	flag.Parse()
 
+	endpoints.VERSION = VERSION
 	bird.InstallRateLimitReset()
 	// Load configurations
 	conf, err := LoadConfigs([]string{
