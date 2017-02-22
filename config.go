@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/imdario/mergo"
@@ -53,4 +54,12 @@ func LoadConfigs(configFiles []string) (*Config, error) {
 	}
 
 	return config, confError
+}
+
+func ConfigOptions(filename string) []string {
+	return []string{
+		strings.Join([]string{"/", filename}, ""),
+		filename,
+		strings.Replace(filename, ".conf", ".local.conf", 1),
+	}
 }

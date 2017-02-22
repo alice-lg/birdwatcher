@@ -98,16 +98,13 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 
 func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
+	configfile := flag.String("config", "./etc/ecix/birdwatcher.conf", "Configuration file location")
 	flag.Parse()
 
 	endpoints.VERSION = VERSION
 	bird.InstallRateLimitReset()
 	// Load configurations
-	conf, err := LoadConfigs([]string{
-		"./etc/ecix/birdwatcher.conf",
-		"/etc/ecix/birdwatcher.conf",
-		"./etc/ecix/birdwatcher.local.conf",
-	})
+	conf, err := LoadConfigs(ConfigOptions(*configfile))
 
 	if err != nil {
 		log.Fatal("Loading birdwatcher configuration failed:", err)
