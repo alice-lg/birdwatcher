@@ -15,6 +15,10 @@ type BirdConfig struct {
 	BirdCmd        string `toml:"birdc"`
 }
 
+type ParserConfig struct {
+	FilterFields []string `toml:"filter_fields"`
+}
+
 type RateLimitConfig struct {
 	Reqs    int
 	Max     int `toml:"requests_per_minute"`

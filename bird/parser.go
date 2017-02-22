@@ -6,7 +6,18 @@ import (
 	"strings"
 )
 
+var ParserConf ParserConfig
+
 type Parsed map[string]interface{}
+
+func dirtyContains(l []string, e string) bool {
+	for _, c := range l {
+		if c == e {
+			return true
+		}
+	}
+	return false
+}
 
 func emptyLine(line string) bool {
 	return len(strings.TrimSpace(line)) == 0
@@ -117,6 +128,13 @@ func mainRouteDetail(groups []string, route Parsed) Parsed {
 	route["learnt_from"] = groups[6]
 	route["primary"] = groups[7] == "*"
 	route["metric"] = parseInt(groups[8])
+
+	for k, _ := range route {
+		if !dirtyContains(ParserConf.FilterFields, k) {
+			route[k] = nil
+		}
+	}
+
 	return route
 }
 
