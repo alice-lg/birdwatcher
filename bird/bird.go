@@ -159,7 +159,6 @@ func ProtocolsBgp() (Parsed, bool) {
 		}
 	}
 
-
 	return Parsed{"protocols": bgpProto, "ttl": p["ttl"]}, from_cache
 }
 
@@ -182,7 +181,7 @@ func RoutesProtoCount(protocol string) (Parsed, bool) {
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
-	return RunAndParse("route protocol '"+protocol+"' filtered all", parseRoutes)
+	return RunAndParse("route filtered protocol '"+protocol+"' all", parseRoutes)
 }
 
 func RoutesExport(protocol string) (Parsed, bool) {
