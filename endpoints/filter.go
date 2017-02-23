@@ -47,7 +47,7 @@ func ValidateLengthAndCharset(value string, maxLength int, alphabet string) (str
 }
 
 func ValidateProtocolParam(value string) (string, error) {
-	return ValidateLengthAndCharset(value, 80, "ID_AS:.abcdef1234567890")
+	return ValidateLengthAndCharset(value, 80, "ABCDEFGHIJKLMNOPQRSTUVWXYZ_:.abcdefghijklmnopqrstuvwxyz1234567890")
 }
 
 func ValidatePrefixParam(value string) (string, error) {
