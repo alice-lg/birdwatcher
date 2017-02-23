@@ -20,6 +20,7 @@ type Config struct {
 	Status    bird.StatusConfig
 	Bird      bird.BirdConfig
 	Bird6     bird.BirdConfig
+	Parser    bird.ParserConfig
 }
 
 // Try to load configfiles as specified in the files

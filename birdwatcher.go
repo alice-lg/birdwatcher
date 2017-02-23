@@ -122,6 +122,7 @@ func main() {
 	bird.ClientConf = birdConf
 	bird.StatusConf = conf.Status
 	bird.RateLimitConf.Conf = conf.Ratelimit
+	bird.ParserConf = conf.Parser
 	endpoints.Conf = conf.Server
 
 	// Make server
