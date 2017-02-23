@@ -130,7 +130,7 @@ func mainRouteDetail(groups []string, route Parsed) Parsed {
 	route["metric"] = parseInt(groups[8])
 
 	for k, _ := range route {
-		if !dirtyContains(ParserConf.FilterFields, k) {
+		if dirtyContains(ParserConf.FilterFields, k) {
 			route[k] = nil
 		}
 	}
