@@ -76,6 +76,13 @@ func parseStatus(input []byte) Parsed {
 			res["message"] = line
 		}
 	}
+
+	for k, _ := range res {
+		if dirtyContains(ParserConf.FilterFields, k) {
+			res[k] = nil
+		}
+	}
+
 	return Parsed{"status": res}
 }
 
