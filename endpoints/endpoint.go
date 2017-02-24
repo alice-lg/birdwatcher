@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"compress/gzip"
 	"encoding/json"
 	"net/http"
 
@@ -67,7 +68,14 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		js, _ := json.Marshal(res)
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
+		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			w.Write(js)
+		} else {
+			w.Header().Set("Content-Encoding", "gzip")
+			gz := gzip.NewWriter(w)
+			defer gz.Close()
+			gz.Write(js)
+		}
 	}
 }
 
