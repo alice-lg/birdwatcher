@@ -68,13 +68,16 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		js, _ := json.Marshal(res)
 
 		w.Header().Set("Content-Type", "application/json")
-		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			w.Write(js)
-		} else {
+
+		// Check if compression is supported
+		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			// Compress response
 			w.Header().Set("Content-Encoding", "gzip")
 			gz := gzip.NewWriter(w)
 			defer gz.Close()
 			gz.Write(js)
+		} else {
+			w.Write(js) // Fall back to uncompressed response
 		}
 	}
 }
