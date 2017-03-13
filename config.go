@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -42,6 +43,7 @@ func LoadConfigs(configFiles []string) (*Config, error) {
 		if err != nil {
 			continue
 		} else {
+			log.Println("Using config file:", filename)
 			hasConfig = true
 			// Merge configs
 			if err := mergo.Merge(config, tmp); err != nil {
