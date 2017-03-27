@@ -167,7 +167,7 @@ func Symbols() (Parsed, bool) {
 }
 
 func RoutesPrefixed(prefix string) (Parsed, bool) {
-	return RunAndParse("route all '"+prefix+"'", parseRoutes)
+	return RunAndParse("route all "+prefix, parseRoutes)
 }
 
 func RoutesProto(protocol string) (Parsed, bool) {
