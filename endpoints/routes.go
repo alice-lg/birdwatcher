@@ -24,6 +24,14 @@ func RoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesFiltered(protocol)
 }
 
+func RoutesNoExport(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesNoExport(protocol)
+}
+
 func RoutesPrefixed(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	qs := r.URL.Query()
 	prefixl := qs["prefix"]
