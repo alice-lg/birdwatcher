@@ -63,7 +63,7 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 		r.GET("/routes/filtered/:protocol", endpoints.Endpoint(endpoints.RoutesFiltered))
 	}
 	if isModuleEnabled("routes_noexport", whitelist) {
-		r.GET("/routes/noexport/:protocol", endpoints.Endpoint(endpoints.RoutesNoexport))
+		r.GET("/routes/noexport/:protocol", endpoints.Endpoint(endpoints.RoutesNoExport))
 	}
 	if isModuleEnabled("routes_prefixed", whitelist) {
 		r.GET("/routes/prefix", endpoints.Endpoint(endpoints.RoutesPrefixed))
