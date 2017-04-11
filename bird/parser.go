@@ -278,6 +278,18 @@ func parseInt(from string) int64 {
 	return val
 }
 
+func parseBgpRoutes(input string) Parsed {
+	routes := Parsed{}
+	// Input: 1 imported, 0 filtered, 2 exported, 1 preferred
+	tokens := strings.Split(input, ",")
+	for _, token := range tokens {
+		token = strings.TrimSpace(token)
+		content := strings.Split(token, " ")
+		routes[content[1]] = parseInt(content[0])
+	}
+	return routes
+}
+
 func parseBgp(input string) Parsed {
 	res := Parsed{}
 	lines := getLinesFromString(input)
@@ -286,7 +298,10 @@ func parseBgp(input string) Parsed {
 	bgp_rx := regexp.MustCompile(`^([\w\.:]+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2})\s*(\w+)?.*$`)
 	num_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
 	str_val_rx := regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
-	routes_rx := regexp.MustCompile(`^\s+Routes:\s+(\d+)\s+imported,\s+(\d+)\s+filtered,\s+(\d+)\s+exported,\s+(\d+)\s+preferred\s*$`)
+
+	// routes_rx := regexp.MustCompile(`^\s+Routes:\s+(\d+)\s+imported,\s+(\d+)\s+filtered,\s+(\d+)\s+exported,\s+(\d+)\s+preferred\s*$`)
+	routes_rx := regexp.MustCompile(`^\s+Routes:\s+(.*)`)
+
 	imp_updates_rx := regexp.MustCompile(`^\s+Import updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$`)
 	imp_withdraws_rx := regexp.MustCompile(`^\s+Import withdraws:\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s+(\d+)\s*$`)
 	exp_updates_rx := regexp.MustCompile(`^\s+Export updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s*$`)
@@ -302,14 +317,8 @@ func parseBgp(input string) Parsed {
 			res["state_changed"] = groups[4]
 			res["connection"] = groups[5]
 		} else if routes_rx.MatchString(line) {
-			routes := Parsed{}
 			groups := routes_rx.FindStringSubmatch(line)
-
-			routes["imported"] = parseInt(groups[1])
-			routes["filtered"] = parseInt(groups[2])
-			routes["exported"] = parseInt(groups[3])
-			routes["preferred"] = parseInt(groups[4])
-
+			routes := parseBgpRoutes(groups[1])
 			res["routes"] = routes
 		} else if imp_updates_rx.MatchString(line) {
 			updates := Parsed{}
