@@ -66,6 +66,14 @@ endif
 	cp $(PROG)-linux-$(ARCH) DIST/opt/ecix/birdwatcher/bin/.
 
 
+release: linux
+
+	mkdir -p ../birdseye-static/birdwatcher-builds/$(APP_VERSION)/
+	cp birdwatcher-linux-amd64 ../birdseye-static/birdwatcher-builds/$(APP_VERSION)/
+	rm -f ../birdseye-static/birdwatcher-builds/latest
+	cd ../birdseye-static/birdwatcher-builds && ln -s $(APP_VERSION) latest 
+
+
 rpm: dist
 
 	# Clear tmp failed build (if any)
