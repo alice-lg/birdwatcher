@@ -29,6 +29,18 @@ Running `make linux` will create a Linux executable (by default for
 `amd64`, but that is configurable by providing the `ARCH` argument
 to the Makefile).
 
+### Bird configuration
+
+Birdwatcher parses the output of birdc and expects (for now)
+the time format to be `iso long`. You need to configure
+
+    timeformat base         iso long;
+    timeformat log          iso long;
+    timeformat protocol     iso long;
+    timeformat route        iso long;
+
+in your `/etc/bird[6].conf` for birdwatcher to work.
+
 ### Building an RPM
 
 Building RPMs is supported through [fpm](https://github.com/jordansissel/fpm).
