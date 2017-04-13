@@ -29,7 +29,7 @@ Running `make linux` will create a Linux executable (by default for
 `amd64`, but that is configurable by providing the `ARCH` argument
 to the Makefile).
 
-### Bird configuration
+### BIRD configuration
 
 Birdwatcher parses the output of birdc and expects (for now)
 the time format to be `iso long`. You need to configure
@@ -40,6 +40,80 @@ the time format to be `iso long`. You need to configure
     timeformat route        iso long;
 
 in your `/etc/bird[6].conf` for birdwatcher to work.
+
+#### BIRD keep filtered routes
+To also see the filtered routes in BIRD you need to make sure that you 
+have enabled the 'import keep filtered on' option for your BGP peers. 
+
+    protocol bgp 'peerX' {
+        ...
+        import keep filtered on;
+        ...
+    }
+
+Now you should be able to do a 'show route filterd' in BIRD.
+
+Do note that 'import keep filtered on' does NOT work for BIRD's pipe protocol
+which is used when you have per peer tables, often used with Route Servers. If 
+your BIRD configuration has its import filters set on the BIRD pipe protocols 
+themselves then you will not be able to show the filtered routes. 
+However, you could move the import filters from the pipes to the BGP protocols 
+directly. For example:
+
+    table master;
+    table table_peer_X;
+
+    protocol pipe pipe_peer_X {
+        table master;
+        peer table table_peer_X;
+        mode transparent;
+        import all;
+        export where exportMagic();
+    }
+
+    protocol bgp 'peerX' {
+        ...
+        table table_peer_X;
+        import where importFilter();
+        import keep filtered on;
+        export all;
+        ...
+    }
+
+#### BIRD tagging filtered routes
+If you want to make use of the filtered route reasons in the Birdseye then you need
+to make sure that you are using BIRD 1.6.3 or up as you will need Large BGP Communities
+(http://largebgpcommunities.net/).
+
+You need to add a Large BGP Community just before you filter a route, for example:
+
+    define yourASN = 12345
+    define yourFilteredNumber = 65666
+    define prefixTooLong = 1
+    define pathTooLong = 2
+
+    function importScrub() {
+        ...
+        if (net.len > 24) then {
+            print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is longer than 24: ",net.len,"!";
+            bgp_large_community.add((YourASN,yourFilteredNumber,prefixTooLong));
+            return false;
+        }
+        if (bgp_path.len > 64) then {
+            print "REJECTING: ",net.ip,"/",net.len," received from ",from,": AS path length is ridiculously long: ",bgp_path.len,"!";
+            bgp_large_community.add((yourASN,yourFilteredNumber,pathTooLong));
+            return false;
+        }
+        ...
+        return true;
+    }
+
+    function importFilter() {
+        ...
+        if !(importScrub()) then reject;
+        ...
+        accept;
+    }
 
 ### Building an RPM
 
