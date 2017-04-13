@@ -51,7 +51,7 @@ have enabled the 'import keep filtered on' option for your BGP peers.
         ...
     }
 
-Now you should be able to do a 'show route filterd' in BIRD.
+Now you should be able to do a 'show route filtered' in BIRD.
 
 Do note that 'import keep filtered on' does NOT work for BIRD's pipe protocol
 which is used when you have per peer tables, often used with Route Servers. If 
