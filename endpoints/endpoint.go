@@ -3,6 +3,7 @@ package endpoints
 import (
 	"fmt"
 	"log"
+	"reflect"
 	"strings"
 
 	"compress/gzip"
@@ -55,8 +56,15 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		res := make(map[string]interface{})
 
 		ret, from_cache := wrapped(r, ps)
-		if ret == nil {
+		if reflect.DeepEqual(ret, bird.NilParse) {
 			w.WriteHeader(http.StatusTooManyRequests)
+			return
+		}
+		if reflect.DeepEqual(ret, bird.BirdError) {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			js, _ := json.Marshal(ret)
+			w.Write(js)
 			return
 		}
 		res["api"] = GetApiInfo(from_cache)

@@ -1,10 +1,12 @@
 package bird
 
 import (
-	"os/exec"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
+
+	"os/exec"
 )
 
 var ClientConf BirdConfig
@@ -19,17 +21,24 @@ var Cache = struct {
 	m map[string]Parsed
 }{m: make(map[string]Parsed)}
 
+var NilParse Parsed = (Parsed)(nil)
+var BirdError Parsed = Parsed{"error": "bird unreachable"}
+
+func isSpecial(ret Parsed) bool {
+	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
+}
+
 func fromCache(key string) (Parsed, bool) {
 	Cache.RLock()
 	val, ok := Cache.m[key]
 	Cache.RUnlock()
 	if !ok {
-		return nil, false
+		return NilParse, false
 	}
 
 	ttl, correct := val["ttl"].(time.Time)
 	if !correct || ttl.Before(time.Now()) {
-		return nil, false
+		return NilParse, false
 	}
 
 	return val, ok
@@ -88,14 +97,14 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 	}
 
 	if !checkRateLimit() {
-		return nil, false
+		return NilParse, false
 	}
 
 	out, err := Run(cmd)
 
 	if err != nil {
 		// ignore errors for now
-		return Parsed{}, false
+		return BirdError, false
 	}
 
 	parsed := parser(out)
@@ -105,7 +114,7 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 
 func Status() (Parsed, bool) {
 	birdStatus, ok := RunAndParse("status", parseStatus)
-	if birdStatus == nil {
+	if isSpecial(birdStatus) {
 		return birdStatus, ok
 	}
 	status := birdStatus["status"].(Parsed)
@@ -145,7 +154,7 @@ func Protocols() (Parsed, bool) {
 
 func ProtocolsBgp() (Parsed, bool) {
 	p, from_cache := Protocols()
-	if p == nil {
+	if isSpecial(p) {
 		return p, from_cache
 	}
 	protocols := p["protocols"].([]string)
