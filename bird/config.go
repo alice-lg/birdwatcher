@@ -24,3 +24,9 @@ type RateLimitConfig struct {
 	Max     int `toml:"requests_per_minute"`
 	Enabled bool
 }
+
+type PerPeerTablesConfig struct {
+	Enabled            bool   `toml:"enabled"`
+	PeerProtocolPrefix string `toml:"peer_protocol_prefix"`
+	PipeProtocolPrefix string `tomo:"pipe_protocol_prefix"`
+}
