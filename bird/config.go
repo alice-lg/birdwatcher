@@ -17,16 +17,14 @@ type BirdConfig struct {
 
 type ParserConfig struct {
 	FilterFields []string `toml:"filter_fields"`
+
+	PerPeerTables      bool   `toml:"per_peer_tables"`
+	PeerProtocolPrefix string `toml:"peer_protocol_prefix"`
+	PipeProtocolPrefix string `tomo:"pipe_protocol_prefix"`
 }
 
 type RateLimitConfig struct {
 	Reqs    int
 	Max     int `toml:"requests_per_minute"`
 	Enabled bool
-}
-
-type PerPeerTablesConfig struct {
-	Enabled            bool   `toml:"enabled"`
-	PeerProtocolPrefix string `toml:"peer_protocol_prefix"`
-	PipeProtocolPrefix string `tomo:"pipe_protocol_prefix"`
 }
