@@ -97,6 +97,8 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	for _, m := range conf.Server.ModulesEnabled {
 		log.Println("       -", m)
 	}
+
+	log.Println("   Per Peer Tables:", conf.Parser.PerPeerTables)
 }
 
 func main() {
