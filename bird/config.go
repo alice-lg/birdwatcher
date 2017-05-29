@@ -20,7 +20,7 @@ type ParserConfig struct {
 
 	PerPeerTables      bool   `toml:"per_peer_tables"`
 	PeerProtocolPrefix string `toml:"peer_protocol_prefix"`
-	PipeProtocolPrefix string `tomo:"pipe_protocol_prefix"`
+	PipeProtocolPrefix string `toml:"pipe_protocol_prefix"`
 }
 
 type RateLimitConfig struct {
