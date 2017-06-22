@@ -1,9 +1,15 @@
 package bird
 
 import (
+	"io/ioutil"
 	"reflect"
 	"testing"
 )
+
+func readSampleData(filename string) ([]byte, error) {
+	sample := "../test/" + filename
+	return ioutil.ReadFile(sample)
+}
 
 func TestParseBgpRoutes(t *testing.T) {
 
@@ -32,4 +38,30 @@ func TestParseBgpRoutes(t *testing.T) {
 		}
 	}
 
+}
+
+func TestParseRoutesAll(t *testing.T) {
+	sample, err := readSampleData("routes_all.sample")
+	if err != nil {
+		t.Error(err)
+	}
+
+	// Parse routes
+	result := parseRoutes(sample)
+	routes, ok := result["routes"].([]Parsed)
+	if !ok {
+		t.Error("Error getting routes")
+	}
+
+	if len(routes) != 4 {
+		t.Error("Expected number of routes to be 3")
+	}
+
+	expectedNetworks := []string{"16.0.0.0/24", "200.0.0.0/24", "200.0.0.0/24", "16.0.0.0/24"}
+	for i, route := range routes {
+		net := route["network"].(string)
+		if net != expectedNetworks[i] {
+			t.Error("Expected network to be:", expectedNetworks[i], "not", net)
+		}
+	}
 }
