@@ -83,3 +83,7 @@ func RoutesPeer(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	}
 	return bird.RoutesPeer(peer)
 }
+
+func RoutesDump(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	return bird.RoutesDump()
+}

@@ -75,6 +75,9 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("routes_peer", whitelist) {
 		r.GET("/routes/peer", endpoints.Endpoint(endpoints.RoutesPeer))
 	}
+	if isModuleEnabled("routes_dump", whitelist) {
+		r.GET("/routes/dump", endpoints.Endpoint(endpoints.RoutesDump))
+	}
 	return r
 }
 

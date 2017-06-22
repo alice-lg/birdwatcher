@@ -242,3 +242,61 @@ func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
 func RoutesPeer(peer string) (Parsed, bool) {
 	return RunAndParse("route export '"+peer+"'", parseRoutes)
 }
+
+func RoutesDump() (Parsed, bool) {
+	if ParserConf.PerPeerTables {
+		return RoutesDumpPerPeerTable()
+	}
+	return RoutesDumpSingleTable()
+}
+
+func RoutesDumpSingleTable() (Parsed, bool) {
+	exportedRes, cached := RunAndParse("route all", parseRoutes)
+	filteredRes, _ := RunAndParse("route filtered all", parseRoutes)
+
+	exported := exportedRes["routes"]
+	filtered := filteredRes["routes"]
+
+	result := Parsed{
+		"exported": exported,
+		"filtered": filtered,
+	}
+	return result, cached
+}
+
+func RoutesDumpPerPeerTable() (Parsed, bool) {
+	exportedRes, cached := RunAndParse("route all", parseRoutes)
+	exported := exportedRes["routes"]
+	filtered := []Parsed{}
+
+	// Get protocols with filtered routes
+	protocols, _ := ProtocolsBgp()
+	for protocol, details := range protocols {
+		details, ok := details.(Parsed)
+		counters, ok := details["routes"].(map[string]int)
+		if !ok {
+			continue
+		}
+		filterCount := counters["filtered"]
+		if filterCount == 0 {
+			continue // nothing to do here.
+		}
+		// Lookup filtered routes
+		pfilteredRes, _ := RunAndParse(
+			"route filtered protocol '"+protocol+"' all",
+			parseRoutes)
+
+		pfiltered, ok := pfilteredRes["routes"].([]Parsed)
+		if !ok {
+			continue // something went wrong...
+		}
+
+		filtered = append(filtered, pfiltered...)
+	}
+
+	result := Parsed{
+		"exported": exported,
+		"filtered": filtered,
+	}
+	return result, cached
+}
