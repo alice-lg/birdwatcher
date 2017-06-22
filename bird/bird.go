@@ -300,7 +300,7 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 	}
 
 	result := Parsed{
-		"exported": imported,
+		"imported": imported,
 		"filtered": filtered,
 	}
 	return result, cached
