@@ -251,22 +251,22 @@ func RoutesDump() (Parsed, bool) {
 }
 
 func RoutesDumpSingleTable() (Parsed, bool) {
-	exportedRes, cached := RunAndParse("route all", parseRoutes)
+	importedRes, cached := RunAndParse("route all", parseRoutes)
 	filteredRes, _ := RunAndParse("route filtered all", parseRoutes)
 
-	exported := exportedRes["routes"]
+	imported := importedRes["routes"]
 	filtered := filteredRes["routes"]
 
 	result := Parsed{
-		"exported": exported,
+		"imported": imported,
 		"filtered": filtered,
 	}
 	return result, cached
 }
 
 func RoutesDumpPerPeerTable() (Parsed, bool) {
-	exportedRes, cached := RunAndParse("route all", parseRoutes)
-	exported := exportedRes["routes"]
+	importedRes, cached := RunAndParse("route all", parseRoutes)
+	imported := importedRes["routes"]
 	filtered := []Parsed{}
 
 	// Get protocols with filtered routes
@@ -300,7 +300,7 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 	}
 
 	result := Parsed{
-		"exported": exported,
+		"exported": imported,
 		"filtered": filtered,
 	}
 	return result, cached
