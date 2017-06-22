@@ -270,14 +270,19 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 	filtered := []Parsed{}
 
 	// Get protocols with filtered routes
-	protocols, _ := ProtocolsBgp()
+	protocolsRes, _ := ProtocolsBgp()
+	protocols := protocolsRes["protocols"].(Parsed)
+
 	for protocol, details := range protocols {
 		details, ok := details.(Parsed)
-		counters, ok := details["routes"].(map[string]int)
 		if !ok {
 			continue
 		}
-		filterCount := counters["filtered"]
+		counters, ok := details["routes"].(Parsed)
+		if !ok {
+			continue
+		}
+		filterCount := counters["filtered"].(int64)
 		if filterCount == 0 {
 			continue // nothing to do here.
 		}
