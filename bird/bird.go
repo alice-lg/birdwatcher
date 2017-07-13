@@ -282,7 +282,7 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 		if !ok {
 			continue
 		}
-		filterCount := counters["filtered"].(int64)
+		filterCount := counters["filtered"]
 		if filterCount == 0 {
 			continue // nothing to do here.
 		}

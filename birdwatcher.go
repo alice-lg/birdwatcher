@@ -13,7 +13,7 @@ import (
 )
 
 //go:generate versionize
-var VERSION = "1.10.1"
+var VERSION = "1.10.2"
 
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
