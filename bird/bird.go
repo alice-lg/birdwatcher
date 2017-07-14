@@ -205,7 +205,7 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 	if ParserConf.PerPeerTables {
 		// Replace prefix
 		protocol = TemplateExpand(
-			ParserConf.PipeProtocolMatch,
+			ParserConf.PeerProtocolMatch,
 			ParserConf.PipeProtocolTemplate,
 			protocol,
 		)
