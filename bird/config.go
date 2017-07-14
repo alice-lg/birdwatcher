@@ -18,9 +18,9 @@ type BirdConfig struct {
 type ParserConfig struct {
 	FilterFields []string `toml:"filter_fields"`
 
-	PerPeerTables      bool   `toml:"per_peer_tables"`
-	PeerProtocolPrefix string `toml:"peer_protocol_prefix"`
-	PipeProtocolPrefix string `toml:"pipe_protocol_prefix"`
+	PerPeerTables        bool   `toml:"per_peer_tables"`
+	PeerProtocolMatch    string `toml:"peer_protocol_match"`
+	PipeProtocolTemplate string `toml:"pipe_protocol_template"`
 }
 
 type RateLimitConfig struct {

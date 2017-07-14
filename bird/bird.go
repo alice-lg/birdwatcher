@@ -202,12 +202,13 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 
 	// In case we have a multi table setup, we have to query
 	// the pipe protocol.
-	if ParserConf.PerPeerTables &&
-		strings.HasPrefix(protocol, ParserConf.PeerProtocolPrefix) {
-
+	if ParserConf.PerPeerTables {
 		// Replace prefix
-		protocol = ParserConf.PipeProtocolPrefix +
-			protocol[len(ParserConf.PeerProtocolPrefix):]
+		protocol = TemplateExpand(
+			ParserConf.PipeProtocolMatch,
+			ParserConf.PipeProtocolTemplate,
+			protocol,
+		)
 	}
 
 	return RunAndParse("route noexport '"+protocol+"' all",
