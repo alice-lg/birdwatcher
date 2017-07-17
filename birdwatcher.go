@@ -102,8 +102,10 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	}
 
 	log.Println("   Per Peer Tables:", conf.Parser.PerPeerTables)
-	log.Println("       - Match:", conf.Parser.PeerProtocolMatch,
-		"Template:", conf.Parser.PipeProtocolTemplate)
+	if conf.Parser.PerPeerTables == true {
+		log.Println("       - Match:", conf.Parser.PeerProtocolMatch)
+		log.Println("       - Template:", conf.Parser.PipeProtocolTemplate)
+	}
 }
 
 func main() {
