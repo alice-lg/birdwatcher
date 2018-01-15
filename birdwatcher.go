@@ -21,6 +21,7 @@ func isModuleEnabled(module string, modulesEnabled []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -122,6 +123,7 @@ func main() {
 	birdConf := conf.Bird
 	if *bird6 {
 		birdConf = conf.Bird6
+		bird.IPVersion = "6"
 	}
 
 	PrintServiceInfo(conf, birdConf)
