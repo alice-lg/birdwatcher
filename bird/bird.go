@@ -101,7 +101,6 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 	}
 
 	out, err := Run(cmd)
-
 	if err != nil {
 		// ignore errors for now
 		return BirdError, false
