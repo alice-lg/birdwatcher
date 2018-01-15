@@ -64,4 +64,53 @@ func TestParseRoutesAll(t *testing.T) {
 			t.Error("Expected network to be:", expectedNetworks[i], "not", net)
 		}
 	}
+
+}
+
+func TestParseRoutesAllBird1(t *testing.T) {
+	sample, err := readSampleData("routes_bird1_ipv6.sample")
+	if err != nil {
+		t.Error(err)
+	}
+
+	result := parseRoutes(sample)
+	routes, ok := result["routes"].([]Parsed)
+	if !ok {
+		t.Fatal("Error getting routes")
+	}
+
+	if len(routes) != 3 {
+		t.Fatalf("Expected 3 routes but got %d", len(routes))
+	}
+
+	expected := []string{"2001:4860::/32", "2001:4860::/32", "2001:678:1e0::/48"}
+	for i, r := range routes {
+		if r["network"].(string) == expected[i] {
+			t.Fatalf("Expected route not found: %s", r)
+		}
+	}
+}
+
+func TestParseRoutesAllBird2(t *testing.T) {
+	sample, err := readSampleData("routes_bird2_ipv6.sample")
+	if err != nil {
+		t.Error(err)
+	}
+
+	result := parseRoutes(sample)
+	routes, ok := result["routes"].([]Parsed)
+	if !ok {
+		t.Fatal("Error getting routes")
+	}
+
+	if len(routes) != 3 {
+		t.Fatalf("Expected 3 routes but got %d", len(routes))
+	}
+
+	expected := []string{"2001:4860::/32", "2001:4860::/32", "2001:678:1e0::/48"}
+	for i, r := range routes {
+		if r["network"].(string) == expected[i] {
+			t.Fatalf("Expected route not found: %s", r)
+		}
+	}
 }

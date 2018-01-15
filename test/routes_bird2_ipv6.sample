@@ -1,0 +1,28 @@
+BIRD 2.0.0 ready.
+2001:4860::/32       unicast [upstream1 2018-01-14 11:50:09] * (100) [AS15169i]
+    via fe80:ffff:ffff::1 on eth0.841
+	Type: BGP univ
+    BGP.origin: IGP
+    BGP.as_path: 199714 15169
+    BGP.next_hop: fe80:ffff:ffff::1
+    BGP.med: 0
+    BGP.local_pref: 100
+    BGP.community: (123,102) (123,4901) (9033,3001) (65000,680) (65000,16265) (65000,20825) (65000,36040) (65010,1) (65011,4)
+    BGP.large_community: (202739, 0, 3000) (202739, 0, 3100)
+                     unicast [upstream2 2018-01-14 13:07:26 from fe80:ffff:ffff::2] (100/?) [AS15169i]
+	via fe80:ffff:ffff::2 on eth3
+	Type: BGP univ
+	BGP.origin: IGP
+	BGP.as_path: 50629 15169
+	BGP.next_hop: fe80:ffff:ffff::2
+	BGP.med: 71
+	BGP.local_pref: 5
+	BGP.community: (50629,200) (50629,201)
+	BGP.large_community: (202739, 0, 3000) (202739, 0, 3100)
+2001:678:1e0::/48    unicast [upstream2 2018-01-15 20:31:39 from fe80:ffff:ffff::2] * (100/?) [i]
+	via fe80:ffff:ffff::2 on wg1
+	Type: BGP univ
+	BGP.origin: IGP
+	BGP.as_path: 
+	BGP.next_hop: fe80:ffff:ffff::2
+	BGP.local_pref: 100
