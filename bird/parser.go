@@ -196,7 +196,7 @@ func parseSymbols(input []byte) Parsed {
 	return Parsed{"symbols": res}
 }
 
-func mainRouteDetail(groups []string, route Parsed) Parsed {
+func parseMainRouteDetail(groups []string, route Parsed) Parsed {
 	route["network"] = groups[1]
 	route["gateway"] = groups[2]
 	route["interface"] = groups[3]
@@ -232,68 +232,23 @@ func parseRoutes(input []byte) Parsed {
 				routes = append(routes, route)
 				route = Parsed{}
 			}
-			route = mainRouteDetail(regex.routes.startDefinition.FindStringSubmatch(line), route)
+
+			route = parseMainRouteDetail(regex.routes.startDefinition.FindStringSubmatch(line), route)
 		} else if regex.routes.second.MatchString(line) {
 			routes = append(routes, route)
-			var network string
-			if tmp, ok := route["network"]; ok {
-				if val, ok := tmp.(string); ok {
-					network = val
-				} else {
-					continue
-				}
-			} else {
-				continue
-			}
-			route = Parsed{}
-
-			groups := regex.routes.second.FindStringSubmatch(line)
-			first, groups := groups[0], groups[1:]
-			groups = append([]string{network}, groups...)
-			groups = append([]string{first}, groups...)
-			route = mainRouteDetail(groups, route)
+			route = parseRoutesSecond(line, route)
 		} else if regex.routes.routeType.MatchString(line) {
 			submatch := regex.routes.routeType.FindStringSubmatch(line)[1]
 			route["type"] = strings.Split(submatch, " ")
 		} else if regex.routes.bgp.MatchString(line) {
-			groups := regex.routes.bgp.FindStringSubmatch(line)
 			bgp := Parsed{}
-
 			if tmp, ok := route["bgp"]; ok {
 				if val, ok := tmp.(Parsed); ok {
 					bgp = val
 				}
 			}
 
-			if groups[1] == "community" {
-				communities := [][]int64{}
-				for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
-					if regex.routes.community.MatchString(community) {
-						com_groups := regex.routes.community.FindStringSubmatch(community)
-						maj := parseInt(com_groups[1])
-						min := parseInt(com_groups[2])
-						communities = append(communities, []int64{maj, min})
-					}
-				}
-				bgp["communities"] = communities
-			} else if groups[1] == "large_community" {
-				communities := [][]int64{}
-				for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
-					if regex.routes.largeCommunity.MatchString(community) {
-						com_groups := regex.routes.largeCommunity.FindStringSubmatch(community)
-						maj := parseInt(com_groups[1])
-						min := parseInt(com_groups[2])
-						pat := parseInt(com_groups[3])
-						communities = append(communities, []int64{maj, min, pat})
-					}
-				}
-				bgp["large_communities"] = communities
-			} else if groups[1] == "as_path" {
-				bgp["as_path"] = strings.Split(groups[2], " ")
-			} else {
-				bgp[groups[1]] = groups[2]
-			}
-
+			parseRoutesBgp(line, bgp)
 			route["bgp"] = bgp
 		}
 	}
@@ -304,6 +259,69 @@ func parseRoutes(input []byte) Parsed {
 
 	res["routes"] = routes
 	return res
+}
+
+func parseRoutesSecond(line string, route Parsed) Parsed {
+	tmp, ok := route["network"]
+	if !ok {
+		return route
+	}
+
+	var network string
+	if network, ok = tmp.(string); !ok {
+		return route
+	}
+
+	route = Parsed{}
+	groups := regex.routes.second.FindStringSubmatch(line)
+	first, groups := groups[0], groups[1:]
+	groups = append([]string{network}, groups...)
+	groups = append([]string{first}, groups...)
+
+	return parseMainRouteDetail(groups, route)
+}
+
+func parseRoutesBgp(line string, bgp Parsed) {
+	groups := regex.routes.bgp.FindStringSubmatch(line)
+
+	if groups[1] == "community" {
+		parseRoutesCommunities(groups, bgp)
+	} else if groups[1] == "large_community" {
+		parseRoutesLargeCommunities(groups, bgp)
+	} else if groups[1] == "as_path" {
+		bgp["as_path"] = strings.Split(groups[2], " ")
+	} else {
+		bgp[groups[1]] = groups[2]
+	}
+}
+
+func parseRoutesCommunities(groups []string, res Parsed) {
+	communities := [][]int64{}
+	for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
+		if regex.routes.community.MatchString(community) {
+			communityGroups := regex.routes.community.FindStringSubmatch(community)
+			maj := parseInt(communityGroups[1])
+			min := parseInt(communityGroups[2])
+			communities = append(communities, []int64{maj, min})
+		}
+	}
+
+	res["communities"] = communities
+}
+
+func parseRoutesLargeCommunities(groups []string, res Parsed) {
+	communities := [][]int64{}
+	for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
+		if regex.routes.largeCommunity.MatchString(community) {
+			communityGroups := regex.routes.largeCommunity.FindStringSubmatch(community)
+			maj := parseInt(communityGroups[1])
+			min := parseInt(communityGroups[2])
+			pat := parseInt(communityGroups[3])
+			communities = append(communities, []int64{maj, min, pat})
+		}
+	}
+
+	res["large_communities"] = communities
 }
 
 func parseRoutesCount(input []byte) Parsed {

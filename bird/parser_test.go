@@ -41,12 +41,11 @@ func TestParseBgpRoutes(t *testing.T) {
 }
 
 func TestParseRoutesAll(t *testing.T) {
-	sample, err := readSampleData("routes_all.sample")
+	sample, err := readSampleData("routes_bird1_ipv4.sample")
 	if err != nil {
 		t.Error(err)
 	}
 
-	// Parse routes
 	result := parseRoutes(sample)
 	routes, ok := result["routes"].([]Parsed)
 	if !ok {
@@ -54,17 +53,65 @@ func TestParseRoutesAll(t *testing.T) {
 	}
 
 	if len(routes) != 4 {
-		t.Error("Expected number of routes to be 3")
+		t.Error("Expected number of routes to be 4")
 	}
 
-	expectedNetworks := []string{"16.0.0.0/24", "200.0.0.0/24", "200.0.0.0/24", "16.0.0.0/24"}
-	for i, route := range routes {
-		net := route["network"].(string)
-		if net != expectedNetworks[i] {
-			t.Error("Expected network to be:", expectedNetworks[i], "not", net)
-		}
-	}
-
+	assertRouteIsEqual(expectedRoute{
+		network: "16.0.0.0/24",
+		gateway: "1.2.3.16",
+		asPath:  []string{"1340"},
+		community: [][]int64{
+			{65011, 3},
+			{9033, 3251},
+		},
+		largeCommunities: [][]int64{
+			{9033, 65666, 12},
+			{9033, 65666, 9},
+		},
+		metric: 100,
+	}, routes[0], "Route 1", t)
+	assertRouteIsEqual(expectedRoute{
+		network: "200.0.0.0/24",
+		gateway: "1.2.3.15",
+		asPath:  []string{"1339"},
+		community: [][]int64{
+			{65011, 40},
+			{9033, 3251},
+		},
+		largeCommunities: [][]int64{
+			{9033, 65666, 12},
+			{9033, 65666, 9},
+		},
+		metric: 100,
+	}, routes[1], "Route 2", t)
+	assertRouteIsEqual(expectedRoute{
+		network: "200.0.0.0/24",
+		gateway: "1.2.3.16",
+		asPath:  []string{"1340"},
+		community: [][]int64{
+			{65011, 3},
+			{9033, 3251},
+		},
+		largeCommunities: [][]int64{
+			{9033, 65666, 12},
+			{9033, 65666, 9},
+		},
+		metric: 100,
+	}, routes[2], "Route 3", t)
+	assertRouteIsEqual(expectedRoute{
+		network: "16.0.0.0/24",
+		gateway: "1.2.3.16",
+		asPath:  []string{"1340"},
+		community: [][]int64{
+			{65011, 3},
+			{9033, 3251},
+		},
+		largeCommunities: [][]int64{
+			{9033, 65666, 12},
+			{9033, 65666, 9},
+		},
+		metric: 100,
+	}, routes[3], "Route 4", t)
 }
 
 func TestParseRoutesAllBird1(t *testing.T) {
@@ -83,12 +130,7 @@ func TestParseRoutesAllBird1(t *testing.T) {
 		t.Fatalf("Expected 3 routes but got %d", len(routes))
 	}
 
-	expected := []string{"2001:4860::/32", "2001:4860::/32", "2001:678:1e0::/48"}
-	for i, r := range routes {
-		if r["network"].(string) == expected[i] {
-			t.Fatalf("Expected route not found: %s", r)
-		}
-	}
+	assertIpv6RoutesAsExpected(routes, t)
 }
 
 func TestParseRoutesAllBird2(t *testing.T) {
@@ -107,10 +149,86 @@ func TestParseRoutesAllBird2(t *testing.T) {
 		t.Fatalf("Expected 3 routes but got %d", len(routes))
 	}
 
-	expected := []string{"2001:4860::/32", "2001:4860::/32", "2001:678:1e0::/48"}
-	for i, r := range routes {
-		if r["network"].(string) == expected[i] {
-			t.Fatalf("Expected route not found: %s", r)
-		}
+	assertIpv6RoutesAsExpected(routes, t)
+}
+
+func assertIpv6RoutesAsExpected(routes []Parsed, t *testing.T) {
+	assertRouteIsEqual(expectedRoute{
+		network: "2001:4860::/32",
+		gateway: "fe80:ffff:ffff::1",
+		asPath:  []string{"15169"},
+		community: [][]int64{
+			{9033, 3001},
+			{65000, 680},
+		},
+		largeCommunities: [][]int64{
+			{48821, 0, 2000},
+			{48821, 0, 2100},
+		},
+		metric: 500,
+	}, routes[0], "Route 1", t)
+	assertRouteIsEqual(expectedRoute{
+		network: "2001:4860::/32",
+		gateway: "fe80:ffff:ffff::2",
+		asPath:  []string{"50629", "15169"},
+		community: [][]int64{
+			{50629, 200},
+			{50629, 201},
+		},
+		largeCommunities: [][]int64{
+			{48821, 0, 3000},
+			{48821, 0, 3100},
+		},
+		metric: 100,
+	}, routes[1], "Route 2", t)
+	assertRouteIsEqual(expectedRoute{
+		network: "2001:678:1e0::/48",
+		gateway: "fe80:ffff:ffff::2",
+		asPath:  []string{"202739"},
+		community: [][]int64{
+			{48821, 2000},
+			{48821, 2100},
+		},
+		largeCommunities: [][]int64{
+			{48821, 0, 2000},
+			{48821, 0, 2100},
+		},
+		metric: 5000,
+	}, routes[2], "Route 3", t)
+}
+
+func assertRouteIsEqual(expected expectedRoute, actual Parsed, name string, t *testing.T) {
+	if prefix := actual["network"].(string); prefix != expected.network {
+		t.Fatal(name, ": Expected network to be:", expected.network, "not", prefix)
 	}
+
+	if nextHop := actual["gateway"].(string); nextHop != expected.gateway {
+		t.Fatal(name, ": Expected gateway to be:", expected.gateway, "not", nextHop)
+	}
+
+	if metric := actual["metric"].(int64); metric != expected.metric {
+		t.Fatal(name, ": Expected metric to be:", expected.metric, "not", metric)
+	}
+
+	bgp := actual["bgp"].(Parsed)
+	if asPath := bgp["as_path"].([]string); !reflect.DeepEqual(asPath, expected.asPath) {
+		t.Fatal(name, ": Expected as_path to be:", expected.asPath, "not", asPath)
+	}
+
+	if community := bgp["communities"].([][]int64); !reflect.DeepEqual(community, expected.community) {
+		t.Fatal(name, ": Expected community to be:", expected.community, "not", community)
+	}
+
+	if largeCommunity := bgp["large_communities"].([][]int64); !reflect.DeepEqual(largeCommunity, expected.largeCommunities) {
+		t.Fatal(name, ": Expected large_community to be:", expected.largeCommunities, "not", largeCommunity)
+	}
+}
+
+type expectedRoute struct {
+	network          string
+	gateway          string
+	asPath           []string
+	community        [][]int64
+	largeCommunities [][]int64
+	metric           int64
 }
