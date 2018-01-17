@@ -68,7 +68,9 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric: 100,
+		metric:   100,
+		protocol: "ID8503_AS1340",
+		primary:  true,
 	}, routes[0], "Route 1", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "200.0.0.0/24",
@@ -82,7 +84,9 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric: 100,
+		metric:   100,
+		protocol: "ID8503_AS1340",
+		primary:  true,
 	}, routes[1], "Route 2", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "200.0.0.0/24",
@@ -96,7 +100,9 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric: 100,
+		metric:   100,
+		protocol: "ID8503_AS1340",
+		primary:  false,
 	}, routes[2], "Route 3", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "16.0.0.0/24",
@@ -110,7 +116,9 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric: 100,
+		metric:   100,
+		protocol: "ID8503_AS1340",
+		primary:  true,
 	}, routes[3], "Route 4", t)
 }
 
@@ -165,7 +173,9 @@ func assertIpv6RoutesAsExpected(routes []Parsed, t *testing.T) {
 			{48821, 0, 2000},
 			{48821, 0, 2100},
 		},
-		metric: 500,
+		metric:   500,
+		primary:  true,
+		protocol: "upstream1",
 	}, routes[0], "Route 1", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:4860::/32",
@@ -179,7 +189,9 @@ func assertIpv6RoutesAsExpected(routes []Parsed, t *testing.T) {
 			{48821, 0, 3000},
 			{48821, 0, 3100},
 		},
-		metric: 100,
+		metric:   100,
+		primary:  false,
+		protocol: "upstream2",
 	}, routes[1], "Route 2", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:678:1e0::/48",
@@ -193,7 +205,9 @@ func assertIpv6RoutesAsExpected(routes []Parsed, t *testing.T) {
 			{48821, 0, 2000},
 			{48821, 0, 2100},
 		},
-		metric: 5000,
+		metric:   5000,
+		primary:  true,
+		protocol: "upstream2",
 	}, routes[2], "Route 3", t)
 }
 
@@ -208,6 +222,10 @@ func assertRouteIsEqual(expected expectedRoute, actual Parsed, name string, t *t
 
 	if metric := actual["metric"].(int64); metric != expected.metric {
 		t.Fatal(name, ": Expected metric to be:", expected.metric, "not", metric)
+	}
+
+	if protocol := actual["from_protocol"].(string); protocol != expected.protocol {
+		t.Fatal(name, ": Expected protocol to be:", expected.protocol, "not", protocol)
 	}
 
 	bgp := actual["bgp"].(Parsed)
@@ -231,4 +249,6 @@ type expectedRoute struct {
 	community        [][]int64
 	largeCommunities [][]int64
 	metric           int64
+	protocol         string
+	primary          bool
 }

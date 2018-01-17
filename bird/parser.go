@@ -196,25 +196,6 @@ func parseSymbols(input []byte) Parsed {
 	return Parsed{"symbols": res}
 }
 
-func parseMainRouteDetail(groups []string, route Parsed) Parsed {
-	route["network"] = groups[1]
-	route["gateway"] = groups[2]
-	route["interface"] = groups[3]
-	route["from_protocol"] = groups[4]
-	route["age"] = groups[5]
-	route["learnt_from"] = groups[6]
-	route["primary"] = groups[7] == "*"
-	route["metric"] = parseInt(groups[8])
-
-	for k := range route {
-		if dirtyContains(ParserConf.FilterFields, k) {
-			route[k] = nil
-		}
-	}
-
-	return route
-}
-
 func parseRoutes(input []byte) Parsed {
 	res := Parsed{}
 	lines := getLines(input)
@@ -259,6 +240,25 @@ func parseRoutes(input []byte) Parsed {
 
 	res["routes"] = routes
 	return res
+}
+
+func parseMainRouteDetail(groups []string, route Parsed) Parsed {
+	route["network"] = groups[1]
+	route["gateway"] = groups[2]
+	route["interface"] = groups[3]
+	route["from_protocol"] = groups[4]
+	route["age"] = groups[5]
+	route["learnt_from"] = groups[6]
+	route["primary"] = groups[7] == "*"
+	route["metric"] = parseInt(groups[8])
+
+	for k := range route {
+		if dirtyContains(ParserConf.FilterFields, k) {
+			route[k] = nil
+		}
+	}
+
+	return route
 }
 
 func parseRoutesSecond(line string, route Parsed) Parsed {
