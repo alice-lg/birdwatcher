@@ -1,6 +1,7 @@
 package bird
 
 import (
+	"fmt"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -68,9 +69,10 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric:   100,
-		protocol: "ID8503_AS1340",
-		primary:  true,
+		metric:    100,
+		localPref: "100",
+		protocol:  "ID8503_AS1340",
+		primary:   true,
 	}, routes[0], "Route 1", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "200.0.0.0/24",
@@ -84,9 +86,10 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric:   100,
-		protocol: "ID8497_AS1339",
-		primary:  true,
+		metric:    100,
+		localPref: "100",
+		protocol:  "ID8497_AS1339",
+		primary:   true,
 	}, routes[1], "Route 2", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "200.0.0.0/24",
@@ -100,9 +103,10 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric:   100,
-		protocol: "ID8503_AS1340",
-		primary:  false,
+		metric:    100,
+		localPref: "100",
+		protocol:  "ID8503_AS1340",
+		primary:   false,
 	}, routes[2], "Route 3", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "16.0.0.0/24",
@@ -116,9 +120,10 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
-		metric:   100,
-		protocol: "ID8503_AS1340",
-		primary:  true,
+		metric:    100,
+		localPref: "100",
+		protocol:  "ID8503_AS1340",
+		primary:   true,
 	}, routes[3], "Route 4", t)
 }
 
@@ -146,6 +151,8 @@ func runTestForIpv6WithTemplate(template string, t *testing.T) {
 		t.Fatal("Expected 3 routes but got ", len(routes))
 	}
 
+	fmt.Println(routes[1])
+
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:4860::/32",
 		gateway: "fe80:ffff:ffff::1",
@@ -158,9 +165,10 @@ func runTestForIpv6WithTemplate(template string, t *testing.T) {
 			{48821, 0, 2000},
 			{48821, 0, 2100},
 		},
-		metric:   500,
-		primary:  true,
-		protocol: "upstream1",
+		metric:    100,
+		localPref: "500",
+		primary:   true,
+		protocol:  "upstream1",
 	}, routes[0], "Route 1", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:4860::/32",
@@ -174,9 +182,10 @@ func runTestForIpv6WithTemplate(template string, t *testing.T) {
 			{48821, 0, 3000},
 			{48821, 0, 3100},
 		},
-		metric:   100,
-		primary:  false,
-		protocol: "upstream2",
+		localPref: "100",
+		metric:    100,
+		primary:   false,
+		protocol:  "upstream2",
 	}, routes[1], "Route 2", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:678:1e0::/48",
@@ -190,9 +199,10 @@ func runTestForIpv6WithTemplate(template string, t *testing.T) {
 			{48821, 0, 2000},
 			{48821, 0, 2100},
 		},
-		metric:   5000,
-		primary:  true,
-		protocol: "upstream2",
+		metric:    100,
+		localPref: "5000",
+		primary:   true,
+		protocol:  "upstream2",
 	}, routes[2], "Route 3", t)
 }
 
@@ -214,6 +224,10 @@ func assertRouteIsEqual(expected expectedRoute, actual Parsed, name string, t *t
 	}
 
 	bgp := actual["bgp"].(Parsed)
+	if localPref := bgp["local_pref"].(string); localPref != expected.localPref {
+		t.Fatal(name, ": Expected local_pref to be:", expected.localPref, "not", localPref)
+	}
+
 	if asPath := bgp["as_path"].([]string); !reflect.DeepEqual(asPath, expected.asPath) {
 		t.Fatal(name, ": Expected as_path to be:", expected.asPath, "not", asPath)
 	}
@@ -236,4 +250,5 @@ type expectedRoute struct {
 	metric           int64
 	protocol         string
 	primary          bool
+	localPref        string
 }

@@ -217,6 +217,7 @@ func parseRoutes(input []byte) Parsed {
 			route = parseMainRouteDetail(regex.routes.startDefinition.FindStringSubmatch(line), route)
 		} else if regex.routes.second.MatchString(line) {
 			routes = append(routes, route)
+
 			route = parseRoutesSecond(line, route)
 		} else if regex.routes.routeType.MatchString(line) {
 			submatch := regex.routes.routeType.FindStringSubmatch(line)[1]
