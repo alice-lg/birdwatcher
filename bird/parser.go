@@ -2,6 +2,7 @@ package bird
 
 import (
 	"bufio"
+	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -93,44 +94,32 @@ func emptyLine(line string) bool {
 	return len(strings.TrimSpace(line)) == 0
 }
 
-func getLinesUnfiltered(input string) []string {
-	lines := make([]string, 0)
+func getLines(reader io.Reader, excludeFilter func(string) bool) []string {
+	lines := []string{}
 
-	reader := strings.NewReader(input)
 	scanner := bufio.NewScanner(reader)
-
 	for scanner.Scan() {
+		if excludeFilter != nil && excludeFilter(scanner.Text()) {
+			continue
+		}
+
 		lines = append(lines, scanner.Text())
 	}
 
 	return lines
 }
 
-func getLinesFromString(input string) []string {
-	lines := getLinesUnfiltered(input)
-
-	var filtered []string
-
-	for _, line := range lines {
-		if !emptyLine(line) {
-			filtered = append(filtered, line)
-		}
-	}
-
-	return filtered
-}
-
-func getLines(input []byte) []string {
-	return getLinesFromString(string(input))
+func getNonEmptyLines(reader io.Reader) []string {
+	return getLines(reader, emptyLine)
 }
 
 func specialLine(line string) bool {
 	return (strings.HasPrefix(line, "BIRD") || strings.HasPrefix(line, "Access restricted"))
 }
 
-func parseStatus(input []byte) Parsed {
+func parseStatus(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getLines(input)
+	lines := getNonEmptyLines(reader)
 
 	for _, line := range lines {
 		if regex.status.startLine.MatchString(line) {
@@ -157,10 +146,10 @@ func parseStatus(input []byte) Parsed {
 	return Parsed{"status": res}
 }
 
-func parseProtocols(input []byte) Parsed {
+func parseProtocols(reader io.Reader) Parsed {
 	res := Parsed{}
 	protocols := []string{}
-	lines := getLinesUnfiltered(string(input))
+	lines := getLines(reader, nil)
 
 	proto := ""
 	for _, line := range lines {
@@ -178,9 +167,9 @@ func parseProtocols(input []byte) Parsed {
 	return res
 }
 
-func parseSymbols(input []byte) Parsed {
+func parseSymbols(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getLines(input)
+	lines := getNonEmptyLines(reader)
 
 	for _, line := range lines {
 		if specialLine(line) {
@@ -196,9 +185,9 @@ func parseSymbols(input []byte) Parsed {
 	return Parsed{"symbols": res}
 }
 
-func parseRoutes(input []byte) Parsed {
+func parseRoutes(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getLines(input)
+	lines := getNonEmptyLines(reader)
 
 	routes := []Parsed{}
 	route := Parsed{}
@@ -325,9 +314,9 @@ func parseRoutesLargeCommunities(groups []string, res Parsed) {
 	res["large_communities"] = communities
 }
 
-func parseRoutesCount(input []byte) Parsed {
+func parseRoutesCount(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getLines(input)
+	lines := getNonEmptyLines(reader)
 
 	for _, line := range lines {
 		if specialLine(line) {
@@ -351,7 +340,7 @@ func isCorrectChannel(currentIPVersion string) bool {
 	return currentIPVersion == IPVersion
 }
 
-func parseBgp(input string) Parsed {
+func parseBgp(lines string) Parsed {
 	res := Parsed{}
 	routeChanges := Parsed{}
 
@@ -366,9 +355,13 @@ func parseBgp(input string) Parsed {
 		func(l string) bool { return parseBgpStringValuesRx(l, res) },
 	}
 
-	lines := getLinesFromString(input)
 	ipVersion := ""
-	for _, line := range lines {
+
+	reader := strings.NewReader(lines)
+	scanner := bufio.NewScanner(reader)
+	for scanner.Scan() {
+		line := scanner.Text()
+
 		if m := regex.bgp.channel.FindStringSubmatch(line); len(m) > 0 {
 			ipVersion = m[1]
 		}

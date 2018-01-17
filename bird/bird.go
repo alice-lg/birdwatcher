@@ -1,7 +1,9 @@
 package bird
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"reflect"
 	"strings"
 	"sync"
@@ -53,10 +55,16 @@ func toCache(key string, val Parsed) {
 	Cache.Unlock()
 }
 
-func Run(args string) ([]byte, error) {
+func Run(args string) (io.Reader, error) {
 	args = "show " + args
 	argsList := strings.Split(args, " ")
-	return exec.Command(ClientConf.BirdCmd, argsList...).Output()
+
+	out, err := exec.Command(ClientConf.BirdCmd, argsList...).Output()
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(out), nil
 }
 
 func InstallRateLimitReset() {
@@ -93,7 +101,7 @@ func checkRateLimit() bool {
 	return true
 }
 
-func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
+func RunAndParse(cmd string, parser func(io.Reader) Parsed) (Parsed, bool) {
 	if val, ok := fromCache(cmd); ok {
 		return val, true
 	}

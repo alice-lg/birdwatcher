@@ -1,15 +1,14 @@
 package bird
 
 import (
-	"fmt"
-	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 )
 
-func readSampleData(filename string) ([]byte, error) {
+func openFile(filename string) (*os.File, error) {
 	sample := "../test/" + filename
-	return ioutil.ReadFile(sample)
+	return os.Open(sample)
 }
 
 func TestParseBgpRoutes(t *testing.T) {
@@ -42,12 +41,13 @@ func TestParseBgpRoutes(t *testing.T) {
 }
 
 func TestParseRoutesAll(t *testing.T) {
-	sample, err := readSampleData("routes_bird1_ipv4.sample")
+	f, err := openFile("routes_bird1_ipv4.sample")
 	if err != nil {
 		t.Error(err)
 	}
+	defer f.Close()
 
-	result := parseRoutes(sample)
+	result := parseRoutes(f)
 	routes, ok := result["routes"].([]Parsed)
 	if !ok {
 		t.Error("Error getting routes")
@@ -135,13 +135,14 @@ func TestParseRoutesAllBird2(t *testing.T) {
 	runTestForIpv6WithTemplate("routes_bird2_ipv6.sample", t)
 }
 
-func runTestForIpv6WithTemplate(template string, t *testing.T) {
-	sample, err := readSampleData(template)
+func runTestForIpv6WithTemplate(file string, t *testing.T) {
+	f, err := openFile(file)
 	if err != nil {
 		t.Error(err)
 	}
+	defer f.Close()
 
-	result := parseRoutes(sample)
+	result := parseRoutes(f)
 	routes, ok := result["routes"].([]Parsed)
 	if !ok {
 		t.Fatal("Error getting routes")
@@ -150,8 +151,6 @@ func runTestForIpv6WithTemplate(template string, t *testing.T) {
 	if len(routes) != 3 {
 		t.Fatal("Expected 3 routes but got ", len(routes))
 	}
-
-	fmt.Println(routes[1])
 
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:4860::/32",
