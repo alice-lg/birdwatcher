@@ -53,7 +53,7 @@ func TestParseRoutesAll(t *testing.T) {
 	}
 
 	if len(routes) != 4 {
-		t.Error("Expected number of routes to be 4")
+		t.Fatal("Expected 4 routes but got ", len(routes))
 	}
 
 	assertRouteIsEqual(expectedRoute{
@@ -85,7 +85,7 @@ func TestParseRoutesAll(t *testing.T) {
 			{9033, 65666, 9},
 		},
 		metric:   100,
-		protocol: "ID8503_AS1340",
+		protocol: "ID8497_AS1339",
 		primary:  true,
 	}, routes[1], "Route 2", t)
 	assertRouteIsEqual(expectedRoute{
@@ -123,26 +123,15 @@ func TestParseRoutesAll(t *testing.T) {
 }
 
 func TestParseRoutesAllBird1(t *testing.T) {
-	sample, err := readSampleData("routes_bird1_ipv6.sample")
-	if err != nil {
-		t.Error(err)
-	}
-
-	result := parseRoutes(sample)
-	routes, ok := result["routes"].([]Parsed)
-	if !ok {
-		t.Fatal("Error getting routes")
-	}
-
-	if len(routes) != 3 {
-		t.Fatalf("Expected 3 routes but got %d", len(routes))
-	}
-
-	assertIpv6RoutesAsExpected(routes, t)
+	runTestForIpv6WithTemplate("routes_bird1_ipv6.sample", t)
 }
 
 func TestParseRoutesAllBird2(t *testing.T) {
-	sample, err := readSampleData("routes_bird2_ipv6.sample")
+	runTestForIpv6WithTemplate("routes_bird2_ipv6.sample", t)
+}
+
+func runTestForIpv6WithTemplate(template string, t *testing.T) {
+	sample, err := readSampleData(template)
 	if err != nil {
 		t.Error(err)
 	}
@@ -154,13 +143,9 @@ func TestParseRoutesAllBird2(t *testing.T) {
 	}
 
 	if len(routes) != 3 {
-		t.Fatalf("Expected 3 routes but got %d", len(routes))
+		t.Fatal("Expected 3 routes but got ", len(routes))
 	}
 
-	assertIpv6RoutesAsExpected(routes, t)
-}
-
-func assertIpv6RoutesAsExpected(routes []Parsed, t *testing.T) {
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:4860::/32",
 		gateway: "fe80:ffff:ffff::1",
