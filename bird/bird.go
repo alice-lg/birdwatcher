@@ -194,7 +194,7 @@ func RoutesProto(protocol string) (Parsed, bool) {
 }
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route all protocol "+protocol) + " count"
+	cmd := routeQueryForChannel("route protocol "+protocol) + " count"
 	return RunAndParse(cmd, parseRoutes)
 }
 
@@ -225,7 +225,7 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 }
 
 func RoutesExportCount(protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route all export "+protocol) + " count"
+	cmd := routeQueryForChannel("route export "+protocol) + " count"
 	return RunAndParse(cmd, parseRoutesCount)
 }
 
