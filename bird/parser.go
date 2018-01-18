@@ -90,27 +90,8 @@ func dirtyContains(l []string, e string) bool {
 	return false
 }
 
-func emptyLine(line string) bool {
-	return len(strings.TrimSpace(line)) == 0
-}
-
-func getLines(reader io.Reader, excludeFilter func(string) bool) []string {
-	lines := []string{}
-
-	scanner := bufio.NewScanner(reader)
-	for scanner.Scan() {
-		if excludeFilter != nil && excludeFilter(scanner.Text()) {
-			continue
-		}
-
-		lines = append(lines, scanner.Text())
-	}
-
-	return lines
-}
-
-func getNonEmptyLines(reader io.Reader) []string {
-	return getLines(reader, emptyLine)
+func emptyString(s string) bool {
+	return len(strings.TrimSpace(s)) == 0
 }
 
 func specialLine(line string) bool {
@@ -119,9 +100,11 @@ func specialLine(line string) bool {
 
 func parseStatus(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getNonEmptyLines(reader)
 
-	for _, line := range lines {
+	lines := newLineIterator(reader, true)
+	for lines.next() {
+		line := lines.string()
+
 		if regex.status.startLine.MatchString(line) {
 			res["version"] = regex.status.startLine.FindStringSubmatch(line)[1]
 		} else if regex.status.routerID.MatchString(line) {
@@ -149,12 +132,15 @@ func parseStatus(reader io.Reader) Parsed {
 func parseProtocols(reader io.Reader) Parsed {
 	res := Parsed{}
 	protocols := []string{}
-	lines := getLines(reader, nil)
 
 	proto := ""
-	for _, line := range lines {
-		if emptyLine(line) {
-			if !emptyLine(proto) {
+
+	lines := newLineIterator(reader, false)
+	for lines.next() {
+		line := lines.string()
+
+		if emptyString(line) {
+			if !emptyString(proto) {
 				protocols = append(protocols, proto)
 			}
 			proto = ""
@@ -169,9 +155,11 @@ func parseProtocols(reader io.Reader) Parsed {
 
 func parseSymbols(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getNonEmptyLines(reader)
 
-	for _, line := range lines {
+	lines := newLineIterator(reader, true)
+	for lines.next() {
+		line := lines.string()
+
 		if specialLine(line) {
 			continue
 		}
@@ -187,13 +175,14 @@ func parseSymbols(reader io.Reader) Parsed {
 
 func parseRoutes(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getNonEmptyLines(reader)
-
 	routes := []Parsed{}
 	route := Parsed{}
 
-	for _, line := range lines {
-		if specialLine(line) || (len(route) == 0 && emptyLine(line)) {
+	lines := newLineIterator(reader, true)
+	for lines.next() {
+		line := lines.string()
+
+		if specialLine(line) {
 			continue
 		}
 
@@ -316,9 +305,11 @@ func parseRoutesLargeCommunities(groups []string, res Parsed) {
 
 func parseRoutesCount(reader io.Reader) Parsed {
 	res := Parsed{}
-	lines := getNonEmptyLines(reader)
 
-	for _, line := range lines {
+	lines := newLineIterator(reader, true)
+	for lines.next() {
+		line := lines.string()
+
 		if specialLine(line) {
 			continue
 		}
