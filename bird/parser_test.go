@@ -40,8 +40,16 @@ func TestParseBgpRoutes(t *testing.T) {
 
 }
 
-func TestParseRoutesAll(t *testing.T) {
-	f, err := openFile("routes_bird1_ipv4.sample")
+func TestParseRoutesAllIpv4Bird1(t *testing.T) {
+	runTestForIpv4WithFile("routes_bird1_ipv4.sample", t)
+}
+
+func TestParseRoutesAllIpv4Bird2(t *testing.T) {
+	runTestForIpv4WithFile("routes_bird2_ipv4.sample", t)
+}
+
+func runTestForIpv4WithFile(file string, t *testing.T) {
+	f, err := openFile(file)
 	if err != nil {
 		t.Error(err)
 	}
@@ -50,7 +58,7 @@ func TestParseRoutesAll(t *testing.T) {
 	result := parseRoutes(f)
 	routes, ok := result["routes"].([]Parsed)
 	if !ok {
-		t.Error("Error getting routes")
+		t.Fatal("Error getting routes")
 	}
 
 	if len(routes) != 4 {
@@ -127,15 +135,15 @@ func TestParseRoutesAll(t *testing.T) {
 	}, routes[3], "Route 4", t)
 }
 
-func TestParseRoutesAllBird1(t *testing.T) {
-	runTestForIpv6WithTemplate("routes_bird1_ipv6.sample", t)
+func TestParseRoutesAllIpv6Bird1(t *testing.T) {
+	runTestForIpv6WithFile("routes_bird1_ipv6.sample", t)
 }
 
-func TestParseRoutesAllBird2(t *testing.T) {
-	runTestForIpv6WithTemplate("routes_bird2_ipv6.sample", t)
+func TestParseRoutesAllIpv6Bird2(t *testing.T) {
+	runTestForIpv6WithFile("routes_bird2_ipv6.sample", t)
 }
 
-func runTestForIpv6WithTemplate(file string, t *testing.T) {
+func runTestForIpv6WithFile(file string, t *testing.T) {
 	f, err := openFile(file)
 	if err != nil {
 		t.Error(err)
