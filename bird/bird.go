@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -326,7 +327,8 @@ func routeQueryForChannel(cmd string) string {
 		return cmd
 	}
 
-	if len(version) == 0 || int(version[0]) < 2 {
+	v, err := strconv.Atoi(string(version[0]))
+	if err != nil || v <= 2 {
 		return cmd
 	}
 
