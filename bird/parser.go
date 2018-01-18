@@ -44,6 +44,8 @@ var (
 			community       *regexp.Regexp
 			largeCommunity  *regexp.Regexp
 			origin          *regexp.Regexp
+			prefixBird2     *regexp.Regexp
+			gatewayBird2    *regexp.Regexp
 		}
 	}
 )
@@ -78,6 +80,8 @@ func init() {
 	regex.routes.community = regexp.MustCompile(`^\((\d+),\s*(\d+)\)`)
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
+	regex.routes.prefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
+	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s*$`)
 }
 
 func dirtyContains(l []string, e string) bool {
@@ -186,13 +190,25 @@ func parseRoutes(reader io.Reader) Parsed {
 			continue
 		}
 
-		if regex.routes.startDefinition.MatchString(line) {
+		if regex.routes.prefixBird2.MatchString(line) {
+			formerPrefix := ""
+			if len(route) > 0 {
+				routes = append(routes, route)
+
+				formerPrefix = route["network"].(string)
+				route = Parsed{}
+			}
+
+			parseMainRouteDetailBird2(regex.routes.prefixBird2.FindStringSubmatch(line), route, formerPrefix)
+		} else if regex.routes.startDefinition.MatchString(line) {
 			if len(route) > 0 {
 				routes = append(routes, route)
 				route = Parsed{}
 			}
 
-			route = parseMainRouteDetail(regex.routes.startDefinition.FindStringSubmatch(line), route)
+			parseMainRouteDetail(regex.routes.startDefinition.FindStringSubmatch(line), route)
+		} else if regex.routes.gatewayBird2.MatchString(line) {
+			parseRoutesGatewayBird2(regex.routes.gatewayBird2.FindStringSubmatch(line), route)
 		} else if regex.routes.second.MatchString(line) {
 			routes = append(routes, route)
 
@@ -221,7 +237,7 @@ func parseRoutes(reader io.Reader) Parsed {
 	return res
 }
 
-func parseMainRouteDetail(groups []string, route Parsed) Parsed {
+func parseMainRouteDetail(groups []string, route Parsed) {
 	route["network"] = groups[1]
 	route["gateway"] = groups[2]
 	route["interface"] = groups[3]
@@ -236,8 +252,31 @@ func parseMainRouteDetail(groups []string, route Parsed) Parsed {
 			route[k] = nil
 		}
 	}
+}
 
-	return route
+func parseMainRouteDetailBird2(groups []string, route Parsed, formerPrefix string) {
+	if len(groups[1]) > 0 {
+		route["network"] = groups[1]
+	} else {
+		route["network"] = formerPrefix
+	}
+
+	route["from_protocol"] = groups[2]
+	route["age"] = groups[3]
+	route["learnt_from"] = groups[4]
+	route["primary"] = groups[5] == "*"
+	route["metric"] = parseInt(groups[6])
+
+	for k := range route {
+		if dirtyContains(ParserConf.FilterFields, k) {
+			route[k] = nil
+		}
+	}
+}
+
+func parseRoutesGatewayBird2(groups []string, route Parsed) {
+	route["gateway"] = groups[1]
+	route["interface"] = groups[2]
 }
 
 func parseRoutesSecond(line string, route Parsed) Parsed {
@@ -257,7 +296,8 @@ func parseRoutesSecond(line string, route Parsed) Parsed {
 	groups = append([]string{network}, groups...)
 	groups = append([]string{first}, groups...)
 
-	return parseMainRouteDetail(groups, route)
+	parseMainRouteDetail(groups, route)
+	return route
 }
 
 func parseRoutesBgp(line string, bgp Parsed) {

@@ -81,6 +81,7 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
 		primary:   true,
+		iface:     "eno7",
 	}, routes[0], "Route 1", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "200.0.0.0/24",
@@ -98,6 +99,7 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		localPref: "100",
 		protocol:  "ID8497_AS1339",
 		primary:   true,
+		iface:     "eno7",
 	}, routes[1], "Route 2", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "200.0.0.0/24",
@@ -115,6 +117,7 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
 		primary:   false,
+		iface:     "eno8",
 	}, routes[2], "Route 3", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "16.0.0.0/24",
@@ -132,6 +135,7 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
 		primary:   true,
+		iface:     "eno7",
 	}, routes[3], "Route 4", t)
 }
 
@@ -176,6 +180,7 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 		localPref: "500",
 		primary:   true,
 		protocol:  "upstream1",
+		iface:     "eth2",
 	}, routes[0], "Route 1", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:4860::/32",
@@ -193,6 +198,7 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 		metric:    100,
 		primary:   false,
 		protocol:  "upstream2",
+		iface:     "eth3",
 	}, routes[1], "Route 2", t)
 	assertRouteIsEqual(expectedRoute{
 		network: "2001:678:1e0::/48",
@@ -210,42 +216,56 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 		localPref: "5000",
 		primary:   true,
 		protocol:  "upstream2",
+		iface:     "eth2",
 	}, routes[2], "Route 3", t)
 }
 
 func assertRouteIsEqual(expected expectedRoute, actual Parsed, name string, t *testing.T) {
-	if prefix := actual["network"].(string); prefix != expected.network {
+	if prefix := value(actual, "network", name, t).(string); prefix != expected.network {
 		t.Fatal(name, ": Expected network to be:", expected.network, "not", prefix)
 	}
 
-	if nextHop := actual["gateway"].(string); nextHop != expected.gateway {
+	if nextHop := value(actual, "gateway", name, t).(string); nextHop != expected.gateway {
 		t.Fatal(name, ": Expected gateway to be:", expected.gateway, "not", nextHop)
 	}
 
-	if metric := actual["metric"].(int64); metric != expected.metric {
+	if metric := value(actual, "metric", name, t).(int64); metric != expected.metric {
 		t.Fatal(name, ": Expected metric to be:", expected.metric, "not", metric)
 	}
 
-	if protocol := actual["from_protocol"].(string); protocol != expected.protocol {
+	if protocol := value(actual, "from_protocol", name, t).(string); protocol != expected.protocol {
 		t.Fatal(name, ": Expected protocol to be:", expected.protocol, "not", protocol)
 	}
 
+	if iface := value(actual, "interface", name, t).(string); iface != expected.iface {
+		t.Fatal(name, ": Expected interface to be:", expected.iface, "not", iface)
+	}
+
 	bgp := actual["bgp"].(Parsed)
-	if localPref := bgp["local_pref"].(string); localPref != expected.localPref {
+	if localPref := value(bgp, "local_pref", name, t).(string); localPref != expected.localPref {
 		t.Fatal(name, ": Expected local_pref to be:", expected.localPref, "not", localPref)
 	}
 
-	if asPath := bgp["as_path"].([]string); !reflect.DeepEqual(asPath, expected.asPath) {
+	if asPath := value(bgp, "as_path", name, t).([]string); !reflect.DeepEqual(asPath, expected.asPath) {
 		t.Fatal(name, ": Expected as_path to be:", expected.asPath, "not", asPath)
 	}
 
-	if community := bgp["communities"].([][]int64); !reflect.DeepEqual(community, expected.community) {
+	if community := value(bgp, "communities", name, t).([][]int64); !reflect.DeepEqual(community, expected.community) {
 		t.Fatal(name, ": Expected community to be:", expected.community, "not", community)
 	}
 
-	if largeCommunity := bgp["large_communities"].([][]int64); !reflect.DeepEqual(largeCommunity, expected.largeCommunities) {
+	if largeCommunity := value(bgp, "large_communities", name, t).([][]int64); !reflect.DeepEqual(largeCommunity, expected.largeCommunities) {
 		t.Fatal(name, ": Expected large_community to be:", expected.largeCommunities, "not", largeCommunity)
 	}
+}
+
+func value(parsed Parsed, key, name string, t *testing.T) interface{} {
+	v, ok := parsed[key]
+	if !ok {
+		t.Fatal(name, ": Key not found", key)
+	}
+
+	return v
 }
 
 type expectedRoute struct {
@@ -258,4 +278,5 @@ type expectedRoute struct {
 	protocol         string
 	primary          bool
 	localPref        string
+	iface            string
 }

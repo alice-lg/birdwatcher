@@ -15,7 +15,7 @@ BIRD 1.6.3 ready.
 	BGP.local_pref: 100
 	BGP.community: (65011,40) (9033,3251)
 	BGP.large_community: (9033, 65666, 12) (9033, 65666, 9)
-                   via 1.2.3.16 on eno7 [ID8503_AS1340 2017-06-21 08:17:33] (100) [AS1340i]
+                   via 1.2.3.16 on eno8 [ID8503_AS1340 2017-06-21 08:17:33] (100) [AS1340i]
 	Type: BGP unicast univ
 	BGP.origin: IGP
 	BGP.as_path: 1340
