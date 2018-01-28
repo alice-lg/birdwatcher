@@ -9,7 +9,8 @@ import (
 	"sync"
 )
 
-const workerPoolSize = 8
+// WorkerPoolSize is the number of go routines used to parse routing tables concurrently
+var WorkerPoolSize = 8
 
 var (
 	ParserConf ParserConfig
@@ -225,9 +226,9 @@ func startRouteWorkers(jobs chan blockJob) chan blockParsed {
 	out := make(chan blockParsed)
 
 	wg := &sync.WaitGroup{}
-	wg.Add(workerPoolSize)
+	wg.Add(WorkerPoolSize)
 	go func() {
-		for i := 0; i < workerPoolSize; i++ {
+		for i := 0; i < WorkerPoolSize; i++ {
 			go workerForRouteBlockParsing(jobs, out, wg)
 		}
 		wg.Wait()
