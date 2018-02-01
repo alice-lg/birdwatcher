@@ -1,7 +1,10 @@
 package bird
 
 import (
+	"bytes"
+	"io"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -11,6 +14,7 @@ import (
 
 var ClientConf BirdConfig
 var StatusConf StatusConfig
+var IPVersion = "4"
 var RateLimitConf struct {
 	sync.RWMutex
 	Conf RateLimitConfig
@@ -51,10 +55,16 @@ func toCache(key string, val Parsed) {
 	Cache.Unlock()
 }
 
-func Run(args string) ([]byte, error) {
+func Run(args string) (io.Reader, error) {
 	args = "show " + args
 	argsList := strings.Split(args, " ")
-	return exec.Command(ClientConf.BirdCmd, argsList...).Output()
+
+	out, err := exec.Command(ClientConf.BirdCmd, argsList...).Output()
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(out), nil
 }
 
 func InstallRateLimitReset() {
@@ -91,7 +101,7 @@ func checkRateLimit() bool {
 	return true
 }
 
-func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
+func RunAndParse(cmd string, parser func(io.Reader) Parsed) (Parsed, bool) {
 	if val, ok := fromCache(cmd); ok {
 		return val, true
 	}
@@ -101,7 +111,6 @@ func RunAndParse(cmd string, parser func([]byte) Parsed) (Parsed, bool) {
 	}
 
 	out, err := Run(cmd)
-
 	if err != nil {
 		// ignore errors for now
 		return BirdError, false
@@ -176,26 +185,28 @@ func Symbols() (Parsed, bool) {
 }
 
 func RoutesPrefixed(prefix string) (Parsed, bool) {
-	return RunAndParse("route all "+prefix, parseRoutes)
+	cmd := routeQueryForChannel("route all")
+	return RunAndParse(cmd, parseRoutes)
 }
 
 func RoutesProto(protocol string) (Parsed, bool) {
-	return RunAndParse("route protocol '"+protocol+"' all",
-		parseRoutes)
+	cmd := routeQueryForChannel("route all protocol " + protocol)
+	return RunAndParse(cmd, parseRoutes)
 }
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
-	return RunAndParse("route protocol '"+protocol+"' count",
-		parseRoutesCount)
+	cmd := routeQueryForChannel("route protocol "+protocol) + " count"
+	return RunAndParse(cmd, parseRoutes)
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
-	return RunAndParse("route filtered protocol '"+protocol+"' all", parseRoutes)
+	cmd := routeQueryForChannel("route all filtered " + protocol)
+	return RunAndParse(cmd, parseRoutes)
 }
 
 func RoutesExport(protocol string) (Parsed, bool) {
-	return RunAndParse("route export '"+protocol+"' all",
-		parseRoutes)
+	cmd := routeQueryForChannel("route all export " + protocol)
+	return RunAndParse(cmd, parseRoutes)
 }
 
 func RoutesNoExport(protocol string) (Parsed, bool) {
@@ -210,49 +221,47 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 			protocol[len(ParserConf.PeerProtocolPrefix):]
 	}
 
-	return RunAndParse("route noexport '"+protocol+"' all",
-		parseRoutes)
+	cmd := routeQueryForChannel("route all noexport " + protocol)
+	return RunAndParse(cmd, parseRoutes)
 }
 
 func RoutesExportCount(protocol string) (Parsed, bool) {
-	return RunAndParse("route export '"+protocol+"' count",
-		parseRoutesCount)
+	cmd := routeQueryForChannel("route export "+protocol) + " count"
+	return RunAndParse(cmd, parseRoutesCount)
 }
 
 func RoutesTable(table string) (Parsed, bool) {
-	return RunAndParse("route table '"+table+"' all",
-		parseRoutes)
+	return RunAndParse("route table '"+table+"' all", parseRoutes)
 }
 
 func RoutesTableCount(table string) (Parsed, bool) {
-	return RunAndParse("route table '"+table+"' count",
-		parseRoutesCount)
+	return RunAndParse("route table '"+table+"' count", parseRoutesCount)
 }
 
 func RoutesLookupTable(net string, table string) (Parsed, bool) {
-	return RunAndParse("route for '"+net+"' table '"+table+"' all",
-		parseRoutes)
+	return RunAndParse("route for '"+net+"' table '"+table+"' all", parseRoutes)
 }
 
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
-	return RunAndParse("route for '"+net+"' protocol '"+protocol+"' all",
-		parseRoutes)
+	return RunAndParse("route for '"+net+"' protocol '"+protocol+"' all", parseRoutes)
 }
 
 func RoutesPeer(peer string) (Parsed, bool) {
-	return RunAndParse("route export '"+peer+"'", parseRoutes)
+	cmd := routeQueryForChannel("route export " + peer)
+	return RunAndParse(cmd, parseRoutes)
 }
 
 func RoutesDump() (Parsed, bool) {
 	if ParserConf.PerPeerTables {
 		return RoutesDumpPerPeerTable()
 	}
+
 	return RoutesDumpSingleTable()
 }
 
 func RoutesDumpSingleTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse("route all", parseRoutes)
-	filteredRes, _ := RunAndParse("route filtered all", parseRoutes)
+	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes)
+	filteredRes, _ := RunAndParse(routeQueryForChannel("route all filtered"), parseRoutes)
 
 	imported := importedRes["routes"]
 	filtered := filteredRes["routes"]
@@ -261,11 +270,12 @@ func RoutesDumpSingleTable() (Parsed, bool) {
 		"imported": imported,
 		"filtered": filtered,
 	}
+
 	return result, cached
 }
 
 func RoutesDumpPerPeerTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse("route all", parseRoutes)
+	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes)
 	imported := importedRes["routes"]
 	filtered := []Parsed{}
 
@@ -287,9 +297,7 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 			continue // nothing to do here.
 		}
 		// Lookup filtered routes
-		pfilteredRes, _ := RunAndParse(
-			"route filtered protocol '"+protocol+"' all",
-			parseRoutes)
+		pfilteredRes, _ := RoutesFiltered(protocol)
 
 		pfiltered, ok := pfilteredRes["routes"].([]Parsed)
 		if !ok {
@@ -303,5 +311,26 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 		"imported": imported,
 		"filtered": filtered,
 	}
+
 	return result, cached
+}
+
+func routeQueryForChannel(cmd string) string {
+	status, _ := Status()
+	birdStatus, ok := status["status"].(Parsed)
+	if !ok {
+		return cmd
+	}
+
+	version, ok := birdStatus["version"].(string)
+	if !ok {
+		return cmd
+	}
+
+	v, err := strconv.Atoi(string(version[0]))
+	if err != nil || v <= 2 {
+		return cmd
+	}
+
+	return cmd + " where net.type = NET_IP" + IPVersion
 }

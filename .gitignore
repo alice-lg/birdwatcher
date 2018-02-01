@@ -7,3 +7,4 @@ birdwatcher-*
 DIST/
 
 *.local.*
+debug.test
