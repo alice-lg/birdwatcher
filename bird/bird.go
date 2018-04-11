@@ -49,7 +49,7 @@ func fromCache(key string) (Parsed, bool) {
 }
 
 func toCache(key string, val Parsed) {
-	val["ttl"] = time.Now().Add(5 * time.Minute)
+	val["ttl"] = time.Now().Add(10 * time.Minute)
 	Cache.Lock()
 	Cache.m[key] = val
 	Cache.Unlock()
