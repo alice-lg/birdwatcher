@@ -89,6 +89,7 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	log.Println("Starting Birdwatcher")
 	log.Println("            Using:", birdConf.BirdCmd)
 	log.Println("           Listen:", birdConf.Listen)
+	log.Println("        Cache TTL:", birdConf.CacheTtl)
 
 	// Endpoint Info
 	if len(conf.Server.AllowFrom) == 0 {
