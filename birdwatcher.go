@@ -4,10 +4,12 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/ecix/birdwatcher/endpoints"
+	"github.com/gorilla/handlers"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -108,11 +110,20 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 
 func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
+	certfile := flag.String("crt", "", "Path to certificate (.crt or .pem)")
+	keyfile := flag.String("key", "", "Path to certificate key (.key or .pem)")
+	https := flag.Bool("enable-tls", false, "Enable TLS")
 	workerPoolSize := flag.Int("worker-pool-size", 8, "Number of go routines used to parse routing tables concurrently")
 	configfile := flag.String("config", "etc/birdwatcher/birdwatcher.conf", "Configuration file location")
 	flag.Parse()
 
 	bird.WorkerPoolSize = *workerPoolSize
+
+	if *https {
+		if len(*certfile) == 0 || len(*keyfile) == 0 {
+			log.Fatalln("You have enabled https support. Please specify both flags -crt and -key.")
+		}
+	}
 
 	endpoints.VERSION = VERSION
 	bird.InstallRateLimitReset()
@@ -141,5 +152,10 @@ func main() {
 
 	// Make server
 	r := makeRouter(conf.Server)
-	log.Fatal(http.ListenAndServe(birdConf.Listen, r))
+
+	if *https {
+		log.Fatal(http.ListenAndServeTLS(birdConf.Listen, *certfile, *keyfile, handlers.LoggingHandler(os.Stdout, r)))
+	} else {
+		log.Fatal(http.ListenAndServe(birdConf.Listen, handlers.LoggingHandler(os.Stdout, r)))
+	}
 }
