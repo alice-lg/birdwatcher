@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
+
 	"strings"
 
 	"github.com/ecix/birdwatcher/bird"
@@ -108,13 +111,14 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	log.Println("   Per Peer Tables:", conf.Parser.PerPeerTables)
 }
 
+// MyLogger is our own log.Logger wrapper so we can customize it
 type MyLogger struct {
 	logger *log.Logger
 }
 
+// Write implements the Write method of io.Writer
 func (m *MyLogger) Write(p []byte) (n int, err error) {
-	p = append([]byte("QUERY: "), p...)
-	log.Println(string(p))
+	m.logger.Println(string(p))
 	return len(p), nil
 }
 
@@ -171,7 +175,8 @@ func main() {
 	// Make server
 	r := makeRouter(conf.Server)
 
-	myquerylog := log.New(os.Stdout, "DEBUG: ", 0)
+	// Set up our own custom log.Logger
+	myquerylog := log.New(os.Stdout, fmt.Sprintf("%s -- %s: ", time.Now().UTC().Format(time.RFC1123), "DEBUG"), 0)
 	mylogger := &MyLogger{myquerylog}
 
 	if birdwatcherconfigfile.Server.EnableTLS {
