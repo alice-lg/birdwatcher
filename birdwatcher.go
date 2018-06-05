@@ -164,12 +164,16 @@ func main() {
 	r := makeRouter(conf.Server)
 
 	// Set up our own custom log.Logger
-	myquerylog := log.New(os.Stdout, fmt.Sprintf("%s -- %s: ", time.Now().Format(time.RFC1123), "QUERY"), 0)
+	// Use this weird golang format to imitate log.Logger's timestamp in log.Prefix()
+	ts := time.Now().Format("2006/01/02 15:04:05")
+	// set log prefix timestamp to our own custom prefix
+	log.SetPrefix(ts)
+	myquerylog := log.New(os.Stdout, fmt.Sprintf("%s %s: ", ts, "QUERY"), 0)
 	mylogger := &MyLogger{myquerylog}
 
 	if conf.Server.EnableTLS {
 		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {
-			log.Fatalln("You have enabled TLS support. Please specify 'crt' and 'key' in birdwatcher config file.")
+			log.Fatalln("You have enabled TLS support but not specified both a .crt and a .key file in the config.")
 		}
 		log.Fatal(http.ListenAndServeTLS(birdConf.Listen, conf.Server.Crt, conf.Server.Key, handlers.LoggingHandler(mylogger, r)))
 	} else {
