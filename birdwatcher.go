@@ -108,6 +108,16 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	log.Println("   Per Peer Tables:", conf.Parser.PerPeerTables)
 }
 
+type MyLogger struct {
+	logger *log.Logger
+}
+
+func (m *MyLogger) Write(p []byte) (n int, err error) {
+	p = append([]byte("QUERY: "), p...)
+	log.Println(string(p))
+	return len(p), nil
+}
+
 func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	certfile := flag.String("crt", "", "Path to certificate (.crt or .pem)")
@@ -122,17 +132,25 @@ func main() {
 	if *https {
 		if len(*certfile) == 0 || len(*keyfile) == 0 {
 			log.Fatalln("You have enabled https support. Please specify both flags -crt and -key.")
-		}
+
+	conf, err := LoadConfigs([]string{*configfile})
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	endpoints.VERSION = VERSION
-	bird.InstallRateLimitReset()
-	// Load configurations
-	conf, err := LoadConfigs(ConfigOptions(*configfile))
+	if conf.Server.EnableTLS {
+		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {
+			log.Fatalln("You have enabled TLS support. Please specify 'crt' and 'key' in birdwatcher config file.")
+		}
+	}
 
 	if err != nil {
 		log.Fatal("Loading birdwatcher configuration failed:", err)
 	}
+
+	endpoints.VERSION = VERSION
+	bird.InstallRateLimitReset()
+
 
 	// Get config according to flags
 	birdConf := conf.Bird
@@ -153,9 +171,12 @@ func main() {
 	// Make server
 	r := makeRouter(conf.Server)
 
-	if *https {
-		log.Fatal(http.ListenAndServeTLS(birdConf.Listen, *certfile, *keyfile, handlers.LoggingHandler(os.Stdout, r)))
+	myquerylog := log.New(os.Stdout, "DEBUG: ", 0)
+	mylogger := &MyLogger{myquerylog}
+
+	if birdwatcherconfigfile.Server.EnableTLS {
+		log.Fatal(http.ListenAndServeTLS(birdConf.Listen, birdwatcherconfigfile.Server.Crt, birdwatcherconfigfile.Server.Key, handlers.LoggingHandler(mylogger, r)))
 	} else {
-		log.Fatal(http.ListenAndServe(birdConf.Listen, handlers.LoggingHandler(os.Stdout, r)))
+		log.Fatal(http.ListenAndServe(birdConf.Listen, handlers.LoggingHandler(mylogger, r)))
 	}
 }
