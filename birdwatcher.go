@@ -118,28 +118,21 @@ type MyLogger struct {
 
 // Write implements the Write method of io.Writer
 func (m *MyLogger) Write(p []byte) (n int, err error) {
-	m.logger.Println(string(p))
+	m.logger.Print(string(p))
 	return len(p), nil
 }
 
 func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
-	certfile := flag.String("crt", "", "Path to certificate (.crt or .pem)")
-	keyfile := flag.String("key", "", "Path to certificate key (.key or .pem)")
-	https := flag.Bool("enable-tls", false, "Enable TLS")
 	workerPoolSize := flag.Int("worker-pool-size", 8, "Number of go routines used to parse routing tables concurrently")
 	configfile := flag.String("config", "etc/birdwatcher/birdwatcher.conf", "Configuration file location")
 	flag.Parse()
 
 	bird.WorkerPoolSize = *workerPoolSize
 
-	if *https {
-		if len(*certfile) == 0 || len(*keyfile) == 0 {
-			log.Fatalln("You have enabled https support. Please specify both flags -crt and -key.")
-
 	conf, err := LoadConfigs([]string{*configfile})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Loading birdwatcher configuration failed:", err)
 	}
 
 	if conf.Server.EnableTLS {
@@ -148,13 +141,8 @@ func main() {
 		}
 	}
 
-	if err != nil {
-		log.Fatal("Loading birdwatcher configuration failed:", err)
-	}
-
 	endpoints.VERSION = VERSION
 	bird.InstallRateLimitReset()
-
 
 	// Get config according to flags
 	birdConf := conf.Bird
@@ -176,11 +164,14 @@ func main() {
 	r := makeRouter(conf.Server)
 
 	// Set up our own custom log.Logger
-	myquerylog := log.New(os.Stdout, fmt.Sprintf("%s -- %s: ", time.Now().UTC().Format(time.RFC1123), "DEBUG"), 0)
+	myquerylog := log.New(os.Stdout, fmt.Sprintf("%s -- %s: ", time.Now().Format(time.RFC1123), "QUERY"), 0)
 	mylogger := &MyLogger{myquerylog}
 
-	if birdwatcherconfigfile.Server.EnableTLS {
-		log.Fatal(http.ListenAndServeTLS(birdConf.Listen, birdwatcherconfigfile.Server.Crt, birdwatcherconfigfile.Server.Key, handlers.LoggingHandler(mylogger, r)))
+	if conf.Server.EnableTLS {
+		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {
+			log.Fatalln("You have enabled TLS support. Please specify 'crt' and 'key' in birdwatcher config file.")
+		}
+		log.Fatal(http.ListenAndServeTLS(birdConf.Listen, conf.Server.Crt, conf.Server.Key, handlers.LoggingHandler(mylogger, r)))
 	} else {
 		log.Fatal(http.ListenAndServe(birdConf.Listen, handlers.LoggingHandler(mylogger, r)))
 	}
