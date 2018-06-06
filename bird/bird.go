@@ -60,7 +60,7 @@ func toCache(key string, val Parsed) {
 }
 
 func Run(args string) (io.Reader, error) {
-	args = "show " + args
+	args = "-r " + "show " + args
 	argsList := strings.Split(args, " ")
 
 	out, err := exec.Command(ClientConf.BirdCmd, argsList...).Output()
