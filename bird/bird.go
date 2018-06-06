@@ -60,7 +60,7 @@ func toCache(key string, val Parsed) {
 }
 
 func Run(args string) (io.Reader, error) {
-	args = "-r " + "show " + args
+	args = "-r " + "show " + args // enforce birdc in restricted mode with "-r" argument
 	argsList := strings.Split(args, " ")
 
 	out, err := exec.Command(ClientConf.BirdCmd, argsList...).Output()
