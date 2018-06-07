@@ -22,16 +22,13 @@ var (
 			lastReboot    *regexp.Regexp
 			lastReconfig  *regexp.Regexp
 		}
-		bgp struct {
-			channel         *regexp.Regexp
-			protocol        *regexp.Regexp
-			numericValue    *regexp.Regexp
-			routes          *regexp.Regexp
-			stringValue     *regexp.Regexp
-			importUpdates   *regexp.Regexp
-			importWithdraws *regexp.Regexp
-			exportUpdates   *regexp.Regexp
-			exportWithdraws *regexp.Regexp
+		protocol struct {
+			channel      *regexp.Regexp
+			protocol     *regexp.Regexp
+			numericValue *regexp.Regexp
+			routes       *regexp.Regexp
+			stringValue  *regexp.Regexp
+			routeChanges *regexp.Regexp
 		}
 		symbols struct {
 			keyRx *regexp.Regexp
@@ -66,15 +63,12 @@ func init() {
 
 	regex.routeCount.countRx = regexp.MustCompile(`^(\d+)\s+of\s+(\d+)\s+routes.*$`)
 
-	regex.bgp.channel = regexp.MustCompile("Channel ipv([46])")
-	regex.bgp.protocol = regexp.MustCompile(`^([\w\.:]+)\s+BGP\s+(\w+)\s+(\w+)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2})\s*(\w+)?.*$`)
-	regex.bgp.numericValue = regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
-	regex.bgp.routes = regexp.MustCompile(`^\s+Routes:\s+(.*)`)
-	regex.bgp.stringValue = regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
-	regex.bgp.importUpdates = regexp.MustCompile(`^\s+Import updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$`)
-	regex.bgp.importWithdraws = regexp.MustCompile(`^\s+Import withdraws:\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s+(\d+)\s*$`)
-	regex.bgp.exportUpdates = regexp.MustCompile(`^\s+Export updates:\s+(\d+)\s+(\d+)\s+(\d+)\s+\-\-\-\s+(\d+)\s*$`)
-	regex.bgp.exportWithdraws = regexp.MustCompile(`^\s+Export withdraws:\s+(\d+)(\s+\-\-\-){2}\s+(\d+)\s*$`)
+	regex.protocol.channel = regexp.MustCompile("Channel ipv([46])")
+	regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(BGP|Pipe|BFD|Direct|Device|Kernel)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*))?$`)
+	regex.protocol.numericValue = regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
+	regex.protocol.routes = regexp.MustCompile(`^\s+Routes:\s+(.*)`)
+	regex.protocol.stringValue = regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
+	regex.protocol.routeChanges = regexp.MustCompile(`(Import|Export) (updates|withdraws):\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s*$`)
 
 	regex.routes.startDefinition = regexp.MustCompile(`^([0-9a-f\.\:\/]+)\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*`)
 	regex.routes.second = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
@@ -465,19 +459,16 @@ func isCorrectChannel(currentIPVersion string) bool {
 	return currentIPVersion == IPVersion
 }
 
-func parseBgp(lines string) Parsed {
+func parseProtocol(lines string) Parsed {
 	res := Parsed{}
 	routeChanges := Parsed{}
 
 	handlers := []func(string) bool{
-		func(l string) bool { return parseBgpProtocol(l, res) },
-		func(l string) bool { return parseBgpRouteLine(l, res) },
-		func(l string) bool { return parseBgpImportUpdates(l, routeChanges) },
-		func(l string) bool { return parseBgpImportWithdraws(l, routeChanges) },
-		func(l string) bool { return parseBgpExportUpdates(l, routeChanges) },
-		func(l string) bool { return parseBgpExportWithdraws(l, routeChanges) },
-		func(l string) bool { return parseBgpNumberValuesRx(l, res) },
-		func(l string) bool { return parseBgpStringValuesRx(l, res) },
+		func(l string) bool { return parseProtocolHeader(l, res) },
+		func(l string) bool { return parseProtocolRouteLine(l, res) },
+		func(l string) bool { return parseProtocolRouteChanges(l, routeChanges) },
+		func(l string) bool { return parseProtocolNumberValuesRx(l, res) },
+		func(l string) bool { return parseProtocolStringValuesRx(l, res) },
 	}
 
 	ipVersion := ""
@@ -487,7 +478,7 @@ func parseBgp(lines string) Parsed {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		if m := regex.bgp.channel.FindStringSubmatch(line); len(m) > 0 {
+		if m := regex.protocol.channel.FindStringSubmatch(line); len(m) > 0 {
 			ipVersion = m[1]
 		}
 
@@ -519,97 +510,62 @@ func parseLine(line string, handlers []func(string) bool) {
 	}
 }
 
-func parseBgpProtocol(line string, res Parsed) bool {
-	groups := regex.bgp.protocol.FindStringSubmatch(line)
+func parseProtocolHeader(line string, res Parsed) bool {
+	groups := regex.protocol.protocol.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
 
 	res["protocol"] = groups[1]
-	res["bird_protocol"] = "BGP"
-	res["table"] = groups[2]
-	res["state"] = groups[3]
-	res["state_changed"] = groups[4]
-	res["connection"] = groups[5]
+	res["bird_protocol"] = groups[2]
+	res["table"] = groups[3]
+	res["state"] = groups[4]
+	res["state_changed"] = groups[5]
+	res["connection"] = groups[6] // TODO eliminate
+	if groups[2] == "Pipe" {
+		res["peer_table"] = groups[6][3:]
+	}
 	return true
 }
 
-func parseBgpRouteLine(line string, res Parsed) bool {
-	groups := regex.bgp.routes.FindStringSubmatch(line)
+func parseProtocolRouteLine(line string, res Parsed) bool {
+	groups := regex.protocol.routes.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
 
-	routes := parseBgpRoutes(groups[1])
+	routes := parseProtocolRoutes(groups[1])
 	res["routes"] = routes
 	return true
 }
 
-func parseBgpImportUpdates(line string, res Parsed) bool {
-	groups := regex.bgp.importUpdates.FindStringSubmatch(line)
+func setChangeCount(name string, value string, res Parsed) {
+	if value == "---" { // field not available for protocol
+		return
+	}
+	res[name] = parseInt(value)
+}
+
+func parseProtocolRouteChanges(line string, res Parsed) bool {
+	groups := regex.protocol.routeChanges.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
 
 	updates := Parsed{}
-	updates["received"] = parseInt(groups[1])
-	updates["rejected"] = parseInt(groups[2])
-	updates["filtered"] = parseInt(groups[3])
-	updates["ignored"] = parseInt(groups[4])
-	updates["accepted"] = parseInt(groups[5])
+	setChangeCount("received", groups[3], updates)
+	setChangeCount("rejected", groups[4], updates)
+	setChangeCount("filtered", groups[5], updates)
+	setChangeCount("ignored", groups[6], updates)
+	setChangeCount("accepted", groups[7], updates)
 
-	res["import_updates"] = updates
+	key := strings.ToLower(groups[1]) + "_" + groups[2]
+	res[key] = updates
 	return true
 }
 
-func parseBgpImportWithdraws(line string, res Parsed) bool {
-	groups := regex.bgp.importWithdraws.FindStringSubmatch(line)
-	if groups == nil {
-		return false
-	}
-
-	updates := Parsed{}
-	updates["received"] = parseInt(groups[1])
-	updates["rejected"] = parseInt(groups[2])
-	updates["filtered"] = parseInt(groups[3])
-	updates["accepted"] = parseInt(groups[4])
-
-	res["import_withdraws"] = updates
-	return true
-}
-
-func parseBgpExportUpdates(line string, res Parsed) bool {
-	groups := regex.bgp.exportUpdates.FindStringSubmatch(line)
-	if groups == nil {
-		return false
-	}
-
-	updates := Parsed{}
-	updates["received"] = parseInt(groups[1])
-	updates["rejected"] = parseInt(groups[2])
-	updates["ignored"] = parseInt(groups[3])
-	updates["accepted"] = parseInt(groups[4])
-
-	res["export_updates"] = updates
-	return true
-}
-
-func parseBgpExportWithdraws(line string, res Parsed) bool {
-	groups := regex.bgp.exportWithdraws.FindStringSubmatch(line)
-	if groups == nil {
-		return false
-	}
-
-	updates := Parsed{}
-	updates["received"] = parseInt(groups[1])
-	updates["accepted"] = parseInt(groups[3])
-
-	res["export_withdraws"] = updates
-	return true
-}
-
-func parseBgpNumberValuesRx(line string, res Parsed) bool {
-	groups := regex.bgp.numericValue.FindStringSubmatch(line)
+func parseProtocolNumberValuesRx(line string, res Parsed) bool {
+	groups := regex.protocol.numericValue.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
@@ -619,8 +575,8 @@ func parseBgpNumberValuesRx(line string, res Parsed) bool {
 	return true
 }
 
-func parseBgpStringValuesRx(line string, res Parsed) bool {
-	groups := regex.bgp.stringValue.FindStringSubmatch(line)
+func parseProtocolStringValuesRx(line string, res Parsed) bool {
+	groups := regex.protocol.stringValue.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
@@ -647,7 +603,7 @@ func parseInt(from string) int64 {
 	return val
 }
 
-func parseBgpRoutes(input string) Parsed {
+func parseProtocolRoutes(input string) Parsed {
 	routes := Parsed{}
 
 	// Input: 1 imported, 0 filtered, 2 exported, 1 preferred

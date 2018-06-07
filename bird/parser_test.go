@@ -1,9 +1,13 @@
 package bird
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"testing"
+
+	pretty "github.com/tonnerre/golang-pretty"
 )
 
 func openFile(filename string) (*os.File, error) {
@@ -32,11 +36,38 @@ func TestParseBgpRoutes(t *testing.T) {
 	}
 
 	for i, in := range inputs {
-		routes := parseBgpRoutes(in)
+		routes := parseProtocolRoutes(in)
 		if !reflect.DeepEqual(routes, expected[i]) {
 			t.Error("Parse bgpRoutes:", routes, "expected:", expected[i])
 		}
 	}
+
+}
+
+func TestParseProtocolBgp(t *testing.T) {
+	f, err := openFile("protocols_bgp_pipe.sample")
+	if err != nil {
+		t.Error(err)
+	}
+	defer f.Close()
+
+	p := parseProtocols(f)
+	log.Printf("%# v", pretty.Formatter(p))
+	lines := p["protocols"].([]string)
+
+	protocols := []Parsed{}
+
+	for _, v := range lines {
+		p2 := parseProtocol(v)
+		protocols = append(protocols, p2)
+	}
+
+	if len(protocols) != 3 {
+		//log.Printf("%# v", pretty.Formatter(protocols))
+		t.Fatalf("Expected 3 protocols, found: %v", len(protocols))
+	}
+
+	fmt.Println(protocols)
 
 }
 

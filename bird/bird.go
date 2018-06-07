@@ -177,7 +177,7 @@ func ProtocolsBgp() (Parsed, bool) {
 	for _, v := range protocols {
 		if strings.Contains(v, " BGP ") {
 			key := strings.Split(v, " ")[0]
-			bgpProto[key] = parseBgp(v)
+			bgpProto[key] = parseProtocol(v)
 		}
 	}
 
