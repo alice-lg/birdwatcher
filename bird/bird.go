@@ -235,19 +235,19 @@ func RoutesExportCount(protocol string) (Parsed, bool) {
 }
 
 func RoutesTable(table string) (Parsed, bool) {
-	return RunAndParse("route table '"+table+"' all", parseRoutes)
+	return RunAndParse("route table "+table+" all", parseRoutes)
 }
 
 func RoutesTableCount(table string) (Parsed, bool) {
-	return RunAndParse("route table '"+table+"' count", parseRoutesCount)
+	return RunAndParse("route table "+table+" count", parseRoutesCount)
 }
 
 func RoutesLookupTable(net string, table string) (Parsed, bool) {
-	return RunAndParse("route for '"+net+"' table '"+table+"' all", parseRoutes)
+	return RunAndParse("route for "+net+" table "+table+" all", parseRoutes)
 }
 
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
-	return RunAndParse("route for '"+net+"' protocol '"+protocol+"' all", parseRoutes)
+	return RunAndParse("route for "+net+" protocol "+protocol+" all", parseRoutes)
 }
 
 func RoutesPeer(peer string) (Parsed, bool) {
