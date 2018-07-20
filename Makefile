@@ -1,5 +1,5 @@
 #
-# Ecix Birdseye Makefile
+# Birdseye Makefile
 #
 
 PROG=birdwatcher
@@ -44,8 +44,8 @@ endif
 
 dist: clean linux
 
-	mkdir -p $(DIST)opt/ecix/birdwatcher/bin
-	mkdir -p $(DIST)etc/ecix
+	mkdir -p $(DIST)opt/birdwatcher/birdwatcher/bin
+	mkdir -p $(DIST)etc/birdwatcher
 
 ifeq ($(SYSTEM_INIT), systemd)
 	# Installing systemd services
@@ -59,11 +59,11 @@ endif
 
 
 	# Copy config and startup script
-	cp etc/ecix/* DIST/etc/ecix/.
-	rm -f DIST/etc/ecix/*.local.*
+	cp etc/birdwatcher/* DIST/etc/birdwatcher/.
+	rm -f DIST/etc/birdwatcher/*.local.*
 
 	# Copy bin
-	cp $(PROG)-linux-$(ARCH) DIST/opt/ecix/birdwatcher/bin/.
+	cp $(PROG)-linux-$(ARCH) DIST/opt/birdwatcher/birdwatcher/bin/.
 
 
 release: linux
@@ -71,7 +71,7 @@ release: linux
 	mkdir -p ../birdseye-static/birdwatcher-builds/$(APP_VERSION)/
 	cp birdwatcher-linux-amd64 ../birdseye-static/birdwatcher-builds/$(APP_VERSION)/
 	rm -f ../birdseye-static/birdwatcher-builds/latest
-	cd ../birdseye-static/birdwatcher-builds && ln -s $(APP_VERSION) latest 
+	cd ../birdseye-static/birdwatcher-builds && ln -s $(APP_VERSION) latest
 
 
 rpm: dist
@@ -81,7 +81,7 @@ rpm: dist
 
 	# Create RPM from dist
 	fpm -s dir -t rpm -n $(PROG) -v $(VERSION) -C $(DIST) \
-		--config-files /etc/ecix/birdwatcher.conf \
+		--config-files /etc/birdwatcher/birdwatcher.conf \
 		opt/ etc/
 
 	mv $(RPM) $(LOCAL_RPMS)
@@ -95,7 +95,7 @@ remote_rpm: build_server dist
 	ssh $(BUILD_SERVER) -- rm -rf $(REMOTE_DIST)
 	scp -r $(DIST) $(BUILD_SERVER):$(REMOTE_DIST)
 	ssh $(BUILD_SERVER) -- fpm -s dir -t rpm -n $(PROG) -v $(VERSION) -C $(REMOTE_DIST) \
-		--config-files /etc/ecix/birdwatcher.conf \
+		--config-files /etc/birdwatcher/birdwatcher.conf \
 		opt/ etc/
 
 	# Get rpm from server
