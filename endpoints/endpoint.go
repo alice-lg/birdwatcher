@@ -67,7 +67,7 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 			w.Write(js)
 			return
 		}
-		res["api"] = GetApiInfo(from_cache)
+		res["api"] = GetApiInfo(&ret, from_cache)
 
 		for k, v := range ret {
 			res[k] = v

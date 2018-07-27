@@ -53,7 +53,13 @@ func toCache(key string, val Parsed) {
 	if ClientConf.CacheTtl > 0 {
 		ttl = ClientConf.CacheTtl
 	}
-	val["ttl"] = time.Now().Add(time.Duration(ttl) * time.Minute)
+	cachedAt := time.Now().UTC()
+	cacheTtl := cachedAt.Add(time.Duration(ttl) * time.Minute)
+
+	// This is not a really ... clean way of doing this.
+	val["ttl"] = cacheTtl
+	val["cached_at"] = cachedAt
+
 	Cache.Lock()
 	Cache.m[key] = val
 	Cache.Unlock()
@@ -186,7 +192,9 @@ func ProtocolsBgp() (Parsed, bool) {
 		}
 	}
 
-	return Parsed{"protocols": bgpProto, "ttl": p["ttl"]}, from_cache
+	return Parsed{"protocols": bgpProto,
+		"ttl":       p["ttl"],
+		"cached_at": p["cached_at"]}, from_cache
 }
 
 func Symbols() (Parsed, bool) {
