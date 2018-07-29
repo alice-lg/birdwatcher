@@ -172,29 +172,22 @@ func Protocols() (Parsed, bool) {
 }
 
 func ProtocolsBgp() (Parsed, bool) {
-	p, from_cache := Protocols()
-	if isSpecial(p) {
-		return p, from_cache
+	protocols, from_cache := Protocols()
+	if isSpecial(protocols) {
+		return protocols, from_cache
 	}
-	protocols := p["protocols"].([]string)
 
-	bgpProto := Parsed{}
+	bgpProtocols := Parsed{}
 
-	for _, v := range protocols {
-		if strings.Contains(v, " BGP ") {
-			key := strings.Split(v, " ")[0]
-			bgpProto[key], from_cache = fromCache(key)
-			if !from_cache {
-				parsed := parseProtocol(v)
-				bgpProto[key] = parsed
-				toCache(key, parsed)
-			}
+	for key, protocol := range protocols["protocols"].(Parsed) {
+		if protocol.(Parsed)["bird_protocol"] == "BGP" {
+			bgpProtocols[key] = protocol
 		}
 	}
 
-	return Parsed{"protocols": bgpProto,
-		"ttl":       p["ttl"],
-		"cached_at": p["cached_at"]}, from_cache
+	return Parsed{"protocols": bgpProtocols,
+		"ttl":       protocols["ttl"],
+		"cached_at": protocols["cached_at"]}, from_cache
 }
 
 func Symbols() (Parsed, bool) {

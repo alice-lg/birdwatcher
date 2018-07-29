@@ -132,7 +132,6 @@ func parseStatus(reader io.Reader) Parsed {
 
 func parseProtocols(reader io.Reader) Parsed {
 	res := Parsed{}
-	protocols := []string{}
 
 	proto := ""
 
@@ -142,7 +141,9 @@ func parseProtocols(reader io.Reader) Parsed {
 
 		if emptyString(line) {
 			if !emptyString(proto) {
-				protocols = append(protocols, proto)
+				parsed := parseProtocol(proto)
+
+				res[parsed["protocol"].(string)] = parsed
 			}
 			proto = ""
 		} else {
@@ -150,8 +151,7 @@ func parseProtocols(reader io.Reader) Parsed {
 		}
 	}
 
-	res["protocols"] = protocols
-	return res
+	return Parsed{"protocols": res}
 }
 
 func parseSymbols(reader io.Reader) Parsed {
