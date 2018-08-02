@@ -159,3 +159,12 @@ R193_231 BGP      T1241_nada_ripe up     2018-06-21 17:50:04  Established
     Hold timer:       143/180
     Keepalive timer:  33/60
 ```
+
+### Command `show route `
+
+Birdc output:  
+`198.49.1.0/24      via 172.31.194.42 on eno2 [R194_42 2018-07-27 18:47:27] * (100) [AS715i]`
+
+`next-hop` obvious  
+`learnt_from` the IP after `from` (missing in example)  
+`gateway` IP address after `via`  
