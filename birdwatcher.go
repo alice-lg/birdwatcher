@@ -156,7 +156,9 @@ func main() {
 	// Configuration
 	bird.ClientConf = birdConf
 	bird.StatusConf = conf.Status
+	bird.RateLimitConf.Lock()
 	bird.RateLimitConf.Conf = conf.Ratelimit
+	bird.RateLimitConf.Unlock()
 	bird.ParserConf = conf.Parser
 	endpoints.Conf = conf.Server
 
