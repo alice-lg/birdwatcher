@@ -59,7 +59,7 @@ func ProtoCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 }
 
 func TableCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
-	return bird.RoutesTable(ps.ByName("table"))
+	return bird.RoutesTableCount(ps.ByName("table"))
 }
 
 func RouteNet(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
