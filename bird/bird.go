@@ -132,10 +132,15 @@ func RunAndParse(cmd string, parser func(io.Reader) Parsed) (Parsed, bool) {
 }
 
 func Status() (Parsed, bool) {
-	birdStatus, ok := RunAndParse("status", parseStatus)
+	birdStatus, from_cache := RunAndParse("status", parseStatus)
 	if isSpecial(birdStatus) {
-		return birdStatus, ok
+		return birdStatus, from_cache
 	}
+
+	if from_cache {
+		return birdStatus, from_cache
+	}
+
 	status := birdStatus["status"].(Parsed)
 
 	// Last Reconfig Timestamp source:
@@ -164,7 +169,7 @@ func Status() (Parsed, bool) {
 
 	birdStatus["status"] = status
 
-	return birdStatus, ok
+	return birdStatus, from_cache
 }
 
 func Protocols() (Parsed, bool) {
