@@ -200,7 +200,7 @@ func Symbols() (Parsed, bool) {
 }
 
 func RoutesPrefixed(prefix string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route all")
+	cmd := routeQueryForChannel("route " + prefix + " all")
 	return RunAndParse(cmd, parseRoutes)
 }
 
