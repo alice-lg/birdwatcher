@@ -167,7 +167,12 @@ func parseSymbols(reader io.Reader) Parsed {
 
 		if regex.symbols.keyRx.MatchString(line) {
 			groups := regex.symbols.keyRx.FindStringSubmatch(line)
-			res[groups[2]] = groups[1]
+
+			if _, ok := res[groups[2]]; !ok {
+				res[groups[2]] = []string{}
+			}
+
+			res[groups[2]] = append(res[groups[2]].([]string), groups[1])
 		}
 	}
 
