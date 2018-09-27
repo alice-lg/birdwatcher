@@ -28,7 +28,7 @@ var Cache = struct {
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
-func isSpecial(ret Parsed) bool {
+func IsSpecial(ret Parsed) bool {
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
 }
 
@@ -133,7 +133,7 @@ func RunAndParse(cmd string, parser func(io.Reader) Parsed) (Parsed, bool) {
 
 func Status() (Parsed, bool) {
 	birdStatus, from_cache := RunAndParse("status", parseStatus)
-	if isSpecial(birdStatus) {
+	if IsSpecial(birdStatus) {
 		return birdStatus, from_cache
 	}
 
@@ -178,7 +178,7 @@ func Protocols() (Parsed, bool) {
 
 func ProtocolsBgp() (Parsed, bool) {
 	protocols, from_cache := Protocols()
-	if isSpecial(protocols) {
+	if IsSpecial(protocols) {
 		return protocols, from_cache
 	}
 
@@ -211,7 +211,7 @@ func RoutesProto(protocol string) (Parsed, bool) {
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route protocol "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutesCount)
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {

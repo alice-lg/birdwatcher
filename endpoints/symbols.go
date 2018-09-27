@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"reflect"
 	"net/http"
 
 	"github.com/alice-lg/birdwatcher/bird"
@@ -14,7 +13,7 @@ func Symbols(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 
 func SymbolTables(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	val, from_cache := bird.Symbols()
-	if reflect.DeepEqual(val, bird.NilParse) || reflect.DeepEqual(val, bird.BirdError) {
+	if bird.IsSpecial(val) {
 		return val, from_cache
 	}
 	return bird.Parsed{"symbols": val["symbols"].(bird.Parsed)["routing table"]}, from_cache
@@ -22,7 +21,7 @@ func SymbolTables(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 
 func SymbolProtocols(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	val, from_cache := bird.Symbols()
-	if reflect.DeepEqual(val, bird.NilParse) || reflect.DeepEqual(val, bird.BirdError) {
+	if bird.IsSpecial(val) {
 		return val, from_cache
 	}
 	return bird.Parsed{"symbols": val["symbols"].(bird.Parsed)["protocol"]}, from_cache
