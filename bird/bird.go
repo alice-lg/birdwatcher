@@ -299,10 +299,8 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 	protocols := protocolsRes["protocols"].(Parsed)
 
 	for protocol, details := range protocols {
-		details, ok := details.(Parsed)
-		if !ok {
-			continue
-		}
+		details := details.(Parsed)
+
 		counters, ok := details["routes"].(Parsed)
 		if !ok {
 			continue
@@ -312,7 +310,10 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 			continue // nothing to do here.
 		}
 		// Lookup filtered routes
-		pfilteredRes, _ := RoutesFiltered(protocol)
+		pfilteredRes, from_cache := RoutesFiltered(protocol)
+		if reflect.DeepEqual(pfilteredRes, BirdError) {
+			return pfilteredRes, from_cache
+		}
 
 		pfiltered, ok := pfilteredRes["routes"].([]Parsed)
 		if !ok {
