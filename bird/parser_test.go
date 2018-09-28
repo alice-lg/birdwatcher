@@ -100,6 +100,9 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
+		extendedCommunities: []Parsed{
+			{"rt": []int64{48858, 50}},
+		},
 		metric:    100,
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
@@ -117,6 +120,11 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{9033, 65666, 12},
 			{9033, 65666, 9},
+		},
+		extendedCommunities: []Parsed{
+			{"ro": []int64{21414, 52001}},
+			{"ro": []int64{21414, 52004}},
+			{"ro": []int64{21414, 64515}},
 		},
 		metric:    100,
 		localPref: "100",
@@ -136,6 +144,11 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
+		extendedCommunities: []Parsed{
+			{"ro": []int64{21414, 52001}},
+			{"ro": []int64{21414, 52004}},
+			{"ro": []int64{21414, 64515}},
+		},
 		metric:    100,
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
@@ -153,6 +166,9 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{9033, 65666, 12},
 			{9033, 65666, 9},
+		},
+		extendedCommunities: []Parsed{
+			{"rt": []int64{48858, 50}},
 		},
 		metric:    100,
 		localPref: "100",
@@ -199,6 +215,11 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 2000},
 			{48821, 0, 2100},
 		},
+		extendedCommunities: []Parsed{
+			{"ro": []int64{21414, 52001}},
+			{"ro": []int64{21414, 52004}},
+			{"ro": []int64{21414, 64515}},
+		},
 		metric:    100,
 		localPref: "500",
 		primary:   true,
@@ -217,6 +238,11 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 3000},
 			{48821, 0, 3100},
 		},
+		extendedCommunities: []Parsed{
+			{"ro": []int64{21414, 52001}},
+			{"ro": []int64{21414, 52004}},
+			{"ro": []int64{21414, 64515}},
+		},
 		localPref: "100",
 		metric:    100,
 		primary:   false,
@@ -234,6 +260,9 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{48821, 0, 2000},
 			{48821, 0, 2100},
+		},
+		extendedCommunities: []Parsed{
+			{"unknown 0x4300": []int64{0, 1}},
 		},
 		metric:    100,
 		localPref: "5000",
@@ -280,6 +309,12 @@ func assertRouteIsEqual(expected expectedRoute, actual Parsed, name string, t *t
 	if largeCommunity := value(bgp, "large_communities", name, t).([][]int64); !reflect.DeepEqual(largeCommunity, expected.largeCommunities) {
 		t.Fatal(name, ": Expected large_community to be:", expected.largeCommunities, "not", largeCommunity)
 	}
+
+	if _, ok := bgp["ext_communities"]; ok {
+		if extendedCommunity := value(bgp, "ext_communities", name, t).([]Parsed); !reflect.DeepEqual(extendedCommunity, expected.extendedCommunities) {
+			t.Fatal(name, ": Expected ext_community to be:", expected.extendedCommunities, "not", extendedCommunity)
+		}
+	}
 }
 
 func value(parsed Parsed, key, name string, t *testing.T) interface{} {
@@ -292,14 +327,15 @@ func value(parsed Parsed, key, name string, t *testing.T) interface{} {
 }
 
 type expectedRoute struct {
-	network          string
-	gateway          string
-	asPath           []string
-	community        [][]int64
-	largeCommunities [][]int64
-	metric           int64
-	protocol         string
-	primary          bool
-	localPref        string
-	iface            string
+	network             string
+	gateway             string
+	asPath              []string
+	community           [][]int64
+	largeCommunities    [][]int64
+	extendedCommunities []Parsed
+	metric              int64
+	protocol            string
+	primary             bool
+	localPref           string
+	iface               string
 }

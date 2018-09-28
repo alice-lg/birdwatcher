@@ -37,15 +37,16 @@ var (
 			countRx *regexp.Regexp
 		}
 		routes struct {
-			startDefinition *regexp.Regexp
-			second          *regexp.Regexp
-			routeType       *regexp.Regexp
-			bgp             *regexp.Regexp
-			community       *regexp.Regexp
-			largeCommunity  *regexp.Regexp
-			origin          *regexp.Regexp
-			prefixBird2     *regexp.Regexp
-			gatewayBird2    *regexp.Regexp
+			startDefinition   *regexp.Regexp
+			second            *regexp.Regexp
+			routeType         *regexp.Regexp
+			bgp               *regexp.Regexp
+			community         *regexp.Regexp
+			largeCommunity    *regexp.Regexp
+			extendedCommunity *regexp.Regexp
+			origin            *regexp.Regexp
+			prefixBird2       *regexp.Regexp
+			gatewayBird2      *regexp.Regexp
 		}
 	}
 )
@@ -76,6 +77,7 @@ func init() {
 	regex.routes.bgp = regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)
 	regex.routes.community = regexp.MustCompile(`^\((\d+),\s*(\d+)\)`)
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
+	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*(\d+),\s*(\d+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
 	regex.routes.prefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
 	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s*$`)
@@ -400,6 +402,8 @@ func parseRoutesBgp(line string, bgp Parsed) {
 		parseRoutesCommunities(groups, bgp)
 	} else if groups[1] == "large_community" {
 		parseRoutesLargeCommunities(groups, bgp)
+	} else if groups[1] == "ext_community" {
+		parseRoutesExtendedCommunities(groups, bgp)
 	} else if groups[1] == "as_path" {
 		bgp["as_path"] = strings.Split(groups[2], " ")
 	} else {
@@ -435,6 +439,20 @@ func parseRoutesLargeCommunities(groups []string, res Parsed) {
 
 	res["large_communities"] = communities
 }
+
+func parseRoutesExtendedCommunities(groups []string, res Parsed) {
+	communities := []Parsed{}
+	for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
+		if regex.routes.extendedCommunity.MatchString(community) {
+			communityGroups := regex.routes.extendedCommunity.FindStringSubmatch(community)
+			c := Parsed{communityGroups[1]: []int64{parseInt(communityGroups[2]), parseInt(communityGroups[3])}}
+			communities = append(communities, c)
+		}
+	}
+
+	res["ext_communities"] = communities
+}
+
 
 func parseRoutesCount(reader io.Reader) Parsed {
 	res := Parsed{}

@@ -8,6 +8,7 @@ BIRD 1.6.3 ready.
         BGP.local_pref: 500
         BGP.community: (9033,3001) (65000,680)
         BGP.large_community: (48821, 0, 2000) (48821, 0, 2100)
+        BGP.ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
                    via fe80:ffff:ffff::2 on eth3 [upstream2 2018-01-14 14:33:52] (100) [AS15169i]
         Type: BGP unicast univ
         BGP.origin: IGP
@@ -17,6 +18,7 @@ BIRD 1.6.3 ready.
         BGP.local_pref: 100
         BGP.community: (50629,200) (50629,201)
         BGP.large_community: (48821, 0, 3000) (48821, 0, 3100)
+        BGP.ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
 2001:678:1e0::/48  via fe80:ffff:ffff::2 on eth2 [upstream2 2018-01-14 15:04:17 from 2001:678:1e0::2] * (100) [AS202739i]
         Type: BGP unicast univ
         BGP.origin: IGP
@@ -25,3 +27,4 @@ BIRD 1.6.3 ready.
         BGP.local_pref: 5000
         BGP.community: (48821,2000) (48821,2100)
         BGP.large_community: (48821, 0, 2000) (48821, 0, 2100)
+        BGP.ext_community: (unknown 0x4300, 0, 1)
