@@ -53,14 +53,7 @@ func TestParseProtocolBgp(t *testing.T) {
 
 	p := parseProtocols(f)
 	log.Printf("%# v", pretty.Formatter(p))
-	lines := p["protocols"].([]string)
-
-	protocols := []Parsed{}
-
-	for _, v := range lines {
-		p2 := parseProtocol(v)
-		protocols = append(protocols, p2)
-	}
+	protocols := p["protocols"].(Parsed)
 
 	if len(protocols) != 3 {
 		//log.Printf("%# v", pretty.Formatter(protocols))
@@ -68,7 +61,6 @@ func TestParseProtocolBgp(t *testing.T) {
 	}
 
 	fmt.Println(protocols)
-
 }
 
 func TestParseRoutesAllIpv4Bird1(t *testing.T) {
