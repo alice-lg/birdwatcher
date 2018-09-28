@@ -214,6 +214,11 @@ func RoutesProtoCount(protocol string) (Parsed, bool) {
 	return RunAndParse(cmd, parseRoutesCount)
 }
 
+func RoutesProtoPrimaryCount(protocol string) (Parsed, bool) {
+	cmd := routeQueryForChannel("route primary protocol "+protocol) + " count"
+	return RunAndParse(cmd, parseRoutesCount)
+}
+
 func RoutesFiltered(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all filtered protocol " + protocol)
 	return RunAndParse(cmd, parseRoutes)

@@ -58,6 +58,14 @@ func ProtoCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesProtoCount(protocol)
 }
 
+func ProtoPrimaryCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+	return bird.RoutesProtoPrimaryCount(protocol)
+}
+
 func TableCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesTableCount(ps.ByName("table"))
 }
