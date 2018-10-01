@@ -514,10 +514,10 @@ func parseProtocol(lines string) Parsed {
 
 	if _, ok := res["routes"]; !ok {
 		routes := Parsed{}
-		routes["accepted"] = 0
-		routes["filtered"] = 0
-		routes["exported"] = 0
-		routes["preferred"] = 0
+		routes["accepted"] = int64(0)
+		routes["filtered"] = int64(0)
+		routes["exported"] = int64(0)
+		routes["preferred"] = int64(0)
 
 		res["routes"] = routes
 	}
@@ -620,7 +620,7 @@ func treatKey(key string) string {
 func parseInt(from string) int64 {
 	val, err := strconv.ParseInt(from, 10, 64)
 	if err != nil {
-		return 0
+		return int64(0)
 	}
 
 	return val
