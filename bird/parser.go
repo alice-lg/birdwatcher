@@ -441,12 +441,11 @@ func parseRoutesLargeCommunities(groups []string, res Parsed) {
 }
 
 func parseRoutesExtendedCommunities(groups []string, res Parsed) {
-	communities := []Parsed{}
+	communities := []interface{}{}
 	for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
 		if regex.routes.extendedCommunity.MatchString(community) {
 			communityGroups := regex.routes.extendedCommunity.FindStringSubmatch(community)
-			c := Parsed{communityGroups[1]: []int64{parseInt(communityGroups[2]), parseInt(communityGroups[3])}}
-			communities = append(communities, c)
+			communities = append(communities, []interface{}{communityGroups[1], parseInt(communityGroups[2]), parseInt(communityGroups[3])})
 		}
 	}
 
