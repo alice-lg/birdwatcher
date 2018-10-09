@@ -20,10 +20,13 @@ var RateLimitConf struct {
 	Conf RateLimitConfig
 }
 
-var Cache = struct {
+type Cache struct {
 	sync.RWMutex
 	m map[string]Parsed
-}{m: make(map[string]Parsed)}
+}
+
+var ParsedCache = Cache{m: make(map[string]Parsed)}
+var MetaCache = Cache{m: make(map[string]Parsed)}
 
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
@@ -32,10 +35,27 @@ func IsSpecial(ret Parsed) bool {
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
 }
 
-func fromCache(key string) (Parsed, bool) {
-	Cache.RLock()
-	val, ok := Cache.m[key]
-	Cache.RUnlock()
+func (c *Cache) Store(key string, val Parsed) {
+	var ttl int = 5
+	if ClientConf.CacheTtl > 0 {
+		ttl = ClientConf.CacheTtl
+	}
+	cachedAt := time.Now().UTC()
+	cacheTtl := cachedAt.Add(time.Duration(ttl) * time.Minute)
+
+	c.Lock()
+	// This is not a really ... clean way of doing this.
+	val["ttl"] = cacheTtl
+	val["cached_at"] = cachedAt
+
+	c.m[key] = val
+	c.Unlock()
+}
+
+func (c *Cache) Get(key string) (Parsed, bool) {
+	c.RLock()
+	val, ok := c.m[key]
+	c.RUnlock()
 	if !ok {
 		return NilParse, false
 	}
@@ -46,23 +66,6 @@ func fromCache(key string) (Parsed, bool) {
 	}
 
 	return val, ok
-}
-
-func toCache(key string, val Parsed) {
-	var ttl int = 5
-	if ClientConf.CacheTtl > 0 {
-		ttl = ClientConf.CacheTtl
-	}
-	cachedAt := time.Now().UTC()
-	cacheTtl := cachedAt.Add(time.Duration(ttl) * time.Minute)
-
-	// This is not a really ... clean way of doing this.
-	val["ttl"] = cacheTtl
-	val["cached_at"] = cachedAt
-
-	Cache.Lock()
-	Cache.m[key] = val
-	Cache.Unlock()
 }
 
 func Run(args string) (io.Reader, error) {
@@ -111,8 +114,8 @@ func checkRateLimit() bool {
 	return true
 }
 
-func RunAndParse(cmd string, parser func(io.Reader) Parsed) (Parsed, bool) {
-	if val, ok := fromCache(cmd); ok {
+func RunAndParse(cmd string, parser func(io.Reader) Parsed, updateMetaCache func(Parsed)) (Parsed, bool) {
+	if val, ok := ParsedCache.Get(cmd); ok {
 		return val, true
 	}
 
@@ -127,12 +130,18 @@ func RunAndParse(cmd string, parser func(io.Reader) Parsed) (Parsed, bool) {
 	}
 
 	parsed := parser(out)
-	toCache(cmd, parsed)
+
+	ParsedCache.Store(cmd, parsed)
+
+	if updateMetaCache != nil {
+		updateMetaCache(parsed)
+	}
+
 	return parsed, false
 }
 
 func Status() (Parsed, bool) {
-	birdStatus, from_cache := RunAndParse("status", parseStatus)
+	birdStatus, from_cache := RunAndParse("status", parseStatus, nil)
 	if IsSpecial(birdStatus) {
 		return birdStatus, from_cache
 	}
@@ -169,11 +178,32 @@ func Status() (Parsed, bool) {
 
 	birdStatus["status"] = status
 
+	ParsedCache.Store("status", birdStatus)
+
 	return birdStatus, from_cache
 }
 
 func Protocols() (Parsed, bool) {
-	return RunAndParse("protocols all", parseProtocols)
+	initializeMetaCache := func(p Parsed) {
+		metaProtocol := Parsed{"protocols": Parsed{"bird_protocol": Parsed{}}}
+
+		for key, _ := range p["protocols"].(Parsed) {
+			parsed := p["protocols"].(Parsed)[key].(Parsed)
+			protocol := parsed["protocol"].(string)
+
+			birdProtocol := parsed["bird_protocol"].(string)
+			// Check if the structure for the current birdProtocol already exists inside the metaProtocol cache, if not create it (BGP|Pipe|etc)
+			if _, ok := metaProtocol["protocols"].(Parsed)["bird_protocol"].(Parsed)[birdProtocol]; !ok {
+				metaProtocol["protocols"].(Parsed)["bird_protocol"].(Parsed)[birdProtocol] = Parsed{}
+			}
+			metaProtocol["protocols"].(Parsed)["bird_protocol"].(Parsed)[birdProtocol].(Parsed)[protocol] = &parsed
+		}
+
+		MetaCache.Store("protocol", metaProtocol)
+	}
+
+	res, from_cache := RunAndParse("protocols all", parseProtocols, initializeMetaCache)
+	return res, from_cache
 }
 
 func ProtocolsBgp() (Parsed, bool) {
@@ -183,11 +213,11 @@ func ProtocolsBgp() (Parsed, bool) {
 	}
 
 	bgpProtocols := Parsed{}
+	protocolsMeta, _ := MetaCache.Get("protocol")
+	metaProtocol, _ := protocolsMeta["protocols"].(Parsed)
 
-	for key, protocol := range protocols["protocols"].(Parsed) {
-		if protocol.(Parsed)["bird_protocol"] == "BGP" {
-			bgpProtocols[key] = protocol
-		}
+	for key, protocol := range metaProtocol["bird_protocol"].(Parsed)["BGP"].(Parsed) {
+		bgpProtocols[key] = *(protocol.(*Parsed))
 	}
 
 	return Parsed{"protocols": bgpProtocols,
@@ -196,45 +226,56 @@ func ProtocolsBgp() (Parsed, bool) {
 }
 
 func Symbols() (Parsed, bool) {
-	return RunAndParse("symbols", parseSymbols)
+	return RunAndParse("symbols", parseSymbols, nil)
 }
 
 func RoutesPrefixed(prefix string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route " + prefix + " all")
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutes, nil)
 }
 
 func RoutesProto(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all protocol " + protocol)
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutes, nil)
 }
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route protocol "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutesCount)
+	return RunAndParse(cmd, parseRoutesCount, nil)
 }
 
 func RoutesProtoPrimaryCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route primary protocol "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutesCount)
+	return RunAndParse(cmd, parseRoutesCount, nil)
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all filtered protocol " + protocol)
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutes, nil)
 }
 
 func RoutesExport(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all export " + protocol)
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutes, nil)
 }
 
 func RoutesNoExport(protocol string) (Parsed, bool) {
-
 	// In case we have a multi table setup, we have to query
 	// the pipe protocol.
 	if ParserConf.PerPeerTables &&
 		strings.HasPrefix(protocol, ParserConf.PeerProtocolPrefix) {
+		metaProtocol, _ := MetaCache.Get("protocol")
+		if metaProtocol == nil {
+			// Warm up cache if neccessary
+			protocolsRes, from_cache := ProtocolsBgp()
+			if IsSpecial(protocolsRes) {
+				return protocolsRes, from_cache
+			}
+			metaProtocol, _ = MetaCache.Get("protocol")
+		}
+		if _, ok := metaProtocol["protocol"].(Parsed)[protocol]; !ok {
+			return NilParse, false
+		}
 
 		// Replace prefix
 		protocol = ParserConf.PipeProtocolPrefix +
@@ -242,36 +283,37 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 	}
 
 	cmd := routeQueryForChannel("route all noexport " + protocol)
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutes, nil)
 }
 
 func RoutesExportCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route export "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutesCount)
+	return RunAndParse(cmd, parseRoutesCount, nil)
 }
 
 func RoutesTable(table string) (Parsed, bool) {
-	return RunAndParse("route table "+table+" all", parseRoutes)
+	return RunAndParse("route table "+table+" all", parseRoutes, nil)
 }
 
 func RoutesTableCount(table string) (Parsed, bool) {
-	return RunAndParse("route table "+table+" count", parseRoutesCount)
+	return RunAndParse("route table "+table+" count", parseRoutesCount, nil)
 }
 
 func RoutesLookupTable(net string, table string) (Parsed, bool) {
-	return RunAndParse("route for "+net+" table "+table+" all", parseRoutes)
+	return RunAndParse("route for "+net+" table "+table+" all", parseRoutes, nil)
 }
 
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
-	return RunAndParse("route for "+net+" protocol "+protocol+" all", parseRoutes)
+	return RunAndParse("route for "+net+" protocol "+protocol+" all", parseRoutes, nil)
 }
 
 func RoutesPeer(peer string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route export " + peer)
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutes, nil)
 }
 
 func RoutesDump() (Parsed, bool) {
+	// TODO insert hook to update the cache with the route count information
 	if ParserConf.PerPeerTables {
 		return RoutesDumpPerPeerTable()
 	}
@@ -280,8 +322,14 @@ func RoutesDump() (Parsed, bool) {
 }
 
 func RoutesDumpSingleTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes)
-	filteredRes, _ := RunAndParse(routeQueryForChannel("route all filtered"), parseRoutes)
+	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes, nil)
+	if IsSpecial(importedRes) {
+		return importedRes, cached
+	}
+	filteredRes, cached := RunAndParse(routeQueryForChannel("route all filtered"), parseRoutes, nil)
+	if IsSpecial(filteredRes) {
+		return filteredRes, cached
+	}
 
 	imported := importedRes["routes"]
 	filtered := filteredRes["routes"]
@@ -295,12 +343,18 @@ func RoutesDumpSingleTable() (Parsed, bool) {
 }
 
 func RoutesDumpPerPeerTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes)
+	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes, nil)
+	if IsSpecial(importedRes) {
+		return importedRes, cached
+	}
 	imported := importedRes["routes"]
 	filtered := []Parsed{}
 
 	// Get protocols with filtered routes
-	protocolsRes, _ := ProtocolsBgp()
+	protocolsRes, cached := ProtocolsBgp()
+	if IsSpecial(protocolsRes) {
+		return protocolsRes, cached
+	}
 	protocols := protocolsRes["protocols"].(Parsed)
 
 	for protocol, details := range protocols {
@@ -316,7 +370,7 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 		}
 		// Lookup filtered routes
 		pfilteredRes, from_cache := RoutesFiltered(protocol)
-		if reflect.DeepEqual(pfilteredRes, BirdError) {
+		if IsSpecial(pfilteredRes) {
 			return pfilteredRes, from_cache
 		}
 
@@ -338,6 +392,10 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 
 func routeQueryForChannel(cmd string) string {
 	status, _ := Status()
+	if IsSpecial(status) {
+		return cmd
+	}
+
 	birdStatus, ok := status["status"].(Parsed)
 	if !ok {
 		return cmd
