@@ -392,11 +392,7 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 			continue // nothing to do here.
 		}
 		// Lookup filtered routes
-		pfilteredRes, from_cache := RoutesFiltered(protocol)
-		if IsSpecial(pfilteredRes) {
-			return pfilteredRes, from_cache
-		}
-
+		pfilteredRes, _ := RoutesFiltered(protocol)
 		pfiltered, ok := pfilteredRes["routes"].([]Parsed)
 		if !ok {
 			continue // something went wrong...
