@@ -31,6 +31,8 @@ var MetaCache = Cache{m: make(map[string]Parsed)}
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
+var RunQueue sync.Map
+
 func IsSpecial(ret Parsed) bool {
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
 }
@@ -119,13 +121,30 @@ func RunAndParse(cmd string, parser func(io.Reader) Parsed, updateMetaCache func
 		return val, true
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(1)
+	if queueGroup, queueLoaded := RunQueue.LoadOrStore(cmd, &wg); queueLoaded {
+		(*queueGroup.(*sync.WaitGroup)).Wait()
+
+		if val, ok := ParsedCache.Get(cmd); ok {
+			return val, true
+		} else {
+			// TODO BirdError should also be signaled somehow
+			return NilParse, false
+		}
+	}
+
 	if !checkRateLimit() {
+		wg.Done()
+		RunQueue.Delete(cmd)
 		return NilParse, false
 	}
 
 	out, err := Run(cmd)
 	if err != nil {
 		// ignore errors for now
+		wg.Done()
+		RunQueue.Delete(cmd)
 		return BirdError, false
 	}
 
@@ -136,6 +155,10 @@ func RunAndParse(cmd string, parser func(io.Reader) Parsed, updateMetaCache func
 	if updateMetaCache != nil {
 		updateMetaCache(parsed)
 	}
+
+	wg.Done()
+
+	RunQueue.Delete(cmd)
 
 	return parsed, false
 }
