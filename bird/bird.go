@@ -37,6 +37,21 @@ func IsSpecial(ret Parsed) bool {
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
 }
 
+// Determines the key in the cache, where the result of specific functions are stored.
+// Eliminates the need to know what command was executed by that function.
+func GetCacheKey(fname string, fargs ...interface{}) string {
+	key := strings.ToLower(fname)
+
+	for _, arg := range fargs {
+		switch arg.(type) {
+		case string:
+			key += "_" + strings.ToLower(arg.(string))
+		}
+	}
+
+	return key
+}
+
 func (c *Cache) Store(key string, val Parsed) {
 	var ttl int = 5
 	if ClientConf.CacheTtl > 0 {
@@ -116,7 +131,7 @@ func checkRateLimit() bool {
 	return true
 }
 
-func RunAndParse(cmd string, parser func(io.Reader) Parsed, updateMetaCache func(Parsed)) (Parsed, bool) {
+func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateMetaCache func(Parsed)) (Parsed, bool) {
 	if val, ok := ParsedCache.Get(cmd); ok {
 		return val, true
 	}
@@ -164,7 +179,7 @@ func RunAndParse(cmd string, parser func(io.Reader) Parsed, updateMetaCache func
 }
 
 func Status() (Parsed, bool) {
-	birdStatus, from_cache := RunAndParse("status", parseStatus, nil)
+	birdStatus, from_cache := RunAndParse(GetCacheKey("Status"), "status", parseStatus, nil)
 	if IsSpecial(birdStatus) {
 		return birdStatus, from_cache
 	}
@@ -225,7 +240,8 @@ func Protocols() (Parsed, bool) {
 		MetaCache.Store("protocol", metaProtocol)
 	}
 
-	res, from_cache := RunAndParse("protocols all", parseProtocols, initializeMetaCache)
+	res, from_cache := RunAndParse(GetCacheKey("Protocols"), "protocols all", parseProtocols, initializeMetaCache)
+
 	return res, from_cache
 }
 
@@ -249,42 +265,42 @@ func ProtocolsBgp() (Parsed, bool) {
 }
 
 func Symbols() (Parsed, bool) {
-	return RunAndParse("symbols", parseSymbols, nil)
+	return RunAndParse(GetCacheKey("Symbols"), "symbols", parseSymbols, nil)
 }
 
 func RoutesPrefixed(prefix string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route " + prefix + " all")
-	return RunAndParse(cmd, parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesPrefixed", prefix), cmd, parseRoutes, nil)
 }
 
 func RoutesProto(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all protocol " + protocol)
-	return RunAndParse(cmd, parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesProto", protocol), cmd, parseRoutes, nil)
 }
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route protocol "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutesCount, nil)
+	return RunAndParse(GetCacheKey("RoutesProtoCount", protocol), cmd, parseRoutesCount, nil)
 }
 
 func RoutesProtoPrimaryCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route primary protocol "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutesCount, nil)
+	return RunAndParse(GetCacheKey("RoutesProtoPrimaryCount", protocol), cmd, parseRoutesCount, nil)
 }
 
 func RoutesFilteredCount(table string, protocol string, neighborAddress string) (Parsed, bool) {
 	cmd := "route table " + table + " noexport " + protocol + " where from=" + neighborAddress + " count"
-	return RunAndParse(cmd, parseRoutesCount, nil)
+	return RunAndParse(GetCacheKey("RoutesFilteredCount", table, protocol, neighborAddress), cmd, parseRoutesCount, nil)
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all filtered protocol " + protocol)
-	return RunAndParse(cmd, parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesFiltered", protocol), cmd, parseRoutes, nil)
 }
 
 func RoutesExport(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all export " + protocol)
-	return RunAndParse(cmd, parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesExport", protocol), cmd, parseRoutes, nil)
 }
 
 func RoutesNoExport(protocol string) (Parsed, bool) {
@@ -311,33 +327,33 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 	}
 
 	cmd := routeQueryForChannel("route all noexport " + protocol)
-	return RunAndParse(cmd, parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesNoExport", protocol), cmd, parseRoutes, nil)
 }
 
 func RoutesExportCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route export "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutesCount, nil)
+	return RunAndParse(GetCacheKey("RoutesExportCount", protocol), cmd, parseRoutesCount, nil)
 }
 
 func RoutesTable(table string) (Parsed, bool) {
-	return RunAndParse("route table "+table+" all", parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesTable", table), "route table "+table+" all", parseRoutes, nil)
 }
 
 func RoutesTableCount(table string) (Parsed, bool) {
-	return RunAndParse("route table "+table+" count", parseRoutesCount, nil)
+	return RunAndParse(GetCacheKey("RoutesTableCount", table), "route table "+table+" count", parseRoutesCount, nil)
 }
 
 func RoutesLookupTable(net string, table string) (Parsed, bool) {
-	return RunAndParse("route for "+net+" table "+table+" all", parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesLookupTable", net, table), "route for "+net+" table "+table+" all", parseRoutes, nil)
 }
 
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
-	return RunAndParse("route for "+net+" protocol "+protocol+" all", parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesLookupProtocol", net, protocol), "route for "+net+" protocol "+protocol+" all", parseRoutes, nil)
 }
 
 func RoutesPeer(peer string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route export " + peer)
-	return RunAndParse(cmd, parseRoutes, nil)
+	return RunAndParse(GetCacheKey("RoutesPeer", peer), cmd, parseRoutes, nil)
 }
 
 func RoutesDump() (Parsed, bool) {
@@ -350,11 +366,11 @@ func RoutesDump() (Parsed, bool) {
 }
 
 func RoutesDumpSingleTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes, nil)
+	importedRes, cached := RunAndParse(GetCacheKey("RoutesDumpSingleTable", "imported"), routeQueryForChannel("route all"), parseRoutes, nil)
 	if IsSpecial(importedRes) {
 		return importedRes, cached
 	}
-	filteredRes, cached := RunAndParse(routeQueryForChannel("route all filtered"), parseRoutes, nil)
+	filteredRes, cached := RunAndParse(GetCacheKey("RoutesDumpSingleTable", "filtered"), routeQueryForChannel("route all filtered"), parseRoutes, nil)
 	if IsSpecial(filteredRes) {
 		return filteredRes, cached
 	}
@@ -371,7 +387,7 @@ func RoutesDumpSingleTable() (Parsed, bool) {
 }
 
 func RoutesDumpPerPeerTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes, nil)
+	importedRes, cached := RunAndParse(GetCacheKey("RoutesDumpPerPeerTable", "imported"), routeQueryForChannel("route all"), parseRoutes, nil)
 	if IsSpecial(importedRes) {
 		return importedRes, cached
 	}
