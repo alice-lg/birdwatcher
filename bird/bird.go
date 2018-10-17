@@ -272,6 +272,11 @@ func RoutesProtoPrimaryCount(protocol string) (Parsed, bool) {
 	return RunAndParse(cmd, parseRoutesCount, nil)
 }
 
+func RoutesFilteredCount(table string, protocol string, neighborAddress string) (Parsed, bool) {
+	cmd := "route table " + table + " noexport " + protocol + " where from=" + neighborAddress + " count"
+	return RunAndParse(cmd, parseRoutesCount, nil)
+}
+
 func RoutesFiltered(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all filtered protocol " + protocol)
 	return RunAndParse(cmd, parseRoutes, nil)
