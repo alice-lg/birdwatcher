@@ -131,7 +131,7 @@ func checkRateLimit() bool {
 	return true
 }
 
-func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateMetaCache func(Parsed)) (Parsed, bool) {
+func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateCache func(*Parsed)) (Parsed, bool) {
 	if val, ok := ParsedCache.Get(cmd); ok {
 		return val, true
 	}
@@ -165,11 +165,11 @@ func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateMe
 
 	parsed := parser(out)
 
-	ParsedCache.Store(cmd, parsed)
-
-	if updateMetaCache != nil {
-		updateMetaCache(parsed)
+	if updateCache != nil {
+		updateCache(&parsed)
 	}
+
+	ParsedCache.Store(cmd, parsed)
 
 	wg.Done()
 
@@ -179,54 +179,45 @@ func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateMe
 }
 
 func Status() (Parsed, bool) {
-	birdStatus, from_cache := RunAndParse(GetCacheKey("Status"), "status", parseStatus, nil)
-	if IsSpecial(birdStatus) {
-		return birdStatus, from_cache
+	updateParsedCache := func(p *Parsed) {
+		status := (*p)["status"].(Parsed)
+
+		// Last Reconfig Timestamp source:
+		var lastReconfig string
+		switch StatusConf.ReconfigTimestampSource {
+		case "bird":
+			lastReconfig = status["last_reconfig"].(string)
+			break
+		case "config_modified":
+			lastReconfig = lastReconfigTimestampFromFileStat(
+				ClientConf.ConfigFilename,
+			)
+		case "config_regex":
+			lastReconfig = lastReconfigTimestampFromFileContent(
+				ClientConf.ConfigFilename,
+				StatusConf.ReconfigTimestampMatch,
+			)
+		}
+
+		status["last_reconfig"] = lastReconfig
+
+		// Filter fields
+		for _, field := range StatusConf.FilterFields {
+			status[field] = nil
+		}
 	}
 
-	if from_cache {
-		return birdStatus, from_cache
-	}
-
-	status := birdStatus["status"].(Parsed)
-
-	// Last Reconfig Timestamp source:
-	var lastReconfig string
-	switch StatusConf.ReconfigTimestampSource {
-	case "bird":
-		lastReconfig = status["last_reconfig"].(string)
-		break
-	case "config_modified":
-		lastReconfig = lastReconfigTimestampFromFileStat(
-			ClientConf.ConfigFilename,
-		)
-	case "config_regex":
-		lastReconfig = lastReconfigTimestampFromFileContent(
-			ClientConf.ConfigFilename,
-			StatusConf.ReconfigTimestampMatch,
-		)
-	}
-
-	status["last_reconfig"] = lastReconfig
-
-	// Filter fields
-	for _, field := range StatusConf.FilterFields {
-		status[field] = nil
-	}
-
-	birdStatus["status"] = status
-
-	ParsedCache.Store("status", birdStatus)
-
+	birdStatus, from_cache := RunAndParse(GetCacheKey("Status"), "status", parseStatus, updateParsedCache)
 	return birdStatus, from_cache
 }
 
 func Protocols() (Parsed, bool) {
-	initializeMetaCache := func(p Parsed) {
+	createMetaCache := func(p *Parsed) {
 		metaProtocol := Parsed{"protocols": Parsed{"bird_protocol": Parsed{}}}
 
-		for key, _ := range p["protocols"].(Parsed) {
-			parsed := p["protocols"].(Parsed)[key].(Parsed)
+		for key, _ := range (*p)["protocols"].(Parsed) {
+			parsed := (*p)["protocols"].(Parsed)[key].(Parsed)
+
 			protocol := parsed["protocol"].(string)
 
 			birdProtocol := parsed["bird_protocol"].(string)
@@ -240,8 +231,7 @@ func Protocols() (Parsed, bool) {
 		MetaCache.Store(GetCacheKey("Protocols"), metaProtocol)
 	}
 
-	res, from_cache := RunAndParse(GetCacheKey("Protocols"), "protocols all", parseProtocols, initializeMetaCache)
-
+	res, from_cache := RunAndParse(GetCacheKey("Protocols"), "protocols all", parseProtocols, createMetaCache)
 	return res, from_cache
 }
 
