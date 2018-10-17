@@ -237,7 +237,7 @@ func Protocols() (Parsed, bool) {
 			metaProtocol["protocols"].(Parsed)["bird_protocol"].(Parsed)[birdProtocol].(Parsed)[protocol] = &parsed
 		}
 
-		MetaCache.Store("protocol", metaProtocol)
+		MetaCache.Store(GetCacheKey("Protocols"), metaProtocol)
 	}
 
 	res, from_cache := RunAndParse(GetCacheKey("Protocols"), "protocols all", parseProtocols, initializeMetaCache)
@@ -251,9 +251,10 @@ func ProtocolsBgp() (Parsed, bool) {
 		return protocols, from_cache
 	}
 
+	protocolsMeta, _ := MetaCache.Get(GetCacheKey("Protocols"))
+	metaProtocol := protocolsMeta["protocols"].(Parsed)
+
 	bgpProtocols := Parsed{}
-	protocolsMeta, _ := MetaCache.Get("protocol")
-	metaProtocol, _ := protocolsMeta["protocols"].(Parsed)
 
 	for key, protocol := range metaProtocol["bird_protocol"].(Parsed)["BGP"].(Parsed) {
 		bgpProtocols[key] = *(protocol.(*Parsed))
@@ -288,9 +289,14 @@ func RoutesProtoPrimaryCount(protocol string) (Parsed, bool) {
 	return RunAndParse(GetCacheKey("RoutesProtoPrimaryCount", protocol), cmd, parseRoutesCount, nil)
 }
 
-func RoutesFilteredCount(table string, protocol string, neighborAddress string) (Parsed, bool) {
-	cmd := "route table " + table + " noexport " + protocol + " where from=" + neighborAddress + " count"
-	return RunAndParse(GetCacheKey("RoutesFilteredCount", table, protocol, neighborAddress), cmd, parseRoutesCount, nil)
+func PipeRoutesFilteredCount(pipe string, table string, neighborAddress string) (Parsed, bool) {
+	cmd := "route table " + table + " noexport " + pipe + " where from=" + neighborAddress + " count"
+	return RunAndParse(GetCacheKey("PipeRoutesFilteredCount", table, pipe, neighborAddress), cmd, parseRoutesCount, nil)
+}
+
+func PipeRoutesFiltered(pipe string, table string) (Parsed, bool) {
+	cmd := routeQueryForChannel("route table '" + table + "' noexport '" + pipe + "' all")
+	return RunAndParse(GetCacheKey("PipeRoutesFiltered", table, pipe), cmd, parseRoutes, nil)
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
@@ -308,16 +314,12 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 	// the pipe protocol.
 	if ParserConf.PerPeerTables &&
 		strings.HasPrefix(protocol, ParserConf.PeerProtocolPrefix) {
-		metaProtocol, _ := MetaCache.Get("protocol")
-		if metaProtocol == nil {
-			// Warm up cache if neccessary
-			protocolsRes, from_cache := ProtocolsBgp()
-			if IsSpecial(protocolsRes) {
-				return protocolsRes, from_cache
-			}
-			metaProtocol, _ = MetaCache.Get("protocol")
+
+		protocolsRes, from_cache := ProtocolsBgp()
+		if IsSpecial(protocolsRes) {
+			return protocolsRes, from_cache
 		}
-		if _, ok := metaProtocol["protocol"].(Parsed)[protocol]; !ok {
+		if _, ok := protocolsRes["protocols"].(Parsed)[protocol]; !ok {
 			return NilParse, false
 		}
 
