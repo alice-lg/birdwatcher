@@ -281,8 +281,11 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 	route := Parsed{}
 	routes := []Parsed{}
 
-	for _, line := range lines {
+	for i := 0; i < len(lines);  {
+		line := lines[i]
+
 		if specialLine(line) {
+			i++
 			continue
 		}
 
@@ -313,6 +316,28 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			submatch := regex.routes.routeType.FindStringSubmatch(line)[1]
 			route["type"] = strings.Split(submatch, " ")
 		} else if regex.routes.bgp.MatchString(line) {
+			// BIRD has a static buffer to hold information which is sent to the client (birdc)
+			// If there is more information to be sent to the client than the buffer can hold,
+			// the output is split into multiple lines and the continuation of the previous
+			// line is indicated by 2 tab characters at the beginning of the next line
+			joinLines := func() {
+				for c := i+1; c < len(lines); c++ {
+					if strings.HasPrefix(lines[c], "\x09\x09") {
+						line += lines[c][3:]
+						i++
+					} else {
+						break
+					}
+				}
+			}
+
+			// The aforementioned behaviour was only observed for the *community fields
+			if strings.HasPrefix(line, "\x09BGP.community") ||
+				strings.HasPrefix(line, "\x09BGP.large_community") ||
+				strings.HasPrefix(line, "\x09BGP.ext_community") {
+				joinLines()
+			}
+
 			bgp := Parsed{}
 			if tmp, ok := route["bgp"]; ok {
 				if val, ok := tmp.(Parsed); ok {
@@ -323,6 +348,8 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			parseRoutesBgp(line, bgp)
 			route["bgp"] = bgp
 		}
+
+		i++
 	}
 
 	if len(route) > 0 {
