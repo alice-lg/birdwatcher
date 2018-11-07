@@ -13,7 +13,6 @@ type TimeInfo struct {
 }
 
 type CacheStatus struct {
-	OrigTTL  int      `json:"orig_ttl"`
 	CachedAt TimeInfo `json:"cached_at"`
 }
 
@@ -51,7 +50,6 @@ func GetApiInfo(res *bird.Parsed, from_cache bool) *APIInfo {
 	// value.
 
 	cacheInfo := CacheStatus{
-		OrigTTL: -1,
 		CachedAt: TimeInfo{
 			Date:         cachedAt,
 			TimezoneType: "UTC",
