@@ -323,7 +323,7 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			joinLines := func() {
 				for c := i+1; c < len(lines); c++ {
 					if strings.HasPrefix(lines[c], "\x09\x09") {
-						line += lines[c][3:]
+						line += lines[c][2:]
 						i++
 					} else {
 						break
