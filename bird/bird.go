@@ -200,7 +200,8 @@ func RoutesProtoCount(protocol string) (Parsed, bool) {
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route all filtered " + protocol)
+	cmd := routeQueryForChannel("route filtered protocol '" + protocol + "' all")
+
 	return RunAndParse(cmd, parseRoutes)
 }
 
@@ -221,7 +222,7 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 			protocol[len(ParserConf.PeerProtocolPrefix):]
 	}
 
-	cmd := routeQueryForChannel("route all noexport " + protocol)
+	cmd := routeQueryForChannel("route noexport '" + protocol + "' all")
 	return RunAndParse(cmd, parseRoutes)
 }
 
