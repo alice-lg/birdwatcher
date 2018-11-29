@@ -14,7 +14,7 @@ regular binaries, which means deployment and maintenance might be
 more convenient.
 
 Our version also has a few more capabilities, as you will
-discover when looking at [the modules section](https://github.com/ecix/birdwatcher/blob/master/etc/ecix/birdwatcher.conf)
+discover when looking at [the modules section](https://github.com/alice-lg/birdwatcher/blob/master/etc/ecix/birdwatcher.conf)
 of the config.
 
 ## Installation
@@ -135,11 +135,11 @@ We do not currently support other deployment methods.
 ## Configuration
 
 An example config with sane defaults is provided in
-[etc/ecix/birdwatcher.conf](https://github.com/ecix/birdwatcher/blob/master/etc/ecix/birdwatcher.conf).
+[etc/ecix/birdwatcher.conf](https://github.com/alice-lg/birdwatcher/blob/master/etc/ecix/birdwatcher.conf).
 You should be able to use it out of the box. If you need
 to change it, it is well-commented and hopefully intuitive.
 If you do not know how to configure it, please consider opening
-[an issue](https://github.com/ecix/birdwatcher/issues/new).
+[an issue](https://github.com/alice-lg/birdwatcher/issues/new).
 
 ## How
 

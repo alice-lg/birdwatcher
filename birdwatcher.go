@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ecix/birdwatcher/bird"
-	"github.com/ecix/birdwatcher/endpoints"
+	"github.com/alice-lg/birdwatcher/bird"
+	"github.com/alice-lg/birdwatcher/endpoints"
 
 	"github.com/julienschmidt/httprouter"
 )
