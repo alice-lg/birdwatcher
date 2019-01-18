@@ -50,6 +50,14 @@ func TableRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesTable(ps.ByName("table"))
 }
 
+func TableRoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	return bird.RoutesTableFiltered(ps.ByName("table"))
+}
+
+func TableAndPeerRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	return bird.RoutesTableAndPeer(ps.ByName("table"), ps.ByName("peer"))
+}
+
 func ProtoCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
@@ -78,20 +86,21 @@ func RouteNetTable(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.RoutesLookupTable(ps.ByName("net"), ps.ByName("table"))
 }
 
-func RoutesPeer(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func PipeRoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	qs := r.URL.Query()
-	peerl := qs["peer"]
-	if len(peerl) != 1 {
-		return bird.Parsed{"error": "need a peer as single query parameter"}, false
-	}
-
-	peer, err := ValidateProtocolParam(peerl[0])
-	if err != nil {
-		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
-	}
-	return bird.RoutesPeer(peer)
+	table := qs["table"][0]
+	pipe := qs["pipe"][0]
+	return bird.PipeRoutesFiltered(pipe, table)
 }
 
-func RoutesDump(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
-	return bird.RoutesDump()
+func PipeRoutesFilteredCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	qs := r.URL.Query()
+	table := qs["table"][0]
+	pipe := qs["pipe"][0]
+	address := qs["address"][0]
+	return bird.PipeRoutesFilteredCount(pipe, table, address)
+}
+
+func PeerRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	return bird.RoutesPeer(ps.ByName("peer"))
 }
