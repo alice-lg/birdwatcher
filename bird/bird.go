@@ -31,8 +31,48 @@ var CacheRedis *RedisCache
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
+var FilteredCommunities = []string{
+	"34307:60001",
+	"34307:60002",
+	"34307:60003",
+	"34307:60004",
+}
+
 func isSpecial(ret Parsed) bool {
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
+}
+
+func isRouteFiltered(rdata interface{}) bool {
+	// Get communities from parsed result
+	route, ok := rdata.(map[string]interface{})
+	if !ok {
+		return false
+	}
+	bgpInfo, ok := route["bgp"].(map[string]interface{})
+	if !ok {
+		return false
+	}
+
+	communities := bgpInfo["communities"].([]interface{})
+	for _, comdata := range communities {
+		cdata, ok := comdata.([]interface{})
+		if !ok {
+			return false
+		}
+		if len(cdata) < 2 {
+			return false
+		}
+		comm := strconv.Itoa(int(cdata[0].(float64))) + ":" +
+			strconv.Itoa(int(cdata[1].(float64)))
+
+		for _, filter := range FilteredCommunities {
+			if comm == filter {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func fromCacheMemory(key string) (Parsed, bool) {
@@ -230,9 +270,32 @@ func RoutesPrefixed(prefix string) (Parsed, bool) {
 	return RunAndParse(cmd, parseRoutes)
 }
 
-func RoutesProto(protocol string) (Parsed, bool) {
+func RoutesProtoAll(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route all protocol " + protocol)
 	return RunAndParse(cmd, parseRoutes)
+}
+
+func RoutesProto(protocol string) (Parsed, bool) {
+	// Get all routes
+	data, fromCache := RoutesProtoAll(protocol)
+
+	routes, ok := data["routes"].([]interface{})
+	if !ok {
+		return NilParse, false
+	}
+
+	// Remove all routes filtered
+	cleanRoutes := make([]interface{}, 0, len(routes))
+	for _, route := range routes {
+		if isRouteFiltered(route) {
+			continue
+		}
+		cleanRoutes = append(cleanRoutes, route)
+	}
+
+	data["routes"] = cleanRoutes
+
+	return data, fromCache
 }
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
@@ -241,9 +304,26 @@ func RoutesProtoCount(protocol string) (Parsed, bool) {
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route filtered protocol '" + protocol + "' all")
+	// Get all routes
+	data, fromCache := RoutesProtoAll(protocol)
 
-	return RunAndParse(cmd, parseRoutes)
+	routes, ok := data["routes"].([]interface{})
+	if !ok {
+		return NilParse, false
+	}
+
+	// Remove all unfiltered routes
+	cleanRoutes := make([]interface{}, 0, len(routes))
+	for _, route := range routes {
+		if !isRouteFiltered(route) {
+			continue
+		}
+		cleanRoutes = append(cleanRoutes, route)
+	}
+
+	data["routes"] = cleanRoutes
+
+	return data, fromCache
 }
 
 func RoutesExport(protocol string) (Parsed, bool) {
