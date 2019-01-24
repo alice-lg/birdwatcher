@@ -27,3 +27,10 @@ type RateLimitConfig struct {
 	Max     int `toml:"requests_per_minute"`
 	Enabled bool
 }
+
+type CacheConfig struct {
+	UseRedis      bool   `toml:"use_redis"`
+	RedisServer   string `toml:"redis_server"`
+	RedisPassword string `toml:"redis_password"`
+	RedisDb       int    `toml:"redis_db"`
+}

@@ -97,6 +97,13 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 		log.Println("        AllowFrom:", strings.Join(conf.Server.AllowFrom, ", "))
 	}
 
+	if conf.Cache.UseRedis {
+		log.Println("    Caching backend: REDIS")
+		log.Println("       Using server:", conf.Cache.RedisServer)
+	} else {
+		log.Println("    Caching backend: MEMORY")
+	}
+
 	log.Println("   ModulesEnabled:")
 	for _, m := range conf.Server.ModulesEnabled {
 		log.Println("       -", m)
@@ -133,6 +140,14 @@ func main() {
 	bird.StatusConf = conf.Status
 	bird.RateLimitConf.Conf = conf.Ratelimit
 	bird.ParserConf = conf.Parser
+
+	if conf.Cache.UseRedis {
+		bird.CacheRedis, err = bird.NewRedisCache(conf.Cache)
+		if err != nil {
+			log.Fatal("Could not initialize redis cache:", err)
+		}
+	}
+
 	endpoints.Conf = conf.Server
 
 	// Make server
