@@ -3,6 +3,7 @@ package bird
 import (
 	"bytes"
 	"io"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -20,10 +21,12 @@ var RateLimitConf struct {
 	Conf RateLimitConfig
 }
 
-var Cache = struct {
+var CacheMap = struct {
 	sync.RWMutex
 	m map[string]Parsed
 }{m: make(map[string]Parsed)}
+
+var CacheRedis *RedisCache
 
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
@@ -32,10 +35,10 @@ func isSpecial(ret Parsed) bool {
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
 }
 
-func fromCache(key string) (Parsed, bool) {
-	Cache.RLock()
-	val, ok := Cache.m[key]
-	Cache.RUnlock()
+func fromCacheMemory(key string) (Parsed, bool) {
+	CacheMap.RLock()
+	val, ok := CacheMap.m[key]
+	CacheMap.RUnlock()
 	if !ok {
 		return NilParse, false
 	}
@@ -48,11 +51,49 @@ func fromCache(key string) (Parsed, bool) {
 	return val, ok
 }
 
-func toCache(key string, val Parsed) {
+func fromCacheRedis(key string) (Parsed, bool) {
+	val, err := CacheRedis.Get(key)
+	if err != nil {
+		return NilParse, false
+	}
+
+	ttl, correct := val["ttl"].(time.Time)
+	if !correct || ttl.Before(time.Now()) {
+		return NilParse, false
+	}
+
+	return val, true
+}
+
+func fromCache(key string) (Parsed, bool) {
+	if CacheRedis == nil {
+		return fromCacheMemory(key)
+	}
+
+	return fromCacheRedis(key)
+}
+
+func toCacheMemory(key string, val Parsed) {
 	val["ttl"] = time.Now().Add(5 * time.Minute)
-	Cache.Lock()
-	Cache.m[key] = val
-	Cache.Unlock()
+	CacheMap.Lock()
+	CacheMap.m[key] = val
+	CacheMap.Unlock()
+}
+
+func toCacheRedis(key string, val Parsed) {
+	val["ttl"] = time.Now().Add(5 * time.Minute)
+	err := CacheRedis.Set(key, val)
+	if err != nil {
+		log.Println("Could not set cache for key:", key, "Error:", err)
+	}
+}
+
+func toCache(key string, val Parsed) {
+	if CacheRedis == nil {
+		toCacheMemory(key, val)
+	} else {
+		toCacheRedis(key, val)
+	}
 }
 
 func Run(args string) (io.Reader, error) {
