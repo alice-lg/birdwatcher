@@ -31,11 +31,11 @@ var CacheRedis *RedisCache
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
-var FilteredCommunities = [][]float64{
-	[]float64{34307, 60001},
-	[]float64{34307, 60002},
-	[]float64{34307, 60003},
-	[]float64{34307, 60004},
+var FilteredCommunities = [][]int64{
+	[]int64{34307, 60001},
+	[]int64{34307, 60002},
+	[]int64{34307, 60003},
+	[]int64{34307, 60004},
 }
 
 func isSpecial(ret Parsed) bool {
@@ -47,13 +47,9 @@ func isRouteFiltered(rdata interface{}) bool {
 	route := rdata.(Parsed)
 	bgpInfo := route["bgp"].(Parsed)
 
-	communities := bgpInfo["communities"].([]interface{})
+	communities := bgpInfo["communities"].([][]int64)
 	for _, comdata := range communities {
-		cdata, ok := comdata.([]interface{})
-		if !ok {
-			return false
-		}
-		if len(cdata) < 2 {
+		if len(comdata) < 2 {
 			return false
 		}
 
@@ -302,10 +298,7 @@ func RoutesFiltered(protocol string) (Parsed, bool) {
 	// Get all routes
 	data, fromCache := RoutesProtoAll(protocol)
 
-	routes, ok := data["routes"].([]interface{})
-	if !ok {
-		return NilParse, false
-	}
+	routes := data["routes"].([]Parsed)
 
 	// Remove all unfiltered routes
 	cleanRoutes := make([]interface{}, 0, len(routes))
