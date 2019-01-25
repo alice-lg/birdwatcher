@@ -44,8 +44,8 @@ func isSpecial(ret Parsed) bool {
 
 func isRouteFiltered(rdata interface{}) bool {
 	// Get communities from parsed result
-	route := rdata.(map[string]interface{})
-	bgpInfo := route["bgp"].(map[string]interface{})
+	route := rdata.(Parsed)
+	bgpInfo := route["bgp"].(Parsed)
 
 	communities := bgpInfo["communities"].([]interface{})
 	for _, comdata := range communities {
