@@ -31,11 +31,11 @@ var CacheRedis *RedisCache
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
-var FilteredCommunities = []string{
-	"34307:60001",
-	"34307:60002",
-	"34307:60003",
-	"34307:60004",
+var FilteredCommunities = [][]float64{
+	[]float64{34307, 60001},
+	[]float64{34307, 60002},
+	[]float64{34307, 60003},
+	[]float64{34307, 60004},
 }
 
 func isSpecial(ret Parsed) bool {
@@ -44,14 +44,8 @@ func isSpecial(ret Parsed) bool {
 
 func isRouteFiltered(rdata interface{}) bool {
 	// Get communities from parsed result
-	route, ok := rdata.(map[string]interface{})
-	if !ok {
-		return false
-	}
-	bgpInfo, ok := route["bgp"].(map[string]interface{})
-	if !ok {
-		return false
-	}
+	route := rdata.(map[string]interface{})
+	bgpInfo := route["bgp"].(map[string]interface{})
 
 	communities := bgpInfo["communities"].([]interface{})
 	for _, comdata := range communities {
@@ -62,11 +56,10 @@ func isRouteFiltered(rdata interface{}) bool {
 		if len(cdata) < 2 {
 			return false
 		}
-		comm := strconv.Itoa(int(cdata[0].(float64))) + ":" +
-			strconv.Itoa(int(cdata[1].(float64)))
 
 		for _, filter := range FilteredCommunities {
-			if comm == filter {
+			if cdata[0].(float64) == filter[0] &&
+				cdata[1].(float64) == filter[1] {
 				return true
 			}
 		}
