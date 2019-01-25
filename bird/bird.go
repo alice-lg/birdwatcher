@@ -376,11 +376,38 @@ func RoutesPeer(peer string) (Parsed, bool) {
 }
 
 func RoutesDump() (Parsed, bool) {
-	if ParserConf.PerPeerTables {
-		return RoutesDumpPerPeerTable()
+	/*
+		if ParserConf.PerPeerTables {
+			return RoutesDumpPerPeerTable()
+		}
+
+		return RoutesDumpSingleTable()
+	*/
+	return RoutesDumpCommunityFilter()
+}
+
+func RoutesDumpCommunityFilter() (Parsed, bool) {
+	importedRes, cached := RunAndParse(routeQueryForChannel("route all"), parseRoutes)
+
+	routes := importedRes["routes"].([]Parsed)
+
+	imported := make([]interface{}, 0, len(routes))
+	filtered := make([]interface{}, 0, len(routes))
+
+	for _, route := range routes {
+		if isRouteFiltered(route) {
+			filtered = append(filtered, route)
+		} else {
+			imported = append(imported, route)
+		}
 	}
 
-	return RoutesDumpSingleTable()
+	result := Parsed{
+		"imported": imported,
+		"filtered": filtered,
+	}
+
+	return result, cached
 }
 
 func RoutesDumpSingleTable() (Parsed, bool) {
