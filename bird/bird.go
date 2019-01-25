@@ -281,7 +281,7 @@ func RoutesProto(protocol string) (Parsed, bool) {
 	// Get all routes
 	data, fromCache := RoutesProtoAll(protocol)
 
-	routes, ok := data["routes"].([]interface{})
+	routes, ok := data["routes"].([]Parsed)
 	if !ok {
 		return NilParse, false
 	}
