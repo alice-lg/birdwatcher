@@ -92,6 +92,7 @@ func fromCacheMemory(key string) (Parsed, bool) {
 }
 
 func fromCacheRedis(key string) (Parsed, bool) {
+	key = "B" + IPVersion + "_" + key
 	val, err := CacheRedis.Get(key)
 	if err != nil {
 		return NilParse, false
@@ -121,6 +122,7 @@ func toCacheMemory(key string, val Parsed) {
 }
 
 func toCacheRedis(key string, val Parsed) {
+	key = "B" + IPVersion + "_" + key
 	val["ttl"] = time.Now().Add(5 * time.Minute)
 	err := CacheRedis.Set(key, val)
 	if err != nil {
