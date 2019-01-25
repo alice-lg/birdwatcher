@@ -54,8 +54,8 @@ func isRouteFiltered(rdata interface{}) bool {
 		}
 
 		for _, filter := range FilteredCommunities {
-			if cdata[0].(float64) == filter[0] &&
-				cdata[1].(float64) == filter[1] {
+			if comdata[0] == filter[0] &&
+				comdata[1] == filter[1] {
 				return true
 			}
 		}
