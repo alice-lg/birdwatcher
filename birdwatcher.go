@@ -16,7 +16,7 @@ import (
 )
 
 //go:generate versionize
-var VERSION = "1.11.0"
+var VERSION = "1.13.0"
 
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
@@ -54,8 +54,17 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("routes_protocol", whitelist) {
 		r.GET("/routes/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoRoutes))
 	}
+	if isModuleEnabled("routes_peer", whitelist) {
+		r.GET("/routes/peer/:peer", endpoints.Endpoint(endpoints.PeerRoutes))
+	}
 	if isModuleEnabled("routes_table", whitelist) {
 		r.GET("/routes/table/:table", endpoints.Endpoint(endpoints.TableRoutes))
+	}
+	if isModuleEnabled("routes_table_filtered", whitelist) {
+		r.GET("/routes/table/:table/filtered", endpoints.Endpoint(endpoints.TableRoutesFiltered))
+	}
+	if isModuleEnabled("routes_table_peer", whitelist) {
+		r.GET("/routes/table/:table/peer/:peer", endpoints.Endpoint(endpoints.TableAndPeerRoutes))
 	}
 	if isModuleEnabled("routes_count_protocol", whitelist) {
 		r.GET("/routes/count/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoCount))
@@ -79,12 +88,13 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 		r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
 		r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
 	}
-	if isModuleEnabled("routes_peer", whitelist) {
-		r.GET("/routes/peer", endpoints.Endpoint(endpoints.RoutesPeer))
+	if isModuleEnabled("routes_pipe_filtered_count", whitelist) {
+		r.GET("/routes/pipe/filtered/count", endpoints.Endpoint(endpoints.PipeRoutesFilteredCount))
 	}
-	if isModuleEnabled("routes_dump", whitelist) {
-		r.GET("/routes/dump", endpoints.Endpoint(endpoints.RoutesDump))
+	if isModuleEnabled("routes_pipe_filtered", whitelist) {
+		r.GET("/routes/pipe/filtered", endpoints.Endpoint(endpoints.PipeRoutesFiltered))
 	}
+
 	return r
 }
 
@@ -115,8 +125,6 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	for _, m := range conf.Server.ModulesEnabled {
 		log.Println("       -", m)
 	}
-
-	log.Println("   Per Peer Tables:", conf.Parser.PerPeerTables)
 }
 
 // MyLogger is our own log.Logger wrapper so we can customize it
