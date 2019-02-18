@@ -98,6 +98,26 @@ func GetCacheKey(fname string, fargs ...interface{}) string {
 	return key
 }
 
+func (c *MemoryCache) Expire() int {
+	c.Lock()
+
+	expiredKeys := []string{}
+	for key, _ := range c.m {
+		ttl, correct := c.m[key]["ttl"].(time.Time)
+		if !correct || ttl.Before(time.Now()) {
+			expiredKeys = append(expiredKeys, key)
+		}
+	}
+
+	for _, key := range expiredKeys {
+		delete(c.m, key)
+	}
+
+	c.Unlock()
+
+	return len(expiredKeys)
+}
+
 func Run(args string) (io.Reader, error) {
 	args = "-r " + "show " + args // enforce birdc in restricted mode with "-r" argument
 	argsList := strings.Split(args, " ")

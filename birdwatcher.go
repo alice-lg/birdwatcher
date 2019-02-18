@@ -205,6 +205,8 @@ func main() {
 	myquerylog.SetFlags(myquerylog.Flags() &^ (log.Ldate | log.Ltime))
 	mylogger := &MyLogger{myquerylog}
 
+	go Housekeeping(conf.Housekeeping)
+
 	if conf.Server.EnableTLS {
 		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {
 			log.Fatalln("You have enabled TLS support but not specified both a .crt and a .key file in the config.")
