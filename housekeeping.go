@@ -10,6 +10,7 @@ import (
 
 
 type HousekeepingConfig struct {
+	Interval           int  `toml:"interval"`
 	ForceReleaseMemory bool `toml:"force_release_memory"`
 }
 
@@ -17,8 +18,8 @@ type HousekeepingConfig struct {
 // Cache entries to release memory
 func Housekeeping(config HousekeepingConfig) {
 	for {
-		if bird.ClientConf.CacheTtl > 0 {
-			time.Sleep(time.Duration(bird.ClientConf.CacheTtl) * time.Minute)
+		if config.Interval > 0 {
+			time.Sleep(time.Duration(config.Interval) * time.Minute)
 		} else {
 			time.Sleep(5 * time.Minute)
 		}
