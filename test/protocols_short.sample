@@ -1,0 +1,10 @@
+BIRD 1.6.5 ready.
+Access restricted
+name     proto    table    state  since       info
+device1  Device   master   up     2019-02-15  
+pp_0097_as3856 Pipe     master   up     2019-02-15  => t_0097_as3856
+pb_0097_as3856 BGP      t_0097_as3856 up     2019-02-15  Established   
+pp_0175_as15169 Pipe     master   up     2019-02-15  => t_0175_as15169
+pb_0175_as15169 BGP      t_0175_as15169 up     2019-02-15  Established   
+pp_0026_as20940 Pipe     master   up     2019-02-15  => t_0026_as20940
+pb_0026_as20940 BGP      t_0026_as20940 up     2019-02-15  Established   

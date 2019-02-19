@@ -42,6 +42,9 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("protocols_bgp", whitelist) {
 		r.GET("/protocols/bgp", endpoints.Endpoint(endpoints.Bgp))
 	}
+	if isModuleEnabled("protocols_short", whitelist) {
+		r.GET("/protocols/short", endpoints.Endpoint(endpoints.ProtocolsShort))
+	}
 	if isModuleEnabled("symbols", whitelist) {
 		r.GET("/symbols", endpoints.Endpoint(endpoints.Symbols))
 	}

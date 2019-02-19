@@ -63,6 +63,26 @@ func TestParseProtocolBgp(t *testing.T) {
 	fmt.Println(protocols)
 }
 
+func TestParseProtocolShort(t *testing.T) {
+	f, err := openFile("protocols_short.sample")
+	if err != nil {
+		t.Error(err)
+	}
+	defer f.Close()
+
+	p := parseProtocolsShort(f)
+	log.Printf("%# v", pretty.Formatter(p))
+	protocols := p["protocols"].(Parsed)
+
+	if len(protocols) != 7 {
+		//log.Printf("%# v", pretty.Formatter(protocols))
+		t.Fatalf("Expected 7 protocols, found: %v", len(protocols))
+	}
+
+	fmt.Println(protocols)
+}
+
+
 func TestParseRoutesAllIpv4Bird1(t *testing.T) {
 	runTestForIpv4WithFile("routes_bird1_ipv4.sample", t)
 }

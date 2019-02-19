@@ -239,6 +239,11 @@ func Status() (Parsed, bool) {
 	return birdStatus, from_cache
 }
 
+func ProtocolsShort() (Parsed, bool) {
+	res, from_cache := RunAndParse(GetCacheKey("ProtocolsShort"), "protocols", parseProtocolsShort, nil)
+	return res, from_cache
+}
+
 func Protocols() (Parsed, bool) {
 	createMetaCache := func(p *Parsed) {
 		metaProtocol := Parsed{"protocols": Parsed{"bird_protocol": Parsed{}}}

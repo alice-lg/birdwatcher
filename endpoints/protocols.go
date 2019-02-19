@@ -14,3 +14,7 @@ func Protocols(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 func Bgp(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 	return bird.ProtocolsBgp()
 }
+
+func ProtocolsShort(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+	return bird.ProtocolsShort()
+}
