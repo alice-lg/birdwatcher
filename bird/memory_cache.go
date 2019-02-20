@@ -59,3 +59,23 @@ func (c *MemoryCache) Set(key string, val Parsed, ttl int) error {
 		return errors.New("Negative TTL value for key" + key)
 	}
 }
+
+func (c *MemoryCache) Expire() int {
+	c.Lock()
+
+	expiredKeys := []string{}
+	for key, _ := range c.m {
+		ttl, correct := c.m[key]["ttl"].(time.Time)
+		if !correct || ttl.Before(time.Now()) {
+			expiredKeys = append(expiredKeys, key)
+		}
+	}
+
+	for _, key := range expiredKeys {
+		delete(c.m, key)
+	}
+
+	c.Unlock()
+
+	return len(expiredKeys)
+}

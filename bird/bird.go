@@ -16,19 +16,19 @@ import (
 type Cache interface {
 	Set(key string, val Parsed, ttl int) error
 	Get(key string) (Parsed, error)
+	Expire() int
 }
 
 var ClientConf BirdConfig
 var StatusConf StatusConfig
 var IPVersion = "4"
 var cache Cache // stores parsed birdc output
+var CacheConf CacheConfig
 var RateLimitConf struct {
 	sync.RWMutex
 	Conf RateLimitConfig
 }
 var RunQueue sync.Map // queue birdc commands before execution
-
-var CacheRedis *RedisCache
 
 var NilParse Parsed = (Parsed)(nil) // special Parsed values
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
@@ -40,8 +40,23 @@ func IsSpecial(ret Parsed) bool { // test for special Parsed values
 // intitialize the Cache once during setup with either a MemoryCache or
 // RedisCache implementation.
 // TODO implement singleton pattern
-func InitializeCache(c Cache) {
-	cache = c
+func InitializeCache() {
+	var err error
+	if CacheConf.UseRedis {
+		cache, err = NewRedisCache(CacheConf)
+		if err != nil {
+			log.Println("Could not initialize redis cache, falling back to memory cache:", err)
+		}
+	} else { // initialize the MemoryCache
+		cache, err = NewMemoryCache()
+		if err != nil {
+			log.Fatal("Could not initialize MemoryCache:", err)
+		}
+	}
+}
+
+func ExpireCache() int {
+	return cache.Expire()
 }
 
 /* Convenience method to make new entries in the cache.
@@ -96,26 +111,6 @@ func GetCacheKey(fname string, fargs ...interface{}) string {
 	}
 
 	return key
-}
-
-func (c *MemoryCache) Expire() int {
-	c.Lock()
-
-	expiredKeys := []string{}
-	for key, _ := range c.m {
-		ttl, correct := c.m[key]["ttl"].(time.Time)
-		if !correct || ttl.Before(time.Now()) {
-			expiredKeys = append(expiredKeys, key)
-		}
-	}
-
-	for _, key := range expiredKeys {
-		delete(c.m, key)
-	}
-
-	c.Unlock()
-
-	return len(expiredKeys)
 }
 
 func Run(args string) (io.Reader, error) {

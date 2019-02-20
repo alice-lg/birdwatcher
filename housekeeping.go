@@ -1,13 +1,12 @@
 package main
 
 import (
-	"time"
 	"log"
 	"runtime/debug"
+	"time"
 
 	"github.com/alice-lg/birdwatcher/bird"
 )
-
 
 type HousekeepingConfig struct {
 	Interval           int  `toml:"interval"`
@@ -16,7 +15,7 @@ type HousekeepingConfig struct {
 
 // This is used to run regular housekeeping tasks, currently expiring old
 // Cache entries to release memory
-func Housekeeping(config HousekeepingConfig) {
+func Housekeeping(config HousekeepingConfig, expireCaches bool) {
 	for {
 		if config.Interval > 0 {
 			time.Sleep(time.Duration(config.Interval) * time.Minute)
@@ -26,15 +25,12 @@ func Housekeeping(config HousekeepingConfig) {
 
 		log.Println("Housekeeping started")
 
-		if bird.ClientConf.CacheTtl > 0 {
+		if (bird.ClientConf.CacheTtl > 0) && expireCaches {
 			// Expire the caches
-			log.Println("Expiring caches")
+			log.Println("Expiring MemoryCache")
 
-			count := bird.ParsedCache.Expire()
-			log.Println("Expired", count, "entries (ParsedCache)")
-
-			count = bird.MetaCache.Expire()
-			log.Println("Expired", count, "entries (MetaCache)")
+			count := bird.ExpireCache()
+			log.Println("Expired", count, "entries (MemoryCache)")
 		}
 
 		if config.ForceReleaseMemory {

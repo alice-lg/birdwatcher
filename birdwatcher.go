@@ -178,21 +178,8 @@ func main() {
 	bird.RateLimitConf.Conf = conf.Ratelimit
 	bird.RateLimitConf.Unlock()
 	bird.ParserConf = conf.Parser
-
-	var cache bird.Cache
-	if conf.Cache.UseRedis {
-		cache, err = bird.NewRedisCache(conf.Cache)
-		if err != nil {
-			log.Fatal("Could not initialize redis cache, falling back to memory cache:", err)
-		}
-	} else { // initialize the MemoryCache
-		cache, err = bird.NewMemoryCache()
-		if err != nil {
-			log.Fatal("Could not initialize MemoryCache:", err)
-		} else {
-			bird.InitializeCache(cache)
-		}
-	}
+	bird.CacheConf = conf.Cache
+	bird.InitializeCache()
 
 	endpoints.Conf = conf.Server
 
@@ -205,7 +192,7 @@ func main() {
 	myquerylog.SetFlags(myquerylog.Flags() &^ (log.Ldate | log.Ltime))
 	mylogger := &MyLogger{myquerylog}
 
-	go Housekeeping(conf.Housekeeping)
+	go Housekeeping(conf.Housekeeping, !(bird.CacheConf.UseRedis)) // expire caches only for MemoryCache
 
 	if conf.Server.EnableTLS {
 		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {
