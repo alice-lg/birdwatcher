@@ -73,7 +73,7 @@ func init() {
 	regex.protocol.routeChanges = regexp.MustCompile(`(Import|Export) (updates|withdraws):\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s*$`)
 
 	regex.routes.startDefinition = regexp.MustCompile(`^([0-9a-f\.\:\/]+)\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*`)
-	regex.protocol.short = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([0-9\-]+)\s+(.*?)\s*?$`)
+	regex.protocol.short = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([0-9\-]+\s+[0-9\:]+?|[0-9\-]+)\s+(.*?)\s*?$`)
 	regex.routes.second = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
 	regex.routes.routeType = regexp.MustCompile(`^\s+Type:\s+(.*)\s*$`)
 	regex.routes.bgp = regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)

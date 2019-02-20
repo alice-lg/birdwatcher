@@ -74,9 +74,9 @@ func TestParseProtocolShort(t *testing.T) {
 	log.Printf("%# v", pretty.Formatter(p))
 	protocols := p["protocols"].(Parsed)
 
-	if len(protocols) != 7 {
+	if len(protocols) != 27 {
 		//log.Printf("%# v", pretty.Formatter(protocols))
-		t.Fatalf("Expected 7 protocols, found: %v", len(protocols))
+		t.Fatalf("Expected 27 protocols, found: %v", len(protocols))
 	}
 
 	fmt.Println(protocols)
