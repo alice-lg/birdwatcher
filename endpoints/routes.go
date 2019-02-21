@@ -8,34 +8,34 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func ProtoRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func ProtoRoutes(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesProto(protocol)
+	return bird.RoutesProto(useCache, protocol)
 }
 
-func RoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func RoutesFiltered(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesFiltered(protocol)
+	return bird.RoutesFiltered(useCache, protocol)
 }
 
-func RoutesNoExport(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func RoutesNoExport(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesNoExport(protocol)
+	return bird.RoutesNoExport(useCache, protocol)
 }
 
-func RoutesPrefixed(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func RoutesPrefixed(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	qs := r.URL.Query()
 	prefixl := qs["prefix"]
 	if len(prefixl) != 1 {
@@ -47,28 +47,28 @@ func RoutesPrefixed(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesPrefixed(prefix)
+	return bird.RoutesPrefixed(useCache, prefix)
 }
 
-func TableRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func TableRoutes(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	table, err := ValidateProtocolParam(ps.ByName("table"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesTable(table)
+	return bird.RoutesTable(useCache, table)
 }
 
-func TableRoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func TableRoutesFiltered(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	table, err := ValidateProtocolParam(ps.ByName("table"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesTableFiltered(table)
+	return bird.RoutesTableFiltered(useCache, table)
 }
 
-func TableAndPeerRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func TableAndPeerRoutes(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	table, err := ValidateProtocolParam(ps.ByName("table"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
@@ -79,45 +79,45 @@ func TableAndPeerRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, boo
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesTableAndPeer(table, peer)
+	return bird.RoutesTableAndPeer(useCache, table, peer)
 }
 
-func ProtoCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func ProtoCount(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesProtoCount(protocol)
+	return bird.RoutesProtoCount(useCache, protocol)
 }
 
-func ProtoPrimaryCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func ProtoPrimaryCount(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
-	return bird.RoutesProtoPrimaryCount(protocol)
+	return bird.RoutesProtoPrimaryCount(useCache, protocol)
 }
 
-func TableCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func TableCount(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	table, err := ValidateProtocolParam(ps.ByName("table"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesTableCount(table)
+	return bird.RoutesTableCount(useCache, table)
 }
 
-func RouteNet(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func RouteNet(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	net, err := ValidatePrefixParam(ps.ByName("net"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesLookupTable(net, "master")
+	return bird.RoutesLookupTable(useCache, net, "master")
 }
 
-func RouteNetTable(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func RouteNetTable(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	net, err := ValidatePrefixParam(ps.ByName("net"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
@@ -128,10 +128,10 @@ func RouteNetTable(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesLookupTable(net, table)
+	return bird.RoutesLookupTable(useCache, net, table)
 }
 
-func PipeRoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func PipeRoutesFiltered(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	qs := r.URL.Query()
 
 	if len(qs["table"]) != 1 {
@@ -150,10 +150,10 @@ func PipeRoutesFiltered(r *http.Request, ps httprouter.Params) (bird.Parsed, boo
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.PipeRoutesFiltered(pipe, table)
+	return bird.PipeRoutesFiltered(useCache, pipe, table)
 }
 
-func PipeRoutesFilteredCount(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func PipeRoutesFilteredCount(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	qs := r.URL.Query()
 
 	if len(qs["table"]) != 1 {
@@ -180,14 +180,14 @@ func PipeRoutesFilteredCount(r *http.Request, ps httprouter.Params) (bird.Parsed
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.PipeRoutesFilteredCount(pipe, table, address)
+	return bird.PipeRoutesFilteredCount(useCache, pipe, table, address)
 }
 
-func PeerRoutes(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
+func PeerRoutes(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	peer, err := ValidatePrefixParam(ps.ByName("peer"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesPeer(peer)
+	return bird.RoutesPeer(useCache, peer)
 }
