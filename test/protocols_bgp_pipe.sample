@@ -1,0 +1,42 @@
+M65001_nada_co_ripe Pipe     master   up     2018-05-31 15:38:58  => T65001_nada_co_ripe
+  Description:    Nada Co
+  Preference:     70
+  Input filter:   in_nada_co_ripe
+  Output filter:  (unnamed)
+  Routes:         688 imported, 247259 exported
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:         250795     250085         22          0        688
+    Import withdraws:            3          0        ---          0          0
+    Export updates:         803234       1376     307334     247262     247262
+    Export withdraws:            3          0        ---          0          3
+
+C65003_nada2_co_ripe Pipe     Collector    2018-05-31 16:39:01  => T65003_nada2_co_ripe
+  Description:    Nada2 Co
+  Preference:     70
+  Input filter:   in_nada2_co_ripe
+  Output filter:  REJECT
+
+R194_42  BGP      T65001_nada_co_ripe up     2018-05-31 15:38:40  Established
+  Description:    Nada Co
+  Preference:     100
+  Input filter:   (unnamed)
+  Output filter:  (unnamed)
+  Import limit:   200000
+    Action:       disable
+  Routes:         710 imported, 0 filtered, 154998 exported, 376688 preferred
+  Route change stats:     received   rejected   filtered    ignored   accepted
+    Import updates:            710          0          0          0        710
+    Import withdraws:            0          0        ---          0          0
+    Export updates:         172100        710          0        ---     171390
+    Export withdraws:            0        ---        ---        ---          0
+  BGP state:          Established
+    Neighbor address: 172.31.194.42
+    Neighbor AS:      1764
+    Neighbor ID:      172.31.194.42
+    Neighbor caps:    refresh enhanced-refresh AS4
+    Session:          external route-server AS4
+    Source address:   172.31.192.157
+    Route limit:      710/200000
+    Hold timer:       151/180
+    Keepalive timer:  43/60
+    

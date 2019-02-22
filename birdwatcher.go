@@ -2,18 +2,23 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"time"
+
 	"strings"
 
 	"github.com/ecix/birdwatcher/bird"
 	"github.com/ecix/birdwatcher/endpoints"
+	"github.com/gorilla/handlers"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 //go:generate versionize
-var VERSION = "1.11.1"
+var VERSION = "1.11.2"
 
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
@@ -106,6 +111,17 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	log.Println("   Per Peer Tables:", conf.Parser.PerPeerTables)
 }
 
+// MyLogger is our own log.Logger wrapper so we can customize it
+type MyLogger struct {
+	logger *log.Logger
+}
+
+// Write implements the Write method of io.Writer
+func (m *MyLogger) Write(p []byte) (n int, err error) {
+	m.logger.Print(string(p))
+	return len(p), nil
+}
+
 func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	workerPoolSize := flag.Int("worker-pool-size", 8, "Number of go routines used to parse routing tables concurrently")
@@ -114,14 +130,19 @@ func main() {
 
 	bird.WorkerPoolSize = *workerPoolSize
 
-	endpoints.VERSION = VERSION
-	bird.InstallRateLimitReset()
-	// Load configurations
-	conf, err := LoadConfigs(ConfigOptions(*configfile))
-
+	conf, err := LoadConfigs([]string{*configfile})
 	if err != nil {
 		log.Fatal("Loading birdwatcher configuration failed:", err)
 	}
+
+	if conf.Server.EnableTLS {
+		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {
+			log.Fatalln("You have enabled TLS support. Please specify 'crt' and 'key' in birdwatcher config file.")
+		}
+	}
+
+	endpoints.VERSION = VERSION
+	bird.InstallRateLimitReset()
 
 	// Get config according to flags
 	birdConf := conf.Bird
@@ -141,5 +162,21 @@ func main() {
 
 	// Make server
 	r := makeRouter(conf.Server)
-	log.Fatal(http.ListenAndServe(birdConf.Listen, r))
+
+	// Set up our own custom log.Logger
+	// Use this weird golang format to imitate log.Logger's timestamp in log.Prefix()
+	ts := time.Now().Format("2006/01/02 15:04:05")
+	// set log prefix timestamp to our own custom prefix
+	log.SetPrefix(ts)
+	myquerylog := log.New(os.Stdout, fmt.Sprintf("%s %s: ", ts, "QUERY"), 0)
+	mylogger := &MyLogger{myquerylog}
+
+	if conf.Server.EnableTLS {
+		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {
+			log.Fatalln("You have enabled TLS support but not specified both a .crt and a .key file in the config.")
+		}
+		log.Fatal(http.ListenAndServeTLS(birdConf.Listen, conf.Server.Crt, conf.Server.Key, handlers.LoggingHandler(mylogger, r)))
+	} else {
+		log.Fatal(http.ListenAndServe(birdConf.Listen, handlers.LoggingHandler(mylogger, r)))
+	}
 }

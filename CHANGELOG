@@ -1,4 +1,13 @@
 
+1.11.2
+
+* Parser: protocol parser can now parse all types of protocols
+* Parser: improved parsing of route change statistics
+* Add TLS support for the HTTP listener
+* Configuration: add new option for TLS 'enable_tls', 'crt' and 'key'
+* Improved logging of API requests, similar to a webserver
+* Execute birdc in restricted mode 'birdc -r'
+
 1.11.1
 
 * Fix detection of BIRD v2.x.y
