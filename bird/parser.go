@@ -79,7 +79,7 @@ func init() {
 	regex.routes.bgp = regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)
 	regex.routes.community = regexp.MustCompile(`^\((\d+),\s*(\d+)\)`)
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
-	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*(\d+),\s*(\d+)\)`)
+	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*([^,]+),\s*([^,]+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
 	regex.routes.prefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
 	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s*$`)
@@ -503,7 +503,7 @@ func parseRoutesExtendedCommunities(groups []string, res Parsed) {
 	for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
 		if regex.routes.extendedCommunity.MatchString(community) {
 			communityGroups := regex.routes.extendedCommunity.FindStringSubmatch(community)
-			communities = append(communities, []interface{}{communityGroups[1], parseInt(communityGroups[2]), parseInt(communityGroups[3])})
+			communities = append(communities, []interface{}{communityGroups[1], communityGroups[2], communityGroups[3]})
 		}
 	}
 
