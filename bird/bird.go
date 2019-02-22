@@ -53,7 +53,13 @@ func toCache(key string, val Parsed) {
 	if ClientConf.CacheTtl > 0 {
 		ttl = ClientConf.CacheTtl
 	}
-	val["ttl"] = time.Now().Add(time.Duration(ttl) * time.Minute)
+	cachedAt := time.Now().UTC()
+	cacheTtl := cachedAt.Add(time.Duration(ttl) * time.Minute)
+
+	// This is not a really ... clean way of doing this.
+	val["ttl"] = cacheTtl
+	val["cached_at"] = cachedAt
+
 	Cache.Lock()
 	Cache.m[key] = val
 	Cache.Unlock()
@@ -166,22 +172,22 @@ func Protocols() (Parsed, bool) {
 }
 
 func ProtocolsBgp() (Parsed, bool) {
-	p, from_cache := Protocols()
-	if isSpecial(p) {
-		return p, from_cache
+	protocols, from_cache := Protocols()
+	if isSpecial(protocols) {
+		return protocols, from_cache
 	}
-	protocols := p["protocols"].([]string)
 
-	bgpProto := Parsed{}
+	bgpProtocols := Parsed{}
 
-	for _, v := range protocols {
-		if strings.Contains(v, " BGP ") {
-			key := strings.Split(v, " ")[0]
-			bgpProto[key] = parseProtocol(v)
+	for key, protocol := range protocols["protocols"].(Parsed) {
+		if protocol.(Parsed)["bird_protocol"] == "BGP" {
+			bgpProtocols[key] = protocol
 		}
 	}
 
-	return Parsed{"protocols": bgpProto, "ttl": p["ttl"]}, from_cache
+	return Parsed{"protocols": bgpProtocols,
+		"ttl":       protocols["ttl"],
+		"cached_at": protocols["cached_at"]}, from_cache
 }
 
 func Symbols() (Parsed, bool) {
@@ -235,19 +241,19 @@ func RoutesExportCount(protocol string) (Parsed, bool) {
 }
 
 func RoutesTable(table string) (Parsed, bool) {
-	return RunAndParse("route table '"+table+"' all", parseRoutes)
+	return RunAndParse("route table "+table+" all", parseRoutes)
 }
 
 func RoutesTableCount(table string) (Parsed, bool) {
-	return RunAndParse("route table '"+table+"' count", parseRoutesCount)
+	return RunAndParse("route table "+table+" count", parseRoutesCount)
 }
 
 func RoutesLookupTable(net string, table string) (Parsed, bool) {
-	return RunAndParse("route for '"+net+"' table '"+table+"' all", parseRoutes)
+	return RunAndParse("route for "+net+" table "+table+" all", parseRoutes)
 }
 
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
-	return RunAndParse("route for '"+net+"' protocol '"+protocol+"' all", parseRoutes)
+	return RunAndParse("route for "+net+" protocol "+protocol+" all", parseRoutes)
 }
 
 func RoutesPeer(peer string) (Parsed, bool) {

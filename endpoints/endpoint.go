@@ -10,7 +10,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/ecix/birdwatcher/bird"
+	"github.com/alice-lg/birdwatcher/bird"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -67,7 +67,7 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 			w.Write(js)
 			return
 		}
-		res["api"] = GetApiInfo(from_cache)
+		res["api"] = GetApiInfo(&ret, from_cache)
 
 		for k, v := range ret {
 			res[k] = v
