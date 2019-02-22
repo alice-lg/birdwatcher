@@ -1,4 +1,9 @@
 
+1.12.0
+
+* Parser: Fix a bug when parsing 'BGP.*community' output spanning multiple lines
+* Fix the default config path to '/etc/birdwatcher/birdwatcher.conf'
+
 1.11.5
 
 This version brings a major redesign of the cache feature. The cache is more
