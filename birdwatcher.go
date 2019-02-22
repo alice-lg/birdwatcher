@@ -13,7 +13,7 @@ import (
 )
 
 //go:generate versionize
-var VERSION = "1.11.0"
+var VERSION = "1.11.1"
 
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
@@ -89,6 +89,7 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	log.Println("Starting Birdwatcher")
 	log.Println("            Using:", birdConf.BirdCmd)
 	log.Println("           Listen:", birdConf.Listen)
+	log.Println("        Cache TTL:", birdConf.CacheTtl)
 
 	// Endpoint Info
 	if len(conf.Server.AllowFrom) == 0 {
@@ -107,8 +108,11 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 
 func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
-	configfile := flag.String("config", "./etc/ecix/birdwatcher.conf", "Configuration file location")
+	workerPoolSize := flag.Int("worker-pool-size", 8, "Number of go routines used to parse routing tables concurrently")
+	configfile := flag.String("config", "etc/birdwatcher/birdwatcher.conf", "Configuration file location")
 	flag.Parse()
+
+	bird.WorkerPoolSize = *workerPoolSize
 
 	endpoints.VERSION = VERSION
 	bird.InstallRateLimitReset()

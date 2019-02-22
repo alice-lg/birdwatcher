@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -48,7 +49,11 @@ func fromCache(key string) (Parsed, bool) {
 }
 
 func toCache(key string, val Parsed) {
-	val["ttl"] = time.Now().Add(5 * time.Minute)
+	var ttl int = 5
+	if ClientConf.CacheTtl > 0 {
+		ttl = ClientConf.CacheTtl
+	}
+	val["ttl"] = time.Now().Add(time.Duration(ttl) * time.Minute)
 	Cache.Lock()
 	Cache.m[key] = val
 	Cache.Unlock()
@@ -199,7 +204,7 @@ func RoutesProtoCount(protocol string) (Parsed, bool) {
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route all filtered " + protocol)
+	cmd := routeQueryForChannel("route all filtered protocol " + protocol)
 	return RunAndParse(cmd, parseRoutes)
 }
 
@@ -326,7 +331,8 @@ func routeQueryForChannel(cmd string) string {
 		return cmd
 	}
 
-	if len(version) == 0 || int(version[0]) < 2 {
+	v, err := strconv.Atoi(string(version[0]))
+	if err != nil || v <= 2 {
 		return cmd
 	}
 

@@ -1,4 +1,13 @@
 
+1.11.1
+
+* Fix detection of BIRD v2.x.y
+* Fix birdc command in RoutesFiltered
+* Use worker-threads to parse in parallel. This speeds up parsing of large responses e.g. BGP full-table.
+* Add flag "worker-pool-size" to control number of threads while parsing
+* Configuration: add setting for ttl value to control caching of bird responses
+* Configuration: change default location to /etc/birdwatcher
+
 1.11.0
 
 * Parser: support BIRD v2.x with multiprotocol BGP and channels
