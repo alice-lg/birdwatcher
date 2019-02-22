@@ -54,8 +54,8 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		}
 
 		res := make(map[string]interface{})
-
 		ret, from_cache := wrapped(r, ps)
+
 		if reflect.DeepEqual(ret, bird.NilParse) {
 			w.WriteHeader(http.StatusTooManyRequests)
 			return

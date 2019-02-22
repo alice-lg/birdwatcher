@@ -39,4 +39,5 @@ R194_42  BGP      T65001_nada_co_ripe up     2018-05-31 15:38:40  Established
     Route limit:      710/200000
     Hold timer:       151/180
     Keepalive timer:  43/60
+	Last error:       Socket: Connection closed
     
