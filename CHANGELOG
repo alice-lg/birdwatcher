@@ -1,4 +1,19 @@
 
+1.11.4
+
+* Fix race condition between main() and InstallRateLimitReset()
+* Fix endpoint /routes/count/table now returns integer instead of routes
+* Fix endpoint /routes/count/protocol now returns integer instead of routes
+* Fix endpoint /routes/prefixed ignores URL paremeter
+* Fix endpoint /symbols
+* Fix TestParseProtocolBgp()
+* Fix some filtered routes missing in /routes/dump
+* Fix parser return correct type on error
+* New endpoint for total number of best-paths '/routes/count/primary'
+* Parser: support extended communities and test-cases
+* Introduce new data structure for extended communities replacing the Parsed type
+* Cache: avoid duplicate cache writes in Status()
+
 1.11.3
 
 * Move code to Alice-LG GitHub organization
