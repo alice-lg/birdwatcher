@@ -1,4 +1,16 @@
 
+1.11.3
+
+* Move code to Alice-LG GitHub organization
+* Include caching information alongside ttl
+* Repair endpoint 'protocols'
+* Documentation on interpretation of route count numbers
+* Improve example configuration
+* Caching of parsed responses from birdc.
+  Eliminates an additional parser run for cache hits.
+* Fix quotes in arguments of birdc commands in Routes{Table,Lookup}* methods.
+  This eliminates the "IP address expected" error in BIRD.
+
 1.11.2
 
 * Parser: protocol parser can now parse all types of protocols
