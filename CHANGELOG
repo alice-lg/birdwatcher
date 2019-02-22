@@ -1,5 +1,24 @@
 
+1.11.0
+
+* Parser: support BIRD v2.x with multiprotocol BGP and channels
+* Parser: major refactoring
+* Parser: decrease memory footprint
+  * use io.Reader interface
+  * use line-iterator for birdc output
+* Detection of BIRD v1.6.x or BIRD v2.x
+* Extend test coverage for IPv6
+* Tests for BIRD v2.x and IPv4
+* Dependencies managed by now managed by dep
+
+1.10.2
+
+* Workaround for interface conversion issue
+
+1.10.1
+
+* Fix import/export naming for routes in API
+
 1.10.0
 
 * Added support for dumping all routes
-

@@ -13,7 +13,7 @@ import (
 )
 
 //go:generate versionize
-var VERSION = "1.10.2"
+var VERSION = "1.11.0"
 
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
@@ -21,6 +21,7 @@ func isModuleEnabled(module string, modulesEnabled []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -122,6 +123,7 @@ func main() {
 	birdConf := conf.Bird
 	if *bird6 {
 		birdConf = conf.Bird6
+		bird.IPVersion = "6"
 	}
 
 	PrintServiceInfo(conf, birdConf)
