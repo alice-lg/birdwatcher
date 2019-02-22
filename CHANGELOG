@@ -1,5 +1,18 @@
 
-1.11.4
+1.11.5
+
+This version brings a major redesign of the cache feature. The cache is more
+efficient leading to fewer executions of birdc commands in high load scenarios.
+Other improvements are:
+* Fix testcase for /protocols/bgp
+* New birdc query 'RoutesFilteredCount()'
+* Queue for birdc commands, prevents running the same birdc command multiple
+  times in parallel on concurrent API requests.
+* Cache: redesign cache structure, separation of Parsed and Meta cache
+  * allows independent cache access
+  * implement convenience methods for interaction with the cache
+
+  1.11.4
 
 * Fix race condition between main() and InstallRateLimitReset()
 * Fix endpoint /routes/count/table now returns integer instead of routes
