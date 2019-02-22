@@ -28,7 +28,7 @@ var Cache = struct {
 var NilParse Parsed = (Parsed)(nil)
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
-func isSpecial(ret Parsed) bool {
+func IsSpecial(ret Parsed) bool {
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
 }
 
@@ -132,10 +132,15 @@ func RunAndParse(cmd string, parser func(io.Reader) Parsed) (Parsed, bool) {
 }
 
 func Status() (Parsed, bool) {
-	birdStatus, ok := RunAndParse("status", parseStatus)
-	if isSpecial(birdStatus) {
-		return birdStatus, ok
+	birdStatus, from_cache := RunAndParse("status", parseStatus)
+	if IsSpecial(birdStatus) {
+		return birdStatus, from_cache
 	}
+
+	if from_cache {
+		return birdStatus, from_cache
+	}
+
 	status := birdStatus["status"].(Parsed)
 
 	// Last Reconfig Timestamp source:
@@ -164,7 +169,7 @@ func Status() (Parsed, bool) {
 
 	birdStatus["status"] = status
 
-	return birdStatus, ok
+	return birdStatus, from_cache
 }
 
 func Protocols() (Parsed, bool) {
@@ -173,7 +178,7 @@ func Protocols() (Parsed, bool) {
 
 func ProtocolsBgp() (Parsed, bool) {
 	protocols, from_cache := Protocols()
-	if isSpecial(protocols) {
+	if IsSpecial(protocols) {
 		return protocols, from_cache
 	}
 
@@ -195,7 +200,7 @@ func Symbols() (Parsed, bool) {
 }
 
 func RoutesPrefixed(prefix string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route all")
+	cmd := routeQueryForChannel("route " + prefix + " all")
 	return RunAndParse(cmd, parseRoutes)
 }
 
@@ -206,7 +211,12 @@ func RoutesProto(protocol string) (Parsed, bool) {
 
 func RoutesProtoCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route protocol "+protocol) + " count"
-	return RunAndParse(cmd, parseRoutes)
+	return RunAndParse(cmd, parseRoutesCount)
+}
+
+func RoutesProtoPrimaryCount(protocol string) (Parsed, bool) {
+	cmd := routeQueryForChannel("route primary protocol "+protocol) + " count"
+	return RunAndParse(cmd, parseRoutesCount)
 }
 
 func RoutesFiltered(protocol string) (Parsed, bool) {
@@ -294,10 +304,8 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 	protocols := protocolsRes["protocols"].(Parsed)
 
 	for protocol, details := range protocols {
-		details, ok := details.(Parsed)
-		if !ok {
-			continue
-		}
+		details := details.(Parsed)
+
 		counters, ok := details["routes"].(Parsed)
 		if !ok {
 			continue
@@ -307,7 +315,10 @@ func RoutesDumpPerPeerTable() (Parsed, bool) {
 			continue // nothing to do here.
 		}
 		// Lookup filtered routes
-		pfilteredRes, _ := RoutesFiltered(protocol)
+		pfilteredRes, from_cache := RoutesFiltered(protocol)
+		if reflect.DeepEqual(pfilteredRes, BirdError) {
+			return pfilteredRes, from_cache
+		}
 
 		pfiltered, ok := pfilteredRes["routes"].([]Parsed)
 		if !ok {

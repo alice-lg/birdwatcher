@@ -37,15 +37,16 @@ var (
 			countRx *regexp.Regexp
 		}
 		routes struct {
-			startDefinition *regexp.Regexp
-			second          *regexp.Regexp
-			routeType       *regexp.Regexp
-			bgp             *regexp.Regexp
-			community       *regexp.Regexp
-			largeCommunity  *regexp.Regexp
-			origin          *regexp.Regexp
-			prefixBird2     *regexp.Regexp
-			gatewayBird2    *regexp.Regexp
+			startDefinition   *regexp.Regexp
+			second            *regexp.Regexp
+			routeType         *regexp.Regexp
+			bgp               *regexp.Regexp
+			community         *regexp.Regexp
+			largeCommunity    *regexp.Regexp
+			extendedCommunity *regexp.Regexp
+			origin            *regexp.Regexp
+			prefixBird2       *regexp.Regexp
+			gatewayBird2      *regexp.Regexp
 		}
 	}
 )
@@ -76,6 +77,7 @@ func init() {
 	regex.routes.bgp = regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)
 	regex.routes.community = regexp.MustCompile(`^\((\d+),\s*(\d+)\)`)
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
+	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*(\d+),\s*(\d+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
 	regex.routes.prefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
 	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s*$`)
@@ -167,7 +169,12 @@ func parseSymbols(reader io.Reader) Parsed {
 
 		if regex.symbols.keyRx.MatchString(line) {
 			groups := regex.symbols.keyRx.FindStringSubmatch(line)
-			res[groups[2]] = groups[1]
+
+			if _, ok := res[groups[2]]; !ok {
+				res[groups[2]] = []string{}
+			}
+
+			res[groups[2]] = append(res[groups[2]].([]string), groups[1])
 		}
 	}
 
@@ -395,6 +402,8 @@ func parseRoutesBgp(line string, bgp Parsed) {
 		parseRoutesCommunities(groups, bgp)
 	} else if groups[1] == "large_community" {
 		parseRoutesLargeCommunities(groups, bgp)
+	} else if groups[1] == "ext_community" {
+		parseRoutesExtendedCommunities(groups, bgp)
 	} else if groups[1] == "as_path" {
 		bgp["as_path"] = strings.Split(groups[2], " ")
 	} else {
@@ -430,6 +439,19 @@ func parseRoutesLargeCommunities(groups []string, res Parsed) {
 
 	res["large_communities"] = communities
 }
+
+func parseRoutesExtendedCommunities(groups []string, res Parsed) {
+	communities := []interface{}{}
+	for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
+		if regex.routes.extendedCommunity.MatchString(community) {
+			communityGroups := regex.routes.extendedCommunity.FindStringSubmatch(community)
+			communities = append(communities, []interface{}{communityGroups[1], parseInt(communityGroups[2]), parseInt(communityGroups[3])})
+		}
+	}
+
+	res["ext_communities"] = communities
+}
+
 
 func parseRoutesCount(reader io.Reader) Parsed {
 	res := Parsed{}
@@ -491,10 +513,10 @@ func parseProtocol(lines string) Parsed {
 
 	if _, ok := res["routes"]; !ok {
 		routes := Parsed{}
-		routes["accepted"] = 0
-		routes["filtered"] = 0
-		routes["exported"] = 0
-		routes["preferred"] = 0
+		routes["accepted"] = int64(0)
+		routes["filtered"] = int64(0)
+		routes["exported"] = int64(0)
+		routes["preferred"] = int64(0)
 
 		res["routes"] = routes
 	}
@@ -597,7 +619,7 @@ func treatKey(key string) string {
 func parseInt(from string) int64 {
 	val, err := strconv.ParseInt(from, 10, 64)
 	if err != nil {
-		return 0
+		return int64(0)
 	}
 
 	return val

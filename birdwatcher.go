@@ -65,6 +65,9 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("routes_count_table", whitelist) {
 		r.GET("/routes/count/table/:table", endpoints.Endpoint(endpoints.TableCount))
 	}
+	if isModuleEnabled("routes_count_primary", whitelist) {
+		r.GET("/routes/count/primary/:protocol", endpoints.Endpoint(endpoints.ProtoPrimaryCount))
+	}
 	if isModuleEnabled("routes_filtered", whitelist) {
 		r.GET("/routes/filtered/:protocol", endpoints.Endpoint(endpoints.RoutesFiltered))
 	}
@@ -156,7 +159,9 @@ func main() {
 	// Configuration
 	bird.ClientConf = birdConf
 	bird.StatusConf = conf.Status
+	bird.RateLimitConf.Lock()
 	bird.RateLimitConf.Conf = conf.Ratelimit
+	bird.RateLimitConf.Unlock()
 	bird.ParserConf = conf.Parser
 	endpoints.Conf = conf.Server
 

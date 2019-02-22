@@ -53,14 +53,7 @@ func TestParseProtocolBgp(t *testing.T) {
 
 	p := parseProtocols(f)
 	log.Printf("%# v", pretty.Formatter(p))
-	lines := p["protocols"].([]string)
-
-	protocols := []Parsed{}
-
-	for _, v := range lines {
-		p2 := parseProtocol(v)
-		protocols = append(protocols, p2)
-	}
+	protocols := p["protocols"].(Parsed)
 
 	if len(protocols) != 3 {
 		//log.Printf("%# v", pretty.Formatter(protocols))
@@ -68,7 +61,6 @@ func TestParseProtocolBgp(t *testing.T) {
 	}
 
 	fmt.Println(protocols)
-
 }
 
 func TestParseRoutesAllIpv4Bird1(t *testing.T) {
@@ -108,6 +100,9 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"rt", int64(48858), int64(50)},
+		},
 		metric:    100,
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
@@ -125,6 +120,11 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{9033, 65666, 12},
 			{9033, 65666, 9},
+		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
 		},
 		metric:    100,
 		localPref: "100",
@@ -144,6 +144,11 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
+		},
 		metric:    100,
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
@@ -161,6 +166,9 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{9033, 65666, 12},
 			{9033, 65666, 9},
+		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"rt", int64(48858), int64(50)},
 		},
 		metric:    100,
 		localPref: "100",
@@ -207,6 +215,11 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 2000},
 			{48821, 0, 2100},
 		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
+		},
 		metric:    100,
 		localPref: "500",
 		primary:   true,
@@ -225,6 +238,11 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 3000},
 			{48821, 0, 3100},
 		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
+		},
 		localPref: "100",
 		metric:    100,
 		primary:   false,
@@ -242,6 +260,9 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{48821, 0, 2000},
 			{48821, 0, 2100},
+		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"unknown 0x4300", int64(0), int64(1)},
 		},
 		metric:    100,
 		localPref: "5000",
@@ -288,6 +309,12 @@ func assertRouteIsEqual(expected expectedRoute, actual Parsed, name string, t *t
 	if largeCommunity := value(bgp, "large_communities", name, t).([][]int64); !reflect.DeepEqual(largeCommunity, expected.largeCommunities) {
 		t.Fatal(name, ": Expected large_community to be:", expected.largeCommunities, "not", largeCommunity)
 	}
+
+	if extendedCommunity, ok := bgp["ext_communities"]; ok {
+		if !reflect.DeepEqual(extendedCommunity.([]interface{}), expected.extendedCommunities) {
+			t.Fatal(name, ": Expected ext_community to be:", expected.extendedCommunities, "not", extendedCommunity)
+		}
+	}
 }
 
 func value(parsed Parsed, key, name string, t *testing.T) interface{} {
@@ -300,14 +327,15 @@ func value(parsed Parsed, key, name string, t *testing.T) interface{} {
 }
 
 type expectedRoute struct {
-	network          string
-	gateway          string
-	asPath           []string
-	community        [][]int64
-	largeCommunities [][]int64
-	metric           int64
-	protocol         string
-	primary          bool
-	localPref        string
-	iface            string
+	network             string
+	gateway             string
+	asPath              []string
+	community           [][]int64
+	largeCommunities    [][]int64
+	extendedCommunities []interface{}
+	metric              int64
+	protocol            string
+	primary             bool
+	localPref           string
+	iface               string
 }

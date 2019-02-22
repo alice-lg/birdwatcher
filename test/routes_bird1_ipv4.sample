@@ -7,6 +7,7 @@ BIRD 1.6.3 ready.
 	BGP.local_pref: 100
 	BGP.community: (65011,3) (9033,3251)
 	BGP.large_community: (9033, 65666, 12) (9033, 65666, 9)
+	BGP.ext_community: (rt, 48858, 50)
 200.0.0.0/24       via 1.2.3.15 on eno7 [ID8497_AS1339 2017-06-21 08:17:31] * (100) [AS1339i]
 	Type: BGP unicast univ
 	BGP.origin: IGP
@@ -15,6 +16,7 @@ BIRD 1.6.3 ready.
 	BGP.local_pref: 100
 	BGP.community: (65011,40) (9033,3251)
 	BGP.large_community: (9033, 65666, 12) (9033, 65666, 9)
+	BGP.ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
                    via 1.2.3.16 on eno8 [ID8503_AS1340 2017-06-21 08:17:33] (100) [AS1340i]
 	Type: BGP unicast univ
 	BGP.origin: IGP
@@ -23,6 +25,7 @@ BIRD 1.6.3 ready.
 	BGP.local_pref: 100
 	BGP.community: (65011,3) (9033,3251)
 	BGP.large_community: (9033, 65666, 12) (9033, 65666, 9)
+	BGP.ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
 16.0.0.0/24        via 1.2.3.16 on eno7 [ID8503_AS1340 2017-06-21 08:17:33] * (100) [AS1340i]
 	Type: BGP unicast univ
 	BGP.origin: IGP
@@ -31,3 +34,4 @@ BIRD 1.6.3 ready.
 	BGP.local_pref: 100
 	BGP.community: (65011,3) (9033,3251)
 	BGP.large_community: (9033, 65666, 12) (9033, 65666, 9)
+	BGP.ext_community: (rt, 48858, 50)
