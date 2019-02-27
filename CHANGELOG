@@ -1,4 +1,8 @@
 
+1.12.2
+
+* Remove unused OrigTTL attribute from cache info
+
 1.12.1
 
 * Parser: ignore whitespace at the end of the protocol line
