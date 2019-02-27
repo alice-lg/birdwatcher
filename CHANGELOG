@@ -1,4 +1,8 @@
 
+1.12.3
+
+* Fix community value misssing when parsing multiline communities
+
 1.12.2
 
 * Remove unused OrigTTL attribute from cache info
