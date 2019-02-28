@@ -28,6 +28,7 @@ var RateLimitConf struct {
 }
 var RunQueue sync.Map // queue birdc commands before execution
 
+var CacheRedis *RedisCache
 var NilParse Parsed = (Parsed)(nil) // special Parsed values
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
