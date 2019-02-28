@@ -22,6 +22,7 @@ type Config struct {
 	Bird      bird.BirdConfig
 	Bird6     bird.BirdConfig
 	Parser    bird.ParserConfig
+	Cache     bird.CacheConfig
 }
 
 // Try to load configfiles as specified in the files
