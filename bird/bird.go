@@ -305,14 +305,6 @@ func RoutesNoExport(protocol string) (Parsed, bool) {
 	if ParserConf.PerPeerTables &&
 		strings.HasPrefix(protocol, ParserConf.PeerProtocolPrefix) {
 
-		protocolsRes, from_cache := ProtocolsBgp()
-		if IsSpecial(protocolsRes) {
-			return protocolsRes, from_cache
-		}
-		if _, ok := protocolsRes["protocols"].(Parsed)[protocol]; !ok {
-			return NilParse, false
-		}
-
 		// Replace prefix
 		protocol = ParserConf.PipeProtocolPrefix +
 			protocol[len(ParserConf.PeerProtocolPrefix):]
