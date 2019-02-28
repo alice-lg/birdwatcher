@@ -3,6 +3,7 @@ package bird
 import (
 	"bytes"
 	"io"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -12,29 +13,69 @@ import (
 	"os/exec"
 )
 
+type Cache interface {
+	Set(key string, val Parsed, ttl int) error
+	Get(key string) (Parsed, error)
+}
+
 var ClientConf BirdConfig
 var StatusConf StatusConfig
 var IPVersion = "4"
+var cache Cache // stores parsed birdc output
 var RateLimitConf struct {
 	sync.RWMutex
 	Conf RateLimitConfig
 }
+var RunQueue sync.Map // queue birdc commands before execution
 
-type Cache struct {
-	sync.RWMutex
-	m map[string]Parsed
-}
-
-var ParsedCache = Cache{m: make(map[string]Parsed)}
-var MetaCache = Cache{m: make(map[string]Parsed)}
-
-var NilParse Parsed = (Parsed)(nil)
+var NilParse Parsed = (Parsed)(nil) // special Parsed values
 var BirdError Parsed = Parsed{"error": "bird unreachable"}
 
-var RunQueue sync.Map
-
-func IsSpecial(ret Parsed) bool {
+func IsSpecial(ret Parsed) bool { // test for special Parsed values
 	return reflect.DeepEqual(ret, NilParse) || reflect.DeepEqual(ret, BirdError)
+}
+
+// intitialize the Cache once during setup with either a MemoryCache or
+// RedisCache implementation.
+// TODO implement singleton pattern
+func InitializeCache(c Cache) {
+	cache = c
+}
+
+/* Convenience method to make new entries in the cache.
+ * Abstracts over the specific caching implementation and the ability to set
+ * individual TTL values for entries. Always use the default TTL value from the
+ * config.
+ */
+func toCache(key string, val Parsed) bool {
+	var ttl int
+	if ClientConf.CacheTtl > 0 {
+		ttl = ClientConf.CacheTtl
+	} else {
+		ttl = 5 // five minutes
+	}
+
+	if err := cache.Set(key, val, ttl); err == nil {
+		return true
+	} else {
+		log.Println(err)
+		return false
+	}
+}
+
+/* Convenience method to retrieve entries from the cache.
+ * Abstracts over the specific caching implementations.
+ */
+func fromCache(key string) (Parsed, bool) {
+	val, err := cache.Get(key)
+	if err != nil {
+		log.Println(err)
+		return val, false
+	} else if IsSpecial(val) { // cache may return NilParse e.g. if ttl is expired
+		return val, false
+	} else {
+		return val, true
+	}
 }
 
 // Determines the key in the cache, where the result of specific functions are stored.
@@ -50,39 +91,6 @@ func GetCacheKey(fname string, fargs ...interface{}) string {
 	}
 
 	return key
-}
-
-func (c *Cache) Store(key string, val Parsed) {
-	var ttl int = 5
-	if ClientConf.CacheTtl > 0 {
-		ttl = ClientConf.CacheTtl
-	}
-	cachedAt := time.Now().UTC()
-	cacheTtl := cachedAt.Add(time.Duration(ttl) * time.Minute)
-
-	c.Lock()
-	// This is not a really ... clean way of doing this.
-	val["ttl"] = cacheTtl
-	val["cached_at"] = cachedAt
-
-	c.m[key] = val
-	c.Unlock()
-}
-
-func (c *Cache) Get(key string) (Parsed, bool) {
-	c.RLock()
-	val, ok := c.m[key]
-	c.RUnlock()
-	if !ok {
-		return NilParse, false
-	}
-
-	ttl, correct := val["ttl"].(time.Time)
-	if !correct || ttl.Before(time.Now()) {
-		return NilParse, false
-	}
-
-	return val, ok
 }
 
 func Run(args string) (io.Reader, error) {
@@ -132,7 +140,7 @@ func checkRateLimit() bool {
 }
 
 func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateCache func(*Parsed)) (Parsed, bool) {
-	if val, ok := ParsedCache.Get(cmd); ok {
+	if val, ok := fromCache(cmd); ok {
 		return val, true
 	}
 
@@ -141,7 +149,7 @@ func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateCa
 	if queueGroup, queueLoaded := RunQueue.LoadOrStore(cmd, &wg); queueLoaded {
 		(*queueGroup.(*sync.WaitGroup)).Wait()
 
-		if val, ok := ParsedCache.Get(cmd); ok {
+		if val, ok := fromCache(cmd); ok {
 			return val, true
 		} else {
 			// TODO BirdError should also be signaled somehow
@@ -169,7 +177,7 @@ func RunAndParse(key string, cmd string, parser func(io.Reader) Parsed, updateCa
 		updateCache(&parsed)
 	}
 
-	ParsedCache.Store(cmd, parsed)
+	toCache(cmd, parsed)
 
 	wg.Done()
 
@@ -228,7 +236,7 @@ func Protocols() (Parsed, bool) {
 			metaProtocol["protocols"].(Parsed)["bird_protocol"].(Parsed)[birdProtocol].(Parsed)[protocol] = &parsed
 		}
 
-		MetaCache.Store(GetCacheKey("Protocols"), metaProtocol)
+		toCache(GetCacheKey("Protocols"), metaProtocol)
 	}
 
 	res, from_cache := RunAndParse(GetCacheKey("Protocols"), "protocols all", parseProtocols, createMetaCache)
@@ -241,7 +249,7 @@ func ProtocolsBgp() (Parsed, bool) {
 		return protocols, from_cache
 	}
 
-	protocolsMeta, _ := MetaCache.Get(GetCacheKey("Protocols"))
+	protocolsMeta, _ := fromCache(GetCacheKey("Protocols")) //TODO geht das einfach so?
 	metaProtocol := protocolsMeta["protocols"].(Parsed)
 
 	bgpProtocols := Parsed{}
