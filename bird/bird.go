@@ -68,14 +68,13 @@ func toCache(key string, val Parsed) bool {
  */
 func fromCache(key string) (Parsed, bool) {
 	val, err := cache.Get(key)
-	if err != nil {
-		log.Println(err)
-		return val, false
-	} else if IsSpecial(val) { // cache may return NilParse e.g. if ttl is expired
-		return val, false
-	} else {
+	if err == nil {
 		return val, true
+	} else {
+		return val, false
 	}
+	//DEBUG log.Println(err)
+
 }
 
 // Determines the key in the cache, where the result of specific functions are stored.

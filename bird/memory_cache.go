@@ -23,17 +23,17 @@ func (c *MemoryCache) Get(key string) (Parsed, error) {
 	c.RLock()
 	val, ok := c.m[key]
 	c.RUnlock()
-	if !ok {
-		return NilParse, errors.New("Could not retrive key" + key + "from MemoryCache.")
+	if !ok { // cache miss
+		return NilParse, errors.New("Failed to retrive key '" + key + "' from MemoryCache.")
 	}
 
 	ttl, correct := val["ttl"].(time.Time)
 	if !correct {
-		return NilParse, errors.New("Invalid TTL value for key" + key)
+		return NilParse, errors.New("Invalid TTL value for key '" + key + "'")
 	}
 
 	if ttl.Before(time.Now()) {
-		return NilParse, nil // TTL expired
+		return val, errors.New("TTL expired for key '" + key + "'") // TTL expired
 	} else {
 		return val, nil // cache hit
 	}
