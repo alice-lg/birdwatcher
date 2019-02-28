@@ -163,6 +163,14 @@ func main() {
 	bird.RateLimitConf.Conf = conf.Ratelimit
 	bird.RateLimitConf.Unlock()
 	bird.ParserConf = conf.Parser
+
+	var cache bird.Cache
+	cache, err = bird.NewMemoryCache() // initialze the MemoryCache
+	if err != nil {
+		log.Fatal("Could not initialize MemoryCache:", err)
+	}
+	bird.InitializeCache(cache)
+
 	endpoints.Conf = conf.Server
 
 	// Make server
