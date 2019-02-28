@@ -235,10 +235,10 @@ func Protocols() (Parsed, bool) {
 			metaProtocol["protocols"].(Parsed)["bird_protocol"].(Parsed)[birdProtocol].(Parsed)[protocol] = &parsed
 		}
 
-		toCache(GetCacheKey("Protocols"), metaProtocol)
+		toCache(GetCacheKey("metaProtocol"), metaProtocol)
 	}
 
-	res, from_cache := RunAndParse(GetCacheKey("Protocols"), "protocols all", parseProtocols, createMetaCache)
+	res, from_cache := RunAndParse(GetCacheKey("metaProtocol"), "protocols all", parseProtocols, createMetaCache)
 	return res, from_cache
 }
 
@@ -248,7 +248,7 @@ func ProtocolsBgp() (Parsed, bool) {
 		return protocols, from_cache
 	}
 
-	protocolsMeta, _ := fromCache(GetCacheKey("Protocols")) //TODO geht das einfach so?
+	protocolsMeta, _ := fromCache(GetCacheKey("metaProtocol"))
 	metaProtocol := protocolsMeta["protocols"].(Parsed)
 
 	bgpProtocols := Parsed{}
