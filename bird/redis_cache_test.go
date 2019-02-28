@@ -23,7 +23,7 @@ func Test_RedisCacheAccess(t *testing.T) {
 	}
 
 	t.Log("Setting redis cache...")
-	err = cache.Set("testkey", parsed)
+	err = cache.Set("testkey", parsed, 5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -80,7 +80,7 @@ func Test_RedisCacheRoutes(t *testing.T) {
 		return
 	}
 
-	err = cache.Set("routes_protocol_test", parsed)
+	err = cache.Set("routes_protocol_test", parsed, 5)
 	if err != nil {
 		t.Error(err)
 	}

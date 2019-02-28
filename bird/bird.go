@@ -66,6 +66,10 @@ func toCache(key string, val Parsed) bool {
 
 /* Convenience method to retrieve entries from the cache.
  * Abstracts over the specific caching implementations.
+ * If err returned by cache.Get(key) is set, the value from the cache is not
+ * used. There is either a fault e.g. missing entry or the ttl is expired.
+ * Handling of specific error conditions e.g. ttl expired but entry present is
+ * possible but currently not implemented.
  */
 func fromCache(key string) (Parsed, bool) {
 	val, err := cache.Get(key)

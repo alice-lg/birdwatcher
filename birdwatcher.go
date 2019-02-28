@@ -173,7 +173,7 @@ func main() {
 
 	var cache bird.Cache
 	if conf.Cache.UseRedis {
-		bird.CacheRedis, err = bird.NewRedisCache(conf.Cache)
+		cache, err = bird.NewRedisCache(conf.Cache)
 		if err != nil {
 			log.Fatal("Could not initialize redis cache, falling back to MemoryCache:", err)
 		}
