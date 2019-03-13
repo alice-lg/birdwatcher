@@ -1,4 +1,9 @@
 
+1.12.4
+
+* Add the ability to switch between redis and the classic
+  memory cache backend
+
 1.12.3
 
 * Fix community value misssing when parsing multiline communities
