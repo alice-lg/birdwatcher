@@ -20,7 +20,7 @@ of the config.
 ## Installation
 
 You will need to have go installed to build the package.
-Running `go get github.com/ecix/birdwatcher` will give you
+Running `go get github.com/alice-lg/birdwatcher` will give you
 a binary. You might need to cross-compile it for your
 bird-running servive (`GOARCH` and `GOOS` are your friends).
 
