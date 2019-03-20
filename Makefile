@@ -102,7 +102,14 @@ remote_rpm: build_server dist
 	scp $(BUILD_SERVER):$(RPM) $(LOCAL_RPMS)/.
 
 
+.PHONY: test clean
+test:
+	go test -v
+	cd endpoints/ && go test -v
+	cd bird/ && go test -v
+
 clean:
 	rm -f $(PROG)-osx-$(ARCH)
 	rm -f $(PROG)-linux-$(ARCH)
 	rm -rf $(DIST)
+
