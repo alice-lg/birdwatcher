@@ -1,27 +1,31 @@
 BIRD 1.6.3 ready.
 2001:4860::/32     via fe80:ffff:ffff::1 on eth2 [upstream1 2018-01-14 14:32:47 from fe80:ffff:ffff::1] * (100) [AS15169i]
-        Type: BGP unicast univ
-        BGP.origin: IGP
-        BGP.as_path: 15169
-        BGP.next_hop: fe80:ffff:ffff::1
-        BGP.med: 0
-        BGP.local_pref: 500
-        BGP.community: (9033,3001) (65000,680)
-        BGP.large_community: (48821, 0, 2000) (48821, 0, 2100)
-                   via fe80:ffff:ffff::2 on eth3 [upstream2 2018-01-14 14:33:52] (100) [AS15169i]
-        Type: BGP unicast univ
-        BGP.origin: IGP
-        BGP.as_path: 50629 15169
-        BGP.next_hop: fe80:ffff:ffff::2
-        BGP.med: 71
-        BGP.local_pref: 100
-        BGP.community: (50629,200) (50629,201)
-        BGP.large_community: (48821, 0, 3000) (48821, 0, 3100)
+	Type: BGP unicast univ
+	BGP.origin: IGP
+	BGP.as_path: 15169
+	BGP.next_hop: fe80:ffff:ffff::1
+	BGP.med: 0
+	BGP.local_pref: 500
+	BGP.community: (0,5464) (0,8339) (0,8741) (0,8823) (0,12387) (0,13101) (0,16097) (0,16316) (0,20546) (0,20686) (0,20723) (0,21083) (0,21385) (0,24940) (0,25504) (0,28876) (0,29545) (0,30058) (0,31103) (0,31400) (0,39090) (0,39392) (0,39912) (0,42473) (0,43957) (0,44453) (0,47297) (0,47692) (0,48200) (0,50629) (0,51191) (0,51839) (0,51852) (0,54113) (0,56719) (0,57957) (0,60517) (0,60574) (0,61303) (0,62297) (0,62336) (0,62359) (33891,33892) (33891,50673) (48793,48793) (50673,500)
+		(65101,11077) (65102,11000) (65103,724) (65104,150)
+	BGP.large_community: (48821, 0, 2000) (48821, 0, 2100)
+	BGP.ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
+	               via fe80:ffff:ffff::2 on eth3 [upstream2 2018-01-14 14:33:52] (100) [AS15169i]
+	Type: BGP unicast univ
+	BGP.origin: IGP
+	BGP.as_path: 50629 15169
+	BGP.next_hop: fe80:ffff:ffff::2
+	BGP.med: 71
+	BGP.local_pref: 100
+	BGP.community: (50629,200) (50629,201)
+	BGP.large_community: (48821, 0, 3000) (48821, 0, 3100)
+	BGP.ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
 2001:678:1e0::/48  via fe80:ffff:ffff::2 on eth2 [upstream2 2018-01-14 15:04:17 from 2001:678:1e0::2] * (100) [AS202739i]
-        Type: BGP unicast univ
-        BGP.origin: IGP
-        BGP.as_path: 202739
-        BGP.next_hop: 2001:678:1e0::2
-        BGP.local_pref: 5000
-        BGP.community: (48821,2000) (48821,2100)
-        BGP.large_community: (48821, 0, 2000) (48821, 0, 2100)
+	Type: BGP unicast univ
+	BGP.origin: IGP
+	BGP.as_path: 202739
+	BGP.next_hop: 2001:678:1e0::2
+	BGP.local_pref: 5000
+	BGP.community: (48821,2000) (48821,2100)
+	BGP.large_community: (48821, 0, 2000) (48821, 0, 2100)
+	BGP.ext_community: (unknown 0x4300, 0, 1)

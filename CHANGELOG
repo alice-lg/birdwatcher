@@ -1,5 +1,105 @@
 
+1.12.4
+
+* Add the ability to switch between redis and the classic
+  memory cache backend
+
+1.12.3
+
+* Fix community value misssing when parsing multiline communities
+
+1.12.2
+
+* Remove unused OrigTTL attribute from cache info
+
+1.12.1
+
+* Parser: ignore whitespace at the end of the protocol line
+* Fix parser tests failing
+
+1.12.0
+
+* Parser: Fix a bug when parsing 'BGP.*community' output spanning multiple lines
+* Fix the default config path to '/etc/birdwatcher/birdwatcher.conf'
+
+1.11.5
+
+This version brings a major redesign of the cache feature. The cache is more
+efficient leading to fewer executions of birdc commands in high load scenarios.
+Other improvements are:
+* Fix testcase for /protocols/bgp
+* New birdc query 'RoutesFilteredCount()'
+* Queue for birdc commands, prevents running the same birdc command multiple
+  times in parallel on concurrent API requests.
+* Cache: redesign cache structure, separation of Parsed and Meta cache
+  * allows independent cache access
+  * implement convenience methods for interaction with the cache
+
+  1.11.4
+
+* Fix race condition between main() and InstallRateLimitReset()
+* Fix endpoint /routes/count/table now returns integer instead of routes
+* Fix endpoint /routes/count/protocol now returns integer instead of routes
+* Fix endpoint /routes/prefixed ignores URL paremeter
+* Fix endpoint /symbols
+* Fix TestParseProtocolBgp()
+* Fix some filtered routes missing in /routes/dump
+* Fix parser return correct type on error
+* New endpoint for total number of best-paths '/routes/count/primary'
+* Parser: support extended communities and test-cases
+* Introduce new data structure for extended communities replacing the Parsed type
+* Cache: avoid duplicate cache writes in Status()
+
+1.11.3
+
+* Move code to Alice-LG GitHub organization
+* Include caching information alongside ttl
+* Repair endpoint 'protocols'
+* Documentation on interpretation of route count numbers
+* Improve example configuration
+* Caching of parsed responses from birdc.
+  Eliminates an additional parser run for cache hits.
+* Fix quotes in arguments of birdc commands in Routes{Table,Lookup}* methods.
+  This eliminates the "IP address expected" error in BIRD.
+
+1.11.2
+
+* Parser: protocol parser can now parse all types of protocols
+* Parser: improved parsing of route change statistics
+* Add TLS support for the HTTP listener
+* Configuration: add new option for TLS 'enable_tls', 'crt' and 'key'
+* Improved logging of API requests, similar to a webserver
+* Execute birdc in restricted mode 'birdc -r'
+
+1.11.1
+
+* Fix detection of BIRD v2.x.y
+* Fix birdc command in RoutesFiltered
+* Use worker-threads to parse in parallel. This speeds up parsing of large responses e.g. BGP full-table.
+* Add flag "worker-pool-size" to control number of threads while parsing
+* Configuration: add setting for ttl value to control caching of bird responses
+* Configuration: change default location to /etc/birdwatcher
+
+1.11.0
+
+* Parser: support BIRD v2.x with multiprotocol BGP and channels
+* Parser: major refactoring
+* Parser: decrease memory footprint
+  * use io.Reader interface
+  * use line-iterator for birdc output
+* Detection of BIRD v1.6.x or BIRD v2.x
+* Extend test coverage for IPv6
+* Tests for BIRD v2.x and IPv4
+* Dependencies managed by now managed by dep
+
+1.10.2
+
+* Workaround for interface conversion issue
+
+1.10.1
+
+* Fix import/export naming for routes in API
+
 1.10.0
 
 * Added support for dumping all routes
-
