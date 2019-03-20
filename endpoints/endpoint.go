@@ -14,7 +14,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type endpoint func(*http.Request, httprouter.Params) (bird.Parsed, bool)
+type endpoint func(*http.Request, httprouter.Params, bool) (bird.Parsed, bool)
 
 var Conf ServerConfig
 
@@ -42,6 +42,17 @@ func CheckAccess(req *http.Request) error {
 	return fmt.Errorf("%s is not allowed to access this service.", ip)
 }
 
+func CheckUseCache(req *http.Request) bool {
+	qs := req.URL.Query()
+
+	if Conf.AllowUncached &&
+		len(qs["uncached"]) == 1 && qs["uncached"][0] == "true" {
+		return false
+	}
+
+	return true
+}
+
 func Endpoint(wrapped endpoint) httprouter.Handle {
 	return func(w http.ResponseWriter,
 		r *http.Request,
@@ -54,7 +65,9 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		}
 
 		res := make(map[string]interface{})
-		ret, from_cache := wrapped(r, ps)
+
+		useCache := CheckUseCache(r)
+		ret, from_cache := wrapped(r, ps, useCache)
 
 		if reflect.DeepEqual(ret, bird.NilParse) {
 			w.WriteHeader(http.StatusTooManyRequests)

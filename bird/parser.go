@@ -29,6 +29,7 @@ var (
 			routes       *regexp.Regexp
 			stringValue  *regexp.Regexp
 			routeChanges *regexp.Regexp
+			short        *regexp.Regexp
 		}
 		symbols struct {
 			keyRx *regexp.Regexp
@@ -72,12 +73,13 @@ func init() {
 	regex.protocol.routeChanges = regexp.MustCompile(`(Import|Export) (updates|withdraws):\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s*$`)
 
 	regex.routes.startDefinition = regexp.MustCompile(`^([0-9a-f\.\:\/]+)\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*`)
+	regex.protocol.short = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([0-9\-]+\s+[0-9\:]+?|[0-9\-]+)\s+(.*?)\s*?$`)
 	regex.routes.second = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
 	regex.routes.routeType = regexp.MustCompile(`^\s+Type:\s+(.*)\s*$`)
 	regex.routes.bgp = regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)
 	regex.routes.community = regexp.MustCompile(`^\((\d+),\s*(\d+)\)`)
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
-	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*(\d+),\s*(\d+)\)`)
+	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*([^,]+),\s*([^,]+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
 	regex.routes.prefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
 	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s*$`)
@@ -130,6 +132,35 @@ func parseStatus(reader io.Reader) Parsed {
 	}
 
 	return Parsed{"status": res}
+}
+
+func parseProtocolsShort(reader io.Reader) Parsed {
+	res := Parsed{}
+
+	lines := newLineIterator(reader, false)
+	for lines.next() {
+		line := lines.string()
+
+		if specialLine(line) {
+			continue
+		}
+
+		if regex.protocol.short.MatchString(line) {
+			// The header is skipped, because the regular expression does not
+			// match if the "since" field does not contain digits
+			matches := regex.protocol.short.FindStringSubmatch(line)
+
+			res[matches[1]] = Parsed{
+				"proto": matches[2],
+				"table": matches[3],
+				"state": matches[4],
+				"since": matches[5],
+				"info": matches[6],
+			}
+		}
+	}
+
+	return Parsed{"protocols": res}
 }
 
 func parseProtocols(reader io.Reader) Parsed {
@@ -472,7 +503,7 @@ func parseRoutesExtendedCommunities(groups []string, res Parsed) {
 	for _, community := range regex.routes.origin.FindAllString(groups[2], -1) {
 		if regex.routes.extendedCommunity.MatchString(community) {
 			communityGroups := regex.routes.extendedCommunity.FindStringSubmatch(community)
-			communities = append(communities, []interface{}{communityGroups[1], parseInt(communityGroups[2]), parseInt(communityGroups[3])})
+			communities = append(communities, []interface{}{communityGroups[1], communityGroups[2], communityGroups[3]})
 		}
 	}
 
