@@ -8,10 +8,16 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "github.com/gorilla/handlers"
+  packages = ["."]
+  revision = "90663712d74cb411cbef281bc1e08c19d1a76145"
+  version = "v1.3.0"
+
+[[projects]]
   name = "github.com/imdario/mergo"
   packages = ["."]
-  revision = "f1ac5984e69fed03e0574a92f70c59f132616ea2"
-  version = "0.3.0"
+  revision = "9316a62528ac99aaecb4e47eadd6dc8aa6533d58"
+  version = "v0.3.5"
 
 [[projects]]
   name = "github.com/julienschmidt/httprouter"
@@ -19,9 +25,21 @@
   revision = "8c199fb6259ffc1af525cc3ad52ee60ba8359669"
   version = "v1.1"
 
+[[projects]]
+  name = "github.com/kr/text"
+  packages = ["."]
+  revision = "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f"
+  version = "v0.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/tonnerre/golang-pretty"
+  packages = ["."]
+  revision = "e7fccc03e91bad289b96c21aa3312a220689bdd7"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0284f4182faee0cc68c76356a89e5a12150bb3fe97b47751f319bfa741170fed"
+  inputs-digest = "cbd7e903341c5f91e2fca727fa706866a0a62457f7b73b68bec5088a3f029242"
   solver-name = "gps-cdcl"
   solver-version = 1

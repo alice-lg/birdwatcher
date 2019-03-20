@@ -2,12 +2,15 @@ package bird
 
 import (
 	"encoding/json"
-	"github.com/go-redis/redis"
+	"errors"
 	"time"
+
+	"github.com/go-redis/redis"
 )
 
 type RedisCache struct {
-	client *redis.Client
+	client    *redis.Client
+	keyPrefix string
 }
 
 func NewRedisCache(config CacheConfig) (*RedisCache, error) {
@@ -31,6 +34,7 @@ func NewRedisCache(config CacheConfig) (*RedisCache, error) {
 }
 
 func (self *RedisCache) Get(key string) (Parsed, error) {
+	key = self.keyPrefix + key //"B" + IPVersion + "_" + key
 	data, err := self.client.Get(key).Result()
 	if err != nil {
 		return NilParse, err
@@ -39,15 +43,34 @@ func (self *RedisCache) Get(key string) (Parsed, error) {
 	parsed := Parsed{}
 	err = json.Unmarshal([]byte(data), &parsed)
 
-	return parsed, err
-}
-
-func (self *RedisCache) Set(key string, parsed Parsed) error {
-	payload, err := json.Marshal(parsed)
-	if err != nil {
-		return err
+	ttl, correct := parsed["ttl"].(time.Time)
+	if !correct {
+		return NilParse, errors.New("Invalid TTL value for key" + key)
 	}
 
-	_, err = self.client.Set(key, payload, time.Minute*5).Result()
-	return err
+	if ttl.Before(time.Now()) {
+		return NilParse, err // TTL expired
+	} else {
+		return parsed, err // cache hit
+	}
+}
+
+func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
+	switch {
+	case ttl == 0:
+		return nil // do not cache
+
+	case ttl > 0:
+		key = self.keyPrefix + key //TODO "B" + IPVersion + "_" + key
+		payload, err := json.Marshal(parsed)
+		if err != nil {
+			return err
+		}
+
+		_, err = self.client.Set(key, payload, time.Duration(ttl)*time.Minute).Result()
+		return err
+
+	default: // ttl negative - invalid
+		return errors.New("Negative TTL value for key" + key)
+	}
 }

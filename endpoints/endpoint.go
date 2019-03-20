@@ -54,8 +54,8 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		}
 
 		res := make(map[string]interface{})
-
 		ret, from_cache := wrapped(r, ps)
+
 		if reflect.DeepEqual(ret, bird.NilParse) {
 			w.WriteHeader(http.StatusTooManyRequests)
 			return
@@ -67,7 +67,7 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 			w.Write(js)
 			return
 		}
-		res["api"] = GetApiInfo(from_cache)
+		res["api"] = GetApiInfo(&ret, from_cache)
 
 		for k, v := range ret {
 			res[k] = v

@@ -1,9 +1,13 @@
 package bird
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"testing"
+
+	pretty "github.com/tonnerre/golang-pretty"
 )
 
 func openFile(filename string) (*os.File, error) {
@@ -32,12 +36,31 @@ func TestParseBgpRoutes(t *testing.T) {
 	}
 
 	for i, in := range inputs {
-		routes := parseBgpRoutes(in)
+		routes := parseProtocolRoutes(in)
 		if !reflect.DeepEqual(routes, expected[i]) {
 			t.Error("Parse bgpRoutes:", routes, "expected:", expected[i])
 		}
 	}
 
+}
+
+func TestParseProtocolBgp(t *testing.T) {
+	f, err := openFile("protocols_bgp_pipe.sample")
+	if err != nil {
+		t.Error(err)
+	}
+	defer f.Close()
+
+	p := parseProtocols(f)
+	log.Printf("%# v", pretty.Formatter(p))
+	protocols := p["protocols"].(Parsed)
+
+	if len(protocols) != 3 {
+		//log.Printf("%# v", pretty.Formatter(protocols))
+		t.Fatalf("Expected 3 protocols, found: %v", len(protocols))
+	}
+
+	fmt.Println(protocols)
 }
 
 func TestParseRoutesAllIpv4Bird1(t *testing.T) {
@@ -70,12 +93,63 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		gateway: "1.2.3.16",
 		asPath:  []string{"1340"},
 		community: [][]int64{
-			{65011, 3},
-			{9033, 3251},
+			{0, 5464},
+			{0, 8339},
+			{0, 8741},
+			{0, 8823},
+			{0, 12387},
+			{0, 13101},
+			{0, 16097},
+			{0, 16316},
+			{0, 20546},
+			{0, 20686},
+			{0, 20723},
+			{0, 21083},
+			{0, 21385},
+			{0, 24940},
+			{0, 25504},
+			{0, 28876},
+			{0, 29545},
+			{0, 30058},
+			{0, 31103},
+			{0, 31400},
+			{0, 39090},
+			{0, 39392},
+			{0, 39912},
+			{0, 42473},
+			{0, 43957},
+			{0, 44453},
+			{0, 47297},
+			{0, 47692},
+			{0, 48200},
+			{0, 50629},
+			{0, 51191},
+			{0, 51839},
+			{0, 51852},
+			{0, 54113},
+			{0, 56719},
+			{0, 57957},
+			{0, 60517},
+			{0, 60574},
+			{0, 61303},
+			{0, 62297},
+			{0, 62336},
+			{0, 62359},
+			{33891, 33892},
+			{33891, 50673},
+			{48793, 48793},
+			{50673, 500},
+			{65101, 11077},
+			{65102, 11000},
+			{65103, 724},
+			{65104, 150},
 		},
 		largeCommunities: [][]int64{
 			{9033, 65666, 12},
 			{9033, 65666, 9},
+		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"rt", int64(48858), int64(50)},
 		},
 		metric:    100,
 		localPref: "100",
@@ -95,6 +169,11 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
+		},
 		metric:    100,
 		localPref: "100",
 		protocol:  "ID8497_AS1339",
@@ -113,6 +192,11 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 12},
 			{9033, 65666, 9},
 		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
+		},
 		metric:    100,
 		localPref: "100",
 		protocol:  "ID8503_AS1340",
@@ -130,6 +214,9 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{9033, 65666, 12},
 			{9033, 65666, 9},
+		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"rt", int64(48858), int64(50)},
 		},
 		metric:    100,
 		localPref: "100",
@@ -169,12 +256,65 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 		gateway: "fe80:ffff:ffff::1",
 		asPath:  []string{"15169"},
 		community: [][]int64{
-			{9033, 3001},
-			{65000, 680},
+			{0, 5464},
+			{0, 8339},
+			{0, 8741},
+			{0, 8823},
+			{0, 12387},
+			{0, 13101},
+			{0, 16097},
+			{0, 16316},
+			{0, 20546},
+			{0, 20686},
+			{0, 20723},
+			{0, 21083},
+			{0, 21385},
+			{0, 24940},
+			{0, 25504},
+			{0, 28876},
+			{0, 29545},
+			{0, 30058},
+			{0, 31103},
+			{0, 31400},
+			{0, 39090},
+			{0, 39392},
+			{0, 39912},
+			{0, 42473},
+			{0, 43957},
+			{0, 44453},
+			{0, 47297},
+			{0, 47692},
+			{0, 48200},
+			{0, 50629},
+			{0, 51191},
+			{0, 51839},
+			{0, 51852},
+			{0, 54113},
+			{0, 56719},
+			{0, 57957},
+			{0, 60517},
+			{0, 60574},
+			{0, 61303},
+			{0, 62297},
+			{0, 62336},
+			{0, 62359},
+			{33891, 33892},
+			{33891, 50673},
+			{48793, 48793},
+			{50673, 500},
+			{65101, 11077},
+			{65102, 11000},
+			{65103, 724},
+			{65104, 150},
 		},
 		largeCommunities: [][]int64{
 			{48821, 0, 2000},
 			{48821, 0, 2100},
+		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
 		},
 		metric:    100,
 		localPref: "500",
@@ -194,6 +334,11 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 3000},
 			{48821, 0, 3100},
 		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"ro", int64(21414), int64(52001)},
+			[]interface{}{"ro", int64(21414), int64(52004)},
+			[]interface{}{"ro", int64(21414), int64(64515)},
+		},
 		localPref: "100",
 		metric:    100,
 		primary:   false,
@@ -211,6 +356,9 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 		largeCommunities: [][]int64{
 			{48821, 0, 2000},
 			{48821, 0, 2100},
+		},
+		extendedCommunities: []interface{}{
+			[]interface{}{"unknown 0x4300", int64(0), int64(1)},
 		},
 		metric:    100,
 		localPref: "5000",
@@ -257,6 +405,12 @@ func assertRouteIsEqual(expected expectedRoute, actual Parsed, name string, t *t
 	if largeCommunity := value(bgp, "large_communities", name, t).([][]int64); !reflect.DeepEqual(largeCommunity, expected.largeCommunities) {
 		t.Fatal(name, ": Expected large_community to be:", expected.largeCommunities, "not", largeCommunity)
 	}
+
+	if extendedCommunity, ok := bgp["ext_communities"]; ok {
+		if !reflect.DeepEqual(extendedCommunity.([]interface{}), expected.extendedCommunities) {
+			t.Fatal(name, ": Expected ext_community to be:", expected.extendedCommunities, "not", extendedCommunity)
+		}
+	}
 }
 
 func value(parsed Parsed, key, name string, t *testing.T) interface{} {
@@ -269,14 +423,15 @@ func value(parsed Parsed, key, name string, t *testing.T) interface{} {
 }
 
 type expectedRoute struct {
-	network          string
-	gateway          string
-	asPath           []string
-	community        [][]int64
-	largeCommunities [][]int64
-	metric           int64
-	protocol         string
-	primary          bool
-	localPref        string
-	iface            string
+	network             string
+	gateway             string
+	asPath              []string
+	community           [][]int64
+	largeCommunities    [][]int64
+	extendedCommunities []interface{}
+	metric              int64
+	protocol            string
+	primary             bool
+	localPref           string
+	iface               string
 }

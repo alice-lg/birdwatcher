@@ -13,6 +13,7 @@ type BirdConfig struct {
 	Listen         string
 	ConfigFilename string `toml:"config"`
 	BirdCmd        string `toml:"birdc"`
+	CacheTtl       int    `toml:"ttl"`
 }
 
 type ParserConfig struct {

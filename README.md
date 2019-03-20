@@ -14,7 +14,7 @@ regular binaries, which means deployment and maintenance might be
 more convenient.
 
 Our version also has a few more capabilities, as you will
-discover when looking at [the modules section](https://github.com/alice-lg/birdwatcher/blob/master/etc/ecix/birdwatcher.conf)
+discover when looking at [the modules section](https://github.com/alice-lg/birdwatcher/blob/master/etc/birdwatcher/birdwatcher.conf)
 of the config.
 
 ## Installation
@@ -42,8 +42,8 @@ the time format to be `iso long`. You need to configure
 in your `/etc/bird[6].conf` for birdwatcher to work.
 
 #### BIRD keep filtered routes
-To also see the filtered routes in BIRD you need to make sure that you 
-have enabled the 'import keep filtered on' option for your BGP peers. 
+To also see the filtered routes in BIRD you need to make sure that you
+have enabled the 'import keep filtered on' option for your BGP peers.
 
     protocol bgp 'peerX' {
         ...
@@ -54,10 +54,10 @@ have enabled the 'import keep filtered on' option for your BGP peers.
 Now you should be able to do a 'show route filtered' in BIRD.
 
 Do note that 'import keep filtered on' does NOT work for BIRD's pipe protocol
-which is used when you have per peer tables, often used with Route Servers. If 
-your BIRD configuration has its import filters set on the BIRD pipe protocols 
-themselves then you will not be able to show the filtered routes. 
-However, you could move the import filters from the pipes to the BGP protocols 
+which is used when you have per peer tables, often used with Route Servers. If
+your BIRD configuration has its import filters set on the BIRD pipe protocols
+themselves then you will not be able to show the filtered routes.
+However, you could move the import filters from the pipes to the BGP protocols
 directly. For example:
 
     table master;
@@ -135,7 +135,7 @@ We do not currently support other deployment methods.
 ## Configuration
 
 An example config with sane defaults is provided in
-[etc/ecix/birdwatcher.conf](https://github.com/alice-lg/birdwatcher/blob/master/etc/ecix/birdwatcher.conf).
+[etc/birdwatcher/birdwatcher.conf](https://github.com/alice-lg/birdwatcher/blob/master/etc/birdwatcher/birdwatcher.conf).
 You should be able to use it out of the box. If you need
 to change it, it is well-commented and hopefully intuitive.
 If you do not know how to configure it, please consider opening

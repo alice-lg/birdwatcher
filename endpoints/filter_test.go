@@ -14,7 +14,6 @@ func TestValidateProtocol(t *testing.T) {
 
 	invalidProtocols := []string{
 		"ID421_AS11171_123.8.127.lö19",
-		"Test123",
 		"ThisValueIsTooLong12345678901234567890123456789012345678901234567890123456789012345678901234567890",
 	}
 
