@@ -17,7 +17,7 @@ type CacheStatus struct {
 }
 
 type APIInfo struct {
-	Version         string      `json:"version"`
+	Version         string
 	ResultFromCache bool        `json:"result_from_cache"`
 	CacheStatus     CacheStatus `json:"cache_status"`
 }
