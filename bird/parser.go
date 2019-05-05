@@ -542,6 +542,7 @@ func parseProtocol(lines string) Parsed {
 		routes := Parsed{}
 		routes["accepted"] = int64(0)
 		routes["filtered"] = int64(0)
+		routes["imported"] = int64(0)
 		routes["exported"] = int64(0)
 		routes["preferred"] = int64(0)
 
