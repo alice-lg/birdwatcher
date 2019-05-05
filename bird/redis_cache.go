@@ -3,6 +3,7 @@ package bird
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -73,4 +74,9 @@ func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
 	default: // ttl negative - invalid
 		return errors.New("Negative TTL value for key" + key)
 	}
+}
+
+func (self *RedisCache) Expire() int {
+	log.Printf("Cannot expire entries in RedisCache backend, redis does this automatically")
+	return 0
 }

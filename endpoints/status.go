@@ -7,6 +7,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func Status(r *http.Request, ps httprouter.Params) (bird.Parsed, bool) {
-	return bird.Status()
+func Status(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
+	return bird.Status(useCache)
 }
