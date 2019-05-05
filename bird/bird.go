@@ -229,7 +229,6 @@ func Protocols() (Parsed, bool) {
 
 		for key, _ := range (*p)["protocols"].(Parsed) {
 			parsed := (*p)["protocols"].(Parsed)[key].(Parsed)
-
 			protocol := parsed["protocol"].(string)
 
 			birdProtocol := parsed["bird_protocol"].(string)
@@ -281,6 +280,16 @@ func RoutesProto(protocol string) (Parsed, bool) {
 	return RunAndParse(GetCacheKey("RoutesProto", protocol), cmd, parseRoutes, nil)
 }
 
+func RoutesPeer(peer string) (Parsed, bool) {
+	cmd := routeQueryForChannel("route all where from=" + peer)
+	return RunAndParse(GetCacheKey("RoutesPeer", peer), cmd, parseRoutes, nil)
+}
+
+func RoutesTableAndPeer(table string, peer string) (Parsed, bool) {
+	cmd := routeQueryForChannel("route table " + table + " all where from=" + peer)
+	return RunAndParse(GetCacheKey("RoutesTableAndPeer", table, peer), cmd, parseRoutes, nil)
+}
+
 func RoutesProtoCount(protocol string) (Parsed, bool) {
 	cmd := routeQueryForChannel("route protocol "+protocol) + " count"
 	return RunAndParse(GetCacheKey("RoutesProtoCount", protocol), cmd, parseRoutesCount, nil)
@@ -312,16 +321,6 @@ func RoutesExport(protocol string) (Parsed, bool) {
 }
 
 func RoutesNoExport(protocol string) (Parsed, bool) {
-	// In case we have a multi table setup, we have to query
-	// the pipe protocol.
-	if ParserConf.PerPeerTables &&
-		strings.HasPrefix(protocol, ParserConf.PeerProtocolPrefix) {
-
-		// Replace prefix
-		protocol = ParserConf.PipeProtocolPrefix +
-			protocol[len(ParserConf.PeerProtocolPrefix):]
-	}
-
 	cmd := routeQueryForChannel("route all noexport " + protocol)
 	return RunAndParse(GetCacheKey("RoutesNoExport", protocol), cmd, parseRoutes, nil)
 }
@@ -335,6 +334,10 @@ func RoutesTable(table string) (Parsed, bool) {
 	return RunAndParse(GetCacheKey("RoutesTable", table), "route table "+table+" all", parseRoutes, nil)
 }
 
+func RoutesTableFiltered(table string) (Parsed, bool) {
+	return RunAndParse(GetCacheKey("RoutesTableFiltered", table), "route table "+table+" filtered", parseRoutes, nil)
+}
+
 func RoutesTableCount(table string) (Parsed, bool) {
 	return RunAndParse(GetCacheKey("RoutesTableCount", table), "route table "+table+" count", parseRoutesCount, nil)
 }
@@ -345,85 +348,6 @@ func RoutesLookupTable(net string, table string) (Parsed, bool) {
 
 func RoutesLookupProtocol(net string, protocol string) (Parsed, bool) {
 	return RunAndParse(GetCacheKey("RoutesLookupProtocol", net, protocol), "route for "+net+" protocol "+protocol+" all", parseRoutes, nil)
-}
-
-func RoutesPeer(peer string) (Parsed, bool) {
-	cmd := routeQueryForChannel("route export " + peer)
-	return RunAndParse(GetCacheKey("RoutesPeer", peer), cmd, parseRoutes, nil)
-}
-
-func RoutesDump() (Parsed, bool) {
-	// TODO insert hook to update the cache with the route count information
-	if ParserConf.PerPeerTables {
-		return RoutesDumpPerPeerTable()
-	}
-
-	return RoutesDumpSingleTable()
-}
-
-func RoutesDumpSingleTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse(GetCacheKey("RoutesDumpSingleTable", "imported"), routeQueryForChannel("route all"), parseRoutes, nil)
-	if IsSpecial(importedRes) {
-		return importedRes, cached
-	}
-	filteredRes, cached := RunAndParse(GetCacheKey("RoutesDumpSingleTable", "filtered"), routeQueryForChannel("route all filtered"), parseRoutes, nil)
-	if IsSpecial(filteredRes) {
-		return filteredRes, cached
-	}
-
-	imported := importedRes["routes"]
-	filtered := filteredRes["routes"]
-
-	result := Parsed{
-		"imported": imported,
-		"filtered": filtered,
-	}
-
-	return result, cached
-}
-
-func RoutesDumpPerPeerTable() (Parsed, bool) {
-	importedRes, cached := RunAndParse(GetCacheKey("RoutesDumpPerPeerTable", "imported"), routeQueryForChannel("route all"), parseRoutes, nil)
-	if IsSpecial(importedRes) {
-		return importedRes, cached
-	}
-	imported := importedRes["routes"]
-	filtered := []Parsed{}
-
-	// Get protocols with filtered routes
-	protocolsRes, cached := ProtocolsBgp()
-	if IsSpecial(protocolsRes) {
-		return protocolsRes, cached
-	}
-	protocols := protocolsRes["protocols"].(Parsed)
-
-	for protocol, details := range protocols {
-		details := details.(Parsed)
-
-		counters, ok := details["routes"].(Parsed)
-		if !ok {
-			continue
-		}
-		filterCount := counters["filtered"]
-		if filterCount == 0 {
-			continue // nothing to do here.
-		}
-		// Lookup filtered routes
-		pfilteredRes, _ := RoutesFiltered(protocol)
-		pfiltered, ok := pfilteredRes["routes"].([]Parsed)
-		if !ok {
-			continue // something went wrong...
-		}
-
-		filtered = append(filtered, pfiltered...)
-	}
-
-	result := Parsed{
-		"imported": imported,
-		"filtered": filtered,
-	}
-
-	return result, cached
 }
 
 func routeQueryForChannel(cmd string) string {
