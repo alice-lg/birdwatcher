@@ -17,12 +17,13 @@ import (
 type Config struct {
 	Server endpoints.ServerConfig
 
-	Ratelimit bird.RateLimitConfig
-	Status    bird.StatusConfig
-	Bird      bird.BirdConfig
-	Bird6     bird.BirdConfig
-	Parser    bird.ParserConfig
-	Cache     bird.CacheConfig
+	Ratelimit    bird.RateLimitConfig
+	Status       bird.StatusConfig
+	Bird         bird.BirdConfig
+	Bird6        bird.BirdConfig
+	Parser       bird.ParserConfig
+	Cache        bird.CacheConfig
+	Housekeeping HousekeepingConfig
 }
 
 // Try to load configfiles as specified in the files

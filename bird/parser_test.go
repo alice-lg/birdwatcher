@@ -63,6 +63,26 @@ func TestParseProtocolBgp(t *testing.T) {
 	fmt.Println(protocols)
 }
 
+func TestParseProtocolShort(t *testing.T) {
+	f, err := openFile("protocols_short.sample")
+	if err != nil {
+		t.Error(err)
+	}
+	defer f.Close()
+
+	p := parseProtocolsShort(f)
+	log.Printf("%# v", pretty.Formatter(p))
+	protocols := p["protocols"].(Parsed)
+
+	if len(protocols) != 27 {
+		//log.Printf("%# v", pretty.Formatter(protocols))
+		t.Fatalf("Expected 27 protocols, found: %v", len(protocols))
+	}
+
+	fmt.Println(protocols)
+}
+
+
 func TestParseRoutesAllIpv4Bird1(t *testing.T) {
 	runTestForIpv4WithFile("routes_bird1_ipv4.sample", t)
 }
@@ -149,7 +169,8 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 9},
 		},
 		extendedCommunities: []interface{}{
-			[]interface{}{"rt", int64(48858), int64(50)},
+			[]interface{}{"rt", "42", "1234"},
+			[]interface{}{"generic", "0x43000000", "0x1"},
 		},
 		metric:    100,
 		localPref: "100",
@@ -170,9 +191,9 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 9},
 		},
 		extendedCommunities: []interface{}{
-			[]interface{}{"ro", int64(21414), int64(52001)},
-			[]interface{}{"ro", int64(21414), int64(52004)},
-			[]interface{}{"ro", int64(21414), int64(64515)},
+			[]interface{}{"ro", "21414", "52001"},
+			[]interface{}{"ro", "21414", "52004"},
+			[]interface{}{"ro", "21414", "64515"},
 		},
 		metric:    100,
 		localPref: "100",
@@ -193,9 +214,9 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 9},
 		},
 		extendedCommunities: []interface{}{
-			[]interface{}{"ro", int64(21414), int64(52001)},
-			[]interface{}{"ro", int64(21414), int64(52004)},
-			[]interface{}{"ro", int64(21414), int64(64515)},
+			[]interface{}{"ro", "21414", "52001"},
+			[]interface{}{"ro", "21414", "52004"},
+			[]interface{}{"ro", "21414", "64515"},
 		},
 		metric:    100,
 		localPref: "100",
@@ -216,7 +237,8 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 			{9033, 65666, 9},
 		},
 		extendedCommunities: []interface{}{
-			[]interface{}{"rt", int64(48858), int64(50)},
+			[]interface{}{"rt", "42", "1234"},
+			[]interface{}{"generic", "0x43000000", "0x1"},
 		},
 		metric:    100,
 		localPref: "100",
@@ -312,9 +334,9 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 2100},
 		},
 		extendedCommunities: []interface{}{
-			[]interface{}{"ro", int64(21414), int64(52001)},
-			[]interface{}{"ro", int64(21414), int64(52004)},
-			[]interface{}{"ro", int64(21414), int64(64515)},
+			[]interface{}{"ro", "21414", "52001"},
+			[]interface{}{"ro", "21414", "52004"},
+			[]interface{}{"ro", "21414", "64515"},
 		},
 		metric:    100,
 		localPref: "500",
@@ -335,9 +357,9 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 3100},
 		},
 		extendedCommunities: []interface{}{
-			[]interface{}{"ro", int64(21414), int64(52001)},
-			[]interface{}{"ro", int64(21414), int64(52004)},
-			[]interface{}{"ro", int64(21414), int64(64515)},
+			[]interface{}{"ro", "21414", "52001"},
+			[]interface{}{"ro", "21414", "52004"},
+			[]interface{}{"ro", "21414", "64515"},
 		},
 		localPref: "100",
 		metric:    100,
@@ -358,7 +380,7 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 			{48821, 0, 2100},
 		},
 		extendedCommunities: []interface{}{
-			[]interface{}{"unknown 0x4300", int64(0), int64(1)},
+			[]interface{}{"unknown 0x4300", "0", "1"},
 		},
 		metric:    100,
 		localPref: "5000",
