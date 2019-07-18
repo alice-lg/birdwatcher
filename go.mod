@@ -8,6 +8,9 @@ require (
 	github.com/gorilla/handlers v1.3.0
 	github.com/imdario/mergo v0.3.5
 	github.com/julienschmidt/httprouter v1.1.0
-	github.com/kr/text v0.1.0
+	github.com/kr/pretty v0.1.0 // indirect
+	github.com/onsi/ginkgo v1.8.0 // indirect
+	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/tonnerre/golang-pretty v0.0.0-20130925195953-e7fccc03e91b
+	gopkg.in/yaml.v2 v2.2.2 // indirect
 )

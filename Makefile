@@ -31,10 +31,10 @@ all: $(TARGET)
 	@echo "Built $(VERSION) @ $(TARGET)"
 
 osx:
-	GOARCH=$(ARCH) GOOS=darwin go build -o $(PROG)-osx-$(ARCH)
+	GO111MODULE=on GOARCH=$(ARCH) GOOS=darwin go build -o $(PROG)-osx-$(ARCH)
 
 linux:
-	GOARCH=$(ARCH) GOOS=linux go build -o $(PROG)-linux-$(ARCH)
+	GO111MODULE=on GOARCH=$(ARCH) GOOS=linux go build -o $(PROG)-linux-$(ARCH)
 
 
 build_server:
