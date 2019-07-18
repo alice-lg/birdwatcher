@@ -66,7 +66,8 @@ func init() {
 	regex.routeCount.countRx = regexp.MustCompile(`^(\d+)\s+of\s+(\d+)\s+routes.*$`)
 
 	regex.protocol.channel = regexp.MustCompile("Channel ipv([46])")
-	regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(BGP|Pipe|BFD|Direct|Device|Kernel)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*?)\s*)?$`)
+	// regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(BGP|RPKI|Pipe|BFD|Direct|Device|Kernel)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*?)\s*)?$`)
+	regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(\w+)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*?)\s*)?$`)
 	regex.protocol.numericValue = regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
 	regex.protocol.routes = regexp.MustCompile(`^\s+Routes:\s+(.*)`)
 	regex.protocol.stringValue = regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
@@ -155,7 +156,7 @@ func parseProtocolsShort(reader io.Reader) Parsed {
 				"table": matches[3],
 				"state": matches[4],
 				"since": matches[5],
-				"info": matches[6],
+				"info":  matches[6],
 			}
 		}
 	}
@@ -312,7 +313,7 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 	route := Parsed{}
 	routes := []Parsed{}
 
-	for i := 0; i < len(lines);  {
+	for i := 0; i < len(lines); {
 		line := lines[i]
 
 		if specialLine(line) {
@@ -352,7 +353,7 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			// the output is split into multiple lines and the continuation of the previous
 			// line is indicated by 2 tab characters at the beginning of the next line
 			joinLines := func() {
-				for c := i+1; c < len(lines); c++ {
+				for c := i + 1; c < len(lines); c++ {
 					if strings.HasPrefix(lines[c], "\x09\x09") {
 						line += lines[c][2:]
 						i++
@@ -509,7 +510,6 @@ func parseRoutesExtendedCommunities(groups []string, res Parsed) {
 
 	res["ext_communities"] = communities
 }
-
 
 func parseRoutesCount(reader io.Reader) Parsed {
 	res := Parsed{}
