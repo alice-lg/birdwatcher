@@ -1,0 +1,31 @@
+BIRD 1.6.5 ready.
+Access restricted
+name     proto    table    state  since       info
+device1  Device   master   up     2019-02-15  
+pp_0097_as3856 Pipe     master   up     2019-02-15  => t_0097_as3856
+pb_0097_as3856 BGP      t_0097_as3856 up     2019-02-15  Established   
+pp_0175_as15169 Pipe     master   up     2019-02-15  => t_0175_as15169
+pb_0175_as15169 BGP      t_0175_as15169 up     2019-02-15  Established   
+pp_0026_as20940 Pipe     master   up     2019-02-15  => t_0026_as20940
+pb_0026_as20940 BGP      t_0026_as20940 up     2019-02-15  Established   
+direct1  Direct   master   down   2019-02-19 16:17:59  
+kernel1  Kernel   master   down   2019-02-19 16:17:59  
+M42_pch_radb Pipe     master   up     2019-02-19 16:17:59  => T42_pch_radb
+C42_pch_radb Pipe     Collector up     2019-02-19 16:17:59  => T42_pch_radb
+R194_42  BGP      T42_pch_radb up     2019-02-19 16:29:00  Established   
+M3856_pch_radb Pipe     master   up     2019-02-19 16:17:59  => T3856_pch_radb
+C3856_pch_radb Pipe     Collector up     2019-02-19 16:17:59  => T3856_pch_radb
+R195_42  BGP      T3856_pch_radb up     2019-02-19 16:18:33  Established   
+M112_112_ripe Pipe     master   up     2019-02-19 16:17:59  => T112_112_ripe
+C112_112_ripe Pipe     Collector up     2019-02-19 16:17:59  => T112_112_ripe
+R195_77  BGP      T112_112_ripe up     2019-02-19 16:24:31  Established   
+M286_kpn_ripe Pipe     master   up     2019-02-19 16:17:59  => T286_kpn_ripe
+C286_kpn_ripe Pipe     Collector up     2019-02-19 16:17:59  => T286_kpn_ripe
+R192_22  BGP      T286_kpn_ripe up     2019-02-19 16:26:10  Established   
+M553_belwue_ripe Pipe     master   up     2019-02-19 16:17:59  => T553_belwue_ripe
+C553_belwue_ripe Pipe     Collector up     2019-02-19 16:17:59  => T553_belwue_ripe
+R192_175 BGP      T553_belwue_ripe up     2019-02-19 16:18:34  Established   
+R194_106 BGP      T553_belwue_ripe up     2019-02-19 16:18:09  Established   
+R194_205 BGP      T52866_iveloz_radb start  2019-02-20 12:06:01  Idle          BGP Error: Bad peer AS
+R_janus1 BGP      T6695_bh_20 start  2019-02-19 16:17:59  Idle          
+

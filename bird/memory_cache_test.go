@@ -26,6 +26,7 @@ func Test_MemoryCacheAccess(t *testing.T) {
 		t.Error(err)
 	}
 
+	cache.Expire()
 	t.Log(parsed)
 }
 

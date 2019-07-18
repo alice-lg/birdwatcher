@@ -16,7 +16,7 @@ import (
 )
 
 //go:generate versionize
-var VERSION = "1.12.3"
+var VERSION = "2.0.0"
 
 func isModuleEnabled(module string, modulesEnabled []string) bool {
 	for _, enabled := range modulesEnabled {
@@ -42,6 +42,9 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("protocols_bgp", whitelist) {
 		r.GET("/protocols/bgp", endpoints.Endpoint(endpoints.Bgp))
 	}
+	if isModuleEnabled("protocols_short", whitelist) {
+		r.GET("/protocols/short", endpoints.Endpoint(endpoints.ProtocolsShort))
+	}
 	if isModuleEnabled("symbols", whitelist) {
 		r.GET("/symbols", endpoints.Endpoint(endpoints.Symbols))
 	}
@@ -54,8 +57,17 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("routes_protocol", whitelist) {
 		r.GET("/routes/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoRoutes))
 	}
+	if isModuleEnabled("routes_peer", whitelist) {
+		r.GET("/routes/peer/:peer", endpoints.Endpoint(endpoints.PeerRoutes))
+	}
 	if isModuleEnabled("routes_table", whitelist) {
 		r.GET("/routes/table/:table", endpoints.Endpoint(endpoints.TableRoutes))
+	}
+	if isModuleEnabled("routes_table_filtered", whitelist) {
+		r.GET("/routes/table/:table/filtered", endpoints.Endpoint(endpoints.TableRoutesFiltered))
+	}
+	if isModuleEnabled("routes_table_peer", whitelist) {
+		r.GET("/routes/table/:table/peer/:peer", endpoints.Endpoint(endpoints.TableAndPeerRoutes))
 	}
 	if isModuleEnabled("routes_count_protocol", whitelist) {
 		r.GET("/routes/count/protocol/:protocol", endpoints.Endpoint(endpoints.ProtoCount))
@@ -79,12 +91,13 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 		r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
 		r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
 	}
-	if isModuleEnabled("routes_peer", whitelist) {
-		r.GET("/routes/peer", endpoints.Endpoint(endpoints.RoutesPeer))
+	if isModuleEnabled("routes_pipe_filtered_count", whitelist) {
+		r.GET("/routes/pipe/filtered/count", endpoints.Endpoint(endpoints.PipeRoutesFilteredCount))
 	}
-	if isModuleEnabled("routes_dump", whitelist) {
-		r.GET("/routes/dump", endpoints.Endpoint(endpoints.RoutesDump))
+	if isModuleEnabled("routes_pipe_filtered", whitelist) {
+		r.GET("/routes/pipe/filtered", endpoints.Endpoint(endpoints.PipeRoutesFiltered))
 	}
+
 	return r
 }
 
@@ -115,8 +128,6 @@ func PrintServiceInfo(conf *Config, birdConf bird.BirdConfig) {
 	for _, m := range conf.Server.ModulesEnabled {
 		log.Println("       -", m)
 	}
-
-	log.Println("   Per Peer Tables:", conf.Parser.PerPeerTables)
 }
 
 // MyLogger is our own log.Logger wrapper so we can customize it
@@ -170,21 +181,8 @@ func main() {
 	bird.RateLimitConf.Conf = conf.Ratelimit
 	bird.RateLimitConf.Unlock()
 	bird.ParserConf = conf.Parser
-
-	var cache bird.Cache
-	if conf.Cache.UseRedis {
-		cache, err = bird.NewRedisCache(conf.Cache)
-		if err != nil {
-			log.Fatal("Could not initialize redis cache, falling back to MemoryCache:", err)
-		}
-	} else { // initialze the MemoryCache
-		cache, err = bird.NewMemoryCache()
-		if err != nil {
-			log.Fatal("Could not initialize MemoryCache:", err)
-		} else {
-			bird.InitializeCache(cache)
-		}
-	}
+	bird.CacheConf = conf.Cache
+	bird.InitializeCache()
 
 	endpoints.Conf = conf.Server
 
@@ -196,6 +194,8 @@ func main() {
 	// Disable timestamps, as they are contained in the query log
 	myquerylog.SetFlags(myquerylog.Flags() &^ (log.Ldate | log.Ltime))
 	mylogger := &MyLogger{myquerylog}
+
+	go Housekeeping(conf.Housekeeping, !(bird.CacheConf.UseRedis)) // expire caches only for MemoryCache
 
 	if conf.Server.EnableTLS {
 		if len(conf.Server.Crt) == 0 || len(conf.Server.Key) == 0 {

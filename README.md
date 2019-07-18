@@ -20,6 +20,8 @@ of the config.
 ## Installation
 
 You will need to have go installed to build the package.
+Please make sure your go version is `>= 1.9`.
+
 Running `go get github.com/alice-lg/birdwatcher` will give you
 a binary. You might need to cross-compile it for your
 bird-running servive (`GOARCH` and `GOOS` are your friends).
@@ -28,6 +30,13 @@ We provide a Makefile for more advanced compilation/configuration.
 Running `make linux` will create a Linux executable (by default for
 `amd64`, but that is configurable by providing the `ARCH` argument
 to the Makefile).
+
+
+#### 2.0 Breaking Change
+
+The per peer table configuration is no longer done in the birdwatcher,
+but directly in alice.
+
 
 ### BIRD configuration
 
@@ -153,3 +162,6 @@ Initially developed by Daniel and MC from [Netnod](https://www.netnod.se/) in
 two days at the RIPE 73 IXP Tools Hackathon in Madrid, Spain.
 
 Running bird and parsing the results was added by [Veit Heller](https://github.com/hellerve/) on behalf of [ecix](http://ecix.net/).
+
+With major contributions from: Patrick Seeburger and Benedikt Rudolph on behalf of [DE-CIX](https://de-cix.net).
+

@@ -1,4 +1,21 @@
 
+2.0.0 - 
+
+BREAKING CHANGES AHEAD:
+
+In order to ease the load on the routeservers and even further
+reduce the memory footprint, we decided to move the per peer table
+configuration out of the birdwatcher and into alice.
+
+Please be aware, that you need the newest version of alice.
+
+Everything else:
+
+* Improved cach setup for inmemory and redis
+* Improved housekeeping and memory footprint reduction
+* Performance improvements and other good stuff.
+
+
 1.12.4
 
 * Add the ability to switch between redis and the classic

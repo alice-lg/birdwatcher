@@ -14,7 +14,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type endpoint func(*http.Request, httprouter.Params) (bird.Parsed, bool)
+type endpoint func(*http.Request, httprouter.Params, bool) (bird.Parsed, bool)
 
 var Conf ServerConfig
 
@@ -42,6 +42,17 @@ func CheckAccess(req *http.Request) error {
 	return fmt.Errorf("%s is not allowed to access this service.", ip)
 }
 
+func CheckUseCache(req *http.Request) bool {
+	qs := req.URL.Query()
+
+	if Conf.AllowUncached &&
+		len(qs["uncached"]) == 1 && qs["uncached"][0] == "true" {
+		return false
+	}
+
+	return true
+}
+
 func Endpoint(wrapped endpoint) httprouter.Handle {
 	return func(w http.ResponseWriter,
 		r *http.Request,
@@ -54,7 +65,9 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 		}
 
 		res := make(map[string]interface{})
-		ret, from_cache := wrapped(r, ps)
+
+		useCache := CheckUseCache(r)
+		ret, from_cache := wrapped(r, ps, useCache)
 
 		if reflect.DeepEqual(ret, bird.NilParse) {
 			w.WriteHeader(http.StatusTooManyRequests)
@@ -73,8 +86,6 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 			res[k] = v
 		}
 
-		js, _ := json.Marshal(res)
-
 		w.Header().Set("Content-Type", "application/json")
 
 		// Check if compression is supported
@@ -83,9 +94,11 @@ func Endpoint(wrapped endpoint) httprouter.Handle {
 			w.Header().Set("Content-Encoding", "gzip")
 			gz := gzip.NewWriter(w)
 			defer gz.Close()
-			gz.Write(js)
+			json := json.NewEncoder(gz)
+			json.Encode(res)
 		} else {
-			w.Write(js) // Fall back to uncompressed response
+			json := json.NewEncoder(w)
+			json.Encode(res) // Fall back to uncompressed response
 		}
 	}
 }
