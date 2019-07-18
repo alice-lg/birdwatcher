@@ -117,7 +117,16 @@ func Run(args string) (io.Reader, error) {
 	args = "-r " + "show " + args // enforce birdc in restricted mode with "-r" argument
 	argsList := strings.Split(args, " ")
 
-	out, err := exec.Command(ClientConf.BirdCmd, argsList...).Output()
+	// Allow for arguments in the config
+	cmdArgs := strings.Split(ClientConf.BirdCmd, " ")
+	birdc := cmdArgs[0]
+	cmdArgs = cmdArgs[1:]
+
+	cmd := []string{}
+	cmd = append(cmd, cmdArgs...)
+	cmd = append(cmd, argsList...)
+
+	out, err := exec.Command(birdc, cmd...).Output()
 	if err != nil {
 		return nil, err
 	}
