@@ -313,6 +313,23 @@ func routesQuery(filter string) string {
 	return cmd + " where net.type = NET_IP" + IPVersion
 }
 
+func remapTable(table string) string {
+	if v := getBirdVersion(); v < 2 {
+		return table // Nothing to do for bird1
+	}
+
+	if table != "master" {
+		return table // Nothing to do here
+	}
+
+	// Rewrite master table
+	if IPVersion == "4" {
+		return "master4"
+	}
+
+	return "master6"
+}
+
 func RoutesPrefixed(useCache bool, prefix string) (Parsed, bool) {
 	cmd := routesQuery(prefix + " all")
 	return RunAndParse(
@@ -344,6 +361,7 @@ func RoutesPeer(useCache bool, peer string) (Parsed, bool) {
 }
 
 func RoutesTableAndPeer(useCache bool, table string, peer string) (Parsed, bool) {
+	table = remapTable(table)
 	cmd := "route table " + table + " all where from=" + peer
 	return RunAndParse(
 		useCache,
@@ -374,6 +392,7 @@ func RoutesProtoPrimaryCount(useCache bool, protocol string) (Parsed, bool) {
 }
 
 func PipeRoutesFilteredCount(useCache bool, pipe string, table string, neighborAddress string) (Parsed, bool) {
+	table = remapTable(table)
 	cmd := "route table " + table +
 		" noexport " + pipe +
 		" where from=" + neighborAddress + " count"
@@ -386,6 +405,7 @@ func PipeRoutesFilteredCount(useCache bool, pipe string, table string, neighborA
 }
 
 func PipeRoutesFiltered(useCache bool, pipe string, table string) (Parsed, bool) {
+	table = remapTable(table)
 	cmd := routesQuery("table '" + table + "' noexport '" + pipe + "' all")
 	return RunAndParse(
 		useCache,
@@ -436,6 +456,7 @@ func RoutesExportCount(useCache bool, protocol string) (Parsed, bool) {
 }
 
 func RoutesTable(useCache bool, table string) (Parsed, bool) {
+	table = remapTable(table)
 	cmd := routesQuery("table " + table + " all")
 	return RunAndParse(
 		useCache,
@@ -446,6 +467,7 @@ func RoutesTable(useCache bool, table string) (Parsed, bool) {
 }
 
 func RoutesTableFiltered(useCache bool, table string) (Parsed, bool) {
+	table = remapTable(table)
 	cmd := routesQuery("table " + table + " filtered")
 	return RunAndParse(
 		useCache,
@@ -456,6 +478,7 @@ func RoutesTableFiltered(useCache bool, table string) (Parsed, bool) {
 }
 
 func RoutesTableCount(useCache bool, table string) (Parsed, bool) {
+	table = remapTable(table)
 	cmd := routesQuery("table " + table + " count")
 	return RunAndParse(
 		useCache,
@@ -467,6 +490,7 @@ func RoutesTableCount(useCache bool, table string) (Parsed, bool) {
 }
 
 func RoutesLookupTable(useCache bool, net string, table string) (Parsed, bool) {
+	table = remapTable(table)
 	cmd := routesQuery("for " + net + " table " + table + " all")
 	return RunAndParse(
 		useCache,
