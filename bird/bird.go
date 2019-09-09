@@ -22,6 +22,7 @@ type Cache interface {
 var ClientConf BirdConfig
 var StatusConf StatusConfig
 var IPVersion = "4"
+var BirdVersion = 0
 var cache Cache // stores parsed birdc output
 var CacheConf CacheConfig
 var RateLimitConf struct {
@@ -302,106 +303,244 @@ func Symbols(useCache bool) (Parsed, bool) {
 	return RunAndParse(useCache, GetCacheKey("Symbols"), "symbols", parseSymbols, nil)
 }
 
+func routesQuery(filter string) string {
+	cmd := "route " + filter
+	if getBirdVersion() < 2 {
+		return cmd
+	}
+
+	// Add ipversion filter
+	return cmd + " where net.type = NET_IP" + IPVersion
+}
+
+func remapTable(table string) string {
+	if v := getBirdVersion(); v < 2 {
+		return table // Nothing to do for bird1
+	}
+
+	if table != "master" {
+		return table // Nothing to do here
+	}
+
+	// Rewrite master table
+	if IPVersion == "4" {
+		return "master4"
+	}
+
+	return "master6"
+}
+
 func RoutesPrefixed(useCache bool, prefix string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route "+prefix+" all")
-	return RunAndParse(useCache, GetCacheKey("RoutesPrefixed", prefix), cmd, parseRoutes, nil)
+	cmd := routesQuery(prefix + " all")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesPrefixed", prefix),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesProto(useCache bool, protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route all protocol "+protocol)
-	return RunAndParse(useCache, GetCacheKey("RoutesProto", protocol), cmd, parseRoutes, nil)
+	cmd := routesQuery("all protocol " + protocol)
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesProto", protocol),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesPeer(useCache bool, peer string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route all where from="+peer)
-	return RunAndParse(useCache, GetCacheKey("RoutesPeer", peer), cmd, parseRoutes, nil)
+	cmd := "route all where from=" + peer
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesPeer", peer),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesTableAndPeer(useCache bool, table string, peer string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route table "+table+" all where from="+peer)
-	return RunAndParse(useCache, GetCacheKey("RoutesTableAndPeer", table, peer), cmd, parseRoutes, nil)
+	table = remapTable(table)
+	cmd := "route table " + table + " all where from=" + peer
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesTableAndPeer", table, peer),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesProtoCount(useCache bool, protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route protocol "+protocol) + " count"
-	return RunAndParse(useCache, GetCacheKey("RoutesProtoCount", protocol), cmd, parseRoutesCount, nil)
+	cmd := routesQuery("protocol " + protocol + " count")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesProtoCount", protocol),
+		cmd,
+		parseRoutesCount,
+		nil)
 }
 
 func RoutesProtoPrimaryCount(useCache bool, protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route primary protocol "+protocol) + " count"
-	return RunAndParse(useCache, GetCacheKey("RoutesProtoPrimaryCount", protocol), cmd, parseRoutesCount, nil)
+	cmd := routesQuery("primary protocol " + protocol + " count")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesProtoPrimaryCount", protocol),
+		cmd,
+		parseRoutesCount,
+		nil)
 }
 
 func PipeRoutesFilteredCount(useCache bool, pipe string, table string, neighborAddress string) (Parsed, bool) {
-	cmd := "route table " + table + " noexport " + pipe + " where from=" + neighborAddress + " count"
-	return RunAndParse(useCache, GetCacheKey("PipeRoutesFilteredCount", table, pipe, neighborAddress), cmd, parseRoutesCount, nil)
+	table = remapTable(table)
+	cmd := "route table " + table +
+		" noexport " + pipe +
+		" where from=" + neighborAddress + " count"
+	return RunAndParse(
+		useCache,
+		GetCacheKey("PipeRoutesFilteredCount", table, pipe, neighborAddress),
+		cmd,
+		parseRoutesCount,
+		nil)
 }
 
 func PipeRoutesFiltered(useCache bool, pipe string, table string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route table '"+table+"' noexport '"+pipe+"' all")
-	return RunAndParse(useCache, GetCacheKey("PipeRoutesFiltered", table, pipe), cmd, parseRoutes, nil)
+	table = remapTable(table)
+	cmd := routesQuery("table '" + table + "' noexport '" + pipe + "' all")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("PipeRoutesFiltered", table, pipe),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesFiltered(useCache bool, protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route all filtered protocol "+protocol)
-	return RunAndParse(useCache, GetCacheKey("RoutesFiltered", protocol), cmd, parseRoutes, nil)
+	cmd := routesQuery("all filtered protocol " + protocol)
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesFiltered", protocol),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesExport(useCache bool, protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route all export "+protocol)
-	return RunAndParse(useCache, GetCacheKey("RoutesExport", protocol), cmd, parseRoutes, nil)
+	cmd := routesQuery("all export " + protocol)
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesExport", protocol),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesNoExport(useCache bool, protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route all noexport "+protocol)
-	return RunAndParse(useCache, GetCacheKey("RoutesNoExport", protocol), cmd, parseRoutes, nil)
+	cmd := routesQuery("all noexport " + protocol)
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesNoExport", protocol),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesExportCount(useCache bool, protocol string) (Parsed, bool) {
-	cmd := routeQueryForChannel(useCache, "route export "+protocol) + " count"
-	return RunAndParse(useCache, GetCacheKey("RoutesExportCount", protocol), cmd, parseRoutesCount, nil)
+	cmd := routesQuery("export " + protocol + " count")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesExportCount", protocol),
+		cmd,
+		parseRoutesCount,
+		nil)
 }
 
 func RoutesTable(useCache bool, table string) (Parsed, bool) {
-	return RunAndParse(useCache, GetCacheKey("RoutesTable", table), "route table "+table+" all", parseRoutes, nil)
+	table = remapTable(table)
+	cmd := routesQuery("table " + table + " all")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesTable", table),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesTableFiltered(useCache bool, table string) (Parsed, bool) {
-	return RunAndParse(useCache, GetCacheKey("RoutesTableFiltered", table), "route table "+table+" filtered", parseRoutes, nil)
+	table = remapTable(table)
+	cmd := routesQuery("table " + table + " filtered")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesTableFiltered", table),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesTableCount(useCache bool, table string) (Parsed, bool) {
-	return RunAndParse(useCache, GetCacheKey("RoutesTableCount", table), "route table "+table+" count", parseRoutesCount, nil)
+	table = remapTable(table)
+	cmd := routesQuery("table " + table + " count")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesTableCount", table),
+		cmd,
+		parseRoutesCount,
+		nil,
+	)
 }
 
 func RoutesLookupTable(useCache bool, net string, table string) (Parsed, bool) {
-	return RunAndParse(useCache, GetCacheKey("RoutesLookupTable", net, table), "route for "+net+" table "+table+" all", parseRoutes, nil)
+	table = remapTable(table)
+	cmd := routesQuery("for " + net + " table " + table + " all")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesLookupTable", net, table),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
 func RoutesLookupProtocol(useCache bool, net string, protocol string) (Parsed, bool) {
-	return RunAndParse(useCache, GetCacheKey("RoutesLookupProtocol", net, protocol), "route for "+net+" protocol "+protocol+" all", parseRoutes, nil)
+	cmd := routesQuery("for " + net + " protocol " + protocol + " all")
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesLookupProtocol", net, protocol),
+		cmd,
+		parseRoutes,
+		nil)
 }
 
-func routeQueryForChannel(useCache bool, cmd string) string {
-	status, _ := Status(useCache)
+func getBirdVersion() int {
+	// We assume the bird major version does not change during
+	// the time the birdwatcher is running.
+	//
+	// However, this requires now a restart when going
+	// from bird1 to bird2.
+	if BirdVersion != 0 {
+		return BirdVersion
+	}
+
+	// This method is a bit hacky.
+	status, _ := Status(false) // Get status without cache
 	if IsSpecial(status) {
-		return cmd
+		return 0
 	}
 
 	birdStatus, ok := status["status"].(Parsed)
 	if !ok {
-		return cmd
+		return 0
 	}
 
 	version, ok := birdStatus["version"].(string)
 	if !ok {
-		return cmd
+		return 0
 	}
 
 	v, err := strconv.Atoi(string(version[0]))
-	if err != nil || v <= 2 {
-		return cmd
+	if err != nil {
+		return 0
 	}
 
-	return cmd + " where net.type = NET_IP" + IPVersion
+	BirdVersion = v
+	return v
 }
