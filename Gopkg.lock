@@ -33,9 +33,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/tonnerre/golang-pretty"
+  name = "github.com/kr/pretty"
   packages = ["."]
-  revision = "e7fccc03e91bad289b96c21aa3312a220689bdd7"
+  revision = "71e7e49937503c662b9b636fd6b2c14b1aa818a5"
 
 [solve-meta]
   analyzer-name = "dep"

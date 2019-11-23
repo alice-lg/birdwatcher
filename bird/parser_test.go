@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	pretty "github.com/tonnerre/golang-pretty"
+	pretty "github.com/kr/pretty"
 )
 
 func openFile(filename string) (*os.File, error) {

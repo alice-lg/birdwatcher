@@ -11,6 +11,5 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/tonnerre/golang-pretty v0.0.0-20130925195953-e7fccc03e91b
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
