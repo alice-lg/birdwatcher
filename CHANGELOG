@@ -1,3 +1,9 @@
+2.2.0
+
+* Fixed hardcoded paths to birdc
+* Added docker support
+
+
 2.1.0
 
 * Fixed bird2 support
