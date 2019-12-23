@@ -124,6 +124,18 @@ You need to add a Large BGP Community just before you filter a route, for exampl
         accept;
     }
 
+### Using Docker
+
+You can run the birdwatcher for bird2 with docker:
+
+    docker pull alicelg/birdwatcher:latest
+
+    docker run -p 29184:29184 -v /var/run/bird.ctl:/usr/local/var/run/bird.ctl -it --rm birdwatcher:latest
+
+
+Or build your own image:
+
+    docker build . -t alicelg/birdwatcher:latest
 ### Building an RPM
 
 Building RPMs is supported through [fpm](https://github.com/jordansissel/fpm).

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	pretty "github.com/tonnerre/golang-pretty"
+	"github.com/kr/pretty"
 )
 
 func openFile(filename string) (*os.File, error) {
@@ -81,7 +81,6 @@ func TestParseProtocolShort(t *testing.T) {
 
 	fmt.Println(protocols)
 }
-
 
 func TestParseRoutesAllIpv4Bird1(t *testing.T) {
 	runTestForIpv4WithFile("routes_bird1_ipv4.sample", t)
