@@ -26,6 +26,15 @@ func RoutesFiltered(r *http.Request, ps httprouter.Params, useCache bool) (bird.
 	return bird.RoutesFiltered(useCache, protocol)
 }
 
+func RoutesExport(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
+	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+
+	return bird.RoutesExport(useCache, protocol)
+}
+
 func RoutesNoExport(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
