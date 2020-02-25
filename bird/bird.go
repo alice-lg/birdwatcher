@@ -305,12 +305,7 @@ func Symbols(useCache bool) (Parsed, bool) {
 
 func routesQuery(filter string) string {
 	cmd := "route " + filter
-	if getBirdVersion() < 2 {
-		return cmd
-	}
-
-	// Add ipversion filter
-	return cmd + " where net.type = NET_IP" + IPVersion
+	return cmd
 }
 
 func remapTable(table string) string {
