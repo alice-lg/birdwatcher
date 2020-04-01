@@ -38,16 +38,17 @@ var (
 			countRx *regexp.Regexp
 		}
 		routes struct {
-			startDefinition   *regexp.Regexp
-			second            *regexp.Regexp
-			routeType         *regexp.Regexp
-			bgp               *regexp.Regexp
-			community         *regexp.Regexp
-			largeCommunity    *regexp.Regexp
-			extendedCommunity *regexp.Regexp
-			origin            *regexp.Regexp
-			prefixBird2       *regexp.Regexp
-			gatewayBird2      *regexp.Regexp
+			startDefinition        *regexp.Regexp
+			second                 *regexp.Regexp
+			routeType              *regexp.Regexp
+			bgp                    *regexp.Regexp
+			community              *regexp.Regexp
+			largeCommunity         *regexp.Regexp
+			extendedCommunity      *regexp.Regexp
+			origin                 *regexp.Regexp
+			prefixBird2            *regexp.Regexp
+			unreachablePrefixBird2 *regexp.Regexp
+			gatewayBird2           *regexp.Regexp
 		}
 	}
 )
@@ -83,6 +84,7 @@ func init() {
 	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*([^,]+),\s*([^,]+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
 	regex.routes.prefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
+	regex.routes.unreachablePrefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unreachable\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
 	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s*$`)
 }
 
@@ -321,7 +323,17 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			continue
 		}
 
-		if regex.routes.prefixBird2.MatchString(line) {
+		if regex.routes.unreachablePrefixBird2.MatchString(line) {
+			formerPrefix := ""
+			if len(route) > 0 {
+				routes = append(routes, route)
+
+				formerPrefix = route["network"].(string)
+				route = Parsed{}
+			}
+
+			parseMainRouteDetailBird2(regex.routes.unreachablePrefixBird2.FindStringSubmatch(line), route, formerPrefix)
+		} else if regex.routes.prefixBird2.MatchString(line) {
 			formerPrefix := ""
 			if len(route) > 0 {
 				routes = append(routes, route)
