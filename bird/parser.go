@@ -48,6 +48,7 @@ var (
 			origin            *regexp.Regexp
 			prefixBird2       *regexp.Regexp
 			gatewayBird2      *regexp.Regexp
+			interfaceBird2    *regexp.Regexp
 		}
 	}
 )
@@ -55,6 +56,10 @@ var (
 type Parsed map[string]interface{}
 
 func init() {
+	const re_ifname = `[^/\s]+`
+	const re_ip = `[0-9a-f\.\:]+`
+	const re_prefix = `[0-9a-f\.\:\/]+`
+
 	regex.status.startLine = regexp.MustCompile(`^BIRD\s([0-9\.]+)\s*$`)
 	regex.status.routerID = regexp.MustCompile(`^Router\sID\sis\s([0-9\.]+)\s*$`)
 	regex.status.currentServer = regexp.MustCompile(`^Current\sserver\stime\sis\s([0-9\-]+\s[0-9\:]+)\s*$`)
@@ -73,17 +78,18 @@ func init() {
 	regex.protocol.stringValue = regexp.MustCompile(`^\s+([^:]+):\s+(.+)\s*$`)
 	regex.protocol.routeChanges = regexp.MustCompile(`(Import|Export) (updates|withdraws):\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s+(\d+|---)\s*$`)
 
-	regex.routes.startDefinition = regexp.MustCompile(`^([0-9a-f\.\:\/]+)\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*`)
+	regex.routes.startDefinition = regexp.MustCompile(`^(` + re_prefix + `)\s+via\s+(` + re_ip + `)\s+on\s+(` + re_ifname + `)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*`)
 	regex.protocol.short = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([0-9\-]+\s+[0-9\:]+?|[0-9\-]+)\s+(.*?)\s*?$`)
-	regex.routes.second = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
+	regex.routes.second = regexp.MustCompile(`^\s+via\s+(` + re_ip + `)\s+on\s+(` + re_ifname + `)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
 	regex.routes.routeType = regexp.MustCompile(`^\s+Type:\s+(.*)\s*$`)
 	regex.routes.bgp = regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)
 	regex.routes.community = regexp.MustCompile(`^\((\d+),\s*(\d+)\)`)
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
 	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*([^,]+),\s*([^,]+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
-	regex.routes.prefixBird2 = regexp.MustCompile(`^([0-9a-f\.\:\/]+)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+([0-9a-f\.\:\/]+))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
-	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+([0-9a-f\.\:]+)\s+on\s+([\w\.]+)\s*$`)
+	regex.routes.prefixBird2 = regexp.MustCompile(`^(` + re_prefix + `)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
+	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+(` + re_ip + `)\s+dev\s+(` + re_ifname + `)\s*$`)
+	regex.routes.interfaceBird2 = regexp.MustCompile(`^\s+dev\s+(` + re_ifname + `)\s*$`)
 }
 
 func dirtyContains(l []string, e string) bool {
@@ -340,6 +346,8 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			parseMainRouteDetail(regex.routes.startDefinition.FindStringSubmatch(line), route)
 		} else if regex.routes.gatewayBird2.MatchString(line) {
 			parseRoutesGatewayBird2(regex.routes.gatewayBird2.FindStringSubmatch(line), route)
+		} else if regex.routes.interfaceBird2.MatchString(line) {
+			parseRoutesInterfaceBird2(regex.routes.interfaceBird2.FindStringSubmatch(line), route)
 		} else if regex.routes.second.MatchString(line) {
 			routes = append(routes, route)
 
@@ -430,7 +438,10 @@ func parseMainRouteDetailBird2(groups []string, route Parsed, formerPrefix strin
 
 func parseRoutesGatewayBird2(groups []string, route Parsed) {
 	route["gateway"] = groups[1]
-	route["interface"] = groups[2]
+}
+
+func parseRoutesInterfaceBird2(groups []string, route Parsed) {
+	route["interface"] = groups[1]
 }
 
 func parseRoutesSecond(line string, route Parsed) Parsed {
