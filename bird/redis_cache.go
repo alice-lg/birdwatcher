@@ -1,12 +1,13 @@
 package bird
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"log"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 type RedisCache struct {
@@ -22,7 +23,8 @@ func NewRedisCache(config CacheConfig) (*RedisCache, error) {
 		DB:       config.RedisDb,
 	})
 
-	_, err := client.Ping().Result()
+	ctx := context.Background()
+	_, err := client.Ping(ctx).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +37,9 @@ func NewRedisCache(config CacheConfig) (*RedisCache, error) {
 }
 
 func (self *RedisCache) Get(key string) (Parsed, error) {
+	ctx := context.Background()
 	key = self.keyPrefix + key //"B" + IPVersion + "_" + key
-	data, err := self.client.Get(key).Result()
+	data, err := self.client.Get(ctx, key).Result()
 	if err != nil {
 		return NilParse, err
 	}
@@ -68,7 +71,9 @@ func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
 			return err
 		}
 
-		_, err = self.client.Set(key, payload, time.Duration(ttl)*time.Minute).Result()
+		ctx := context.Background()
+		_, err = self.client.Set(
+			ctx, key, payload, time.Duration(ttl)*time.Minute).Result()
 		return err
 
 	default: // ttl negative - invalid
