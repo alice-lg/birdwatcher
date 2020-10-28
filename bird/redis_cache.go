@@ -49,8 +49,8 @@ func (self *RedisCache) Get(key string) (Parsed, error) {
 	parsed := Parsed{}
 	err = json.Unmarshal([]byte(data), &parsed)
 
-	ttl, correct := parsed["ttl"].(time.Time)
-	if !correct {
+	ttl, err := parseCacheTTL(parsed["ttl"])
+	if err != nil {
 		return NilParse, fmt.Errorf("invalid TTL value for key: %s", key)
 	}
 
@@ -88,4 +88,26 @@ func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
 func (self *RedisCache) Expire() int {
 	log.Printf("Cannot expire entries in RedisCache backend, redis does this automatically")
 	return 0
+}
+
+// Helperfunction to decode the cache ttl stored
+// in the cache - which will most likely just be
+// RFC3339 timestamp.
+func parseCacheTTL(cacheTTL interface{}) (time.Time, error) {
+	if cacheTTL == nil {
+		// We preseve the nil value as a zero value
+		return time.Time{}, nil
+	}
+
+	switch cacheTTL.(type) {
+	case string:
+		ttl, err := time.Parse(time.RFC3339, cacheTTL.(string))
+		if err != nil {
+			return time.Time{}, err
+		}
+		return ttl, nil
+	case time.Time:
+		return cacheTTL.(time.Time), nil
+	}
+	return time.Time{}, nil
 }
