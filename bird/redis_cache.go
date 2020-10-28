@@ -53,8 +53,8 @@ func (self *RedisCache) Get(key string) (Parsed, error) {
 	if err != nil {
 		return NilParse, fmt.Errorf("invalid TTL value for key: %s", key)
 	}
-
-	if ttl.Before(time.Now()) {
+	// Deal with the inband TTL if present
+	if !ttl.Equal(time.Time{}) && ttl.Before(time.Now()) {
 		return NilParse, err // TTL expired
 	}
 
