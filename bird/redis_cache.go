@@ -3,7 +3,7 @@ package bird
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -36,6 +36,8 @@ func NewRedisCache(config CacheConfig) (*RedisCache, error) {
 	return cache, nil
 }
 
+// Get retrievs a birdwatcher `Parsed` result from
+// the redis cache.
 func (self *RedisCache) Get(key string) (Parsed, error) {
 	ctx := context.Background()
 	key = self.keyPrefix + key //"B" + IPVersion + "_" + key
@@ -49,16 +51,18 @@ func (self *RedisCache) Get(key string) (Parsed, error) {
 
 	ttl, correct := parsed["ttl"].(time.Time)
 	if !correct {
-		return NilParse, errors.New("Invalid TTL value for key" + key)
+		return NilParse, fmt.Errorf("invalid TTL value for key: %s", key)
 	}
 
 	if ttl.Before(time.Now()) {
 		return NilParse, err // TTL expired
-	} else {
-		return parsed, err // cache hit
 	}
+
+	return parsed, err // cache hit
 }
 
+// Set adds a birdwatcher `Parsed` result
+// to the redis cache.
 func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
 	switch {
 	case ttl == 0:
@@ -77,7 +81,7 @@ func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
 		return err
 
 	default: // ttl negative - invalid
-		return errors.New("Negative TTL value for key" + key)
+		return fmt.Errorf("negative TTL value for key: %s", key)
 	}
 }
 
