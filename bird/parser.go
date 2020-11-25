@@ -570,6 +570,8 @@ func parseProtocol(lines string) Parsed {
 
 		if isCorrectChannel(ipVersion) {
 			parseLine(line, handlers)
+		} else {
+			parseLine(line, handlers)
 		}
 	}
 
