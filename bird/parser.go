@@ -70,7 +70,6 @@ func init() {
 
 	regex.routeCount.countRx = regexp.MustCompile(`^(\d+)\s+of\s+(\d+)\s+routes.*$`)
 
-	regex.protocol.channel = regexp.MustCompile("Channel ipv([46])")
 	// regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(BGP|RPKI|Pipe|BFD|Direct|Device|Kernel)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*?)\s*)?$`)
 	regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(\w+)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*?)\s*)?$`)
 	regex.protocol.numericValue = regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
@@ -537,14 +536,6 @@ func parseRoutesCount(reader io.Reader) Parsed {
 	return res
 }
 
-func isCorrectChannel(currentIPVersion string) bool {
-	if len(currentIPVersion) == 0 {
-		return true
-	}
-
-	return currentIPVersion == IPVersion
-}
-
 func parseProtocol(lines string) Parsed {
 	res := Parsed{}
 	routeChanges := Parsed{}
@@ -557,22 +548,11 @@ func parseProtocol(lines string) Parsed {
 		func(l string) bool { return parseProtocolStringValuesRx(l, res) },
 	}
 
-	ipVersion := ""
-
 	reader := strings.NewReader(lines)
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := scanner.Text()
-
-		if m := regex.protocol.channel.FindStringSubmatch(line); len(m) > 0 {
-			ipVersion = m[1]
-		}
-
-		if isCorrectChannel(ipVersion) {
-			parseLine(line, handlers)
-		} else {
-			parseLine(line, handlers)
-		}
+		parseLine(line, handlers)
 	}
 
 	res["route_changes"] = routeChanges
