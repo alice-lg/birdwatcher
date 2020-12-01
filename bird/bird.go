@@ -310,7 +310,7 @@ func routesQuery(filter string) string {
 	}
 
 	// Add ipversion filter
-	return cmd + " where net.type = NET_IP" + IPVersion
+	return cmd
 }
 
 func remapTable(table string) string {
