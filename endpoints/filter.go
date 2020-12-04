@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"fmt"
+	"strings"
 )
 
 /*
@@ -51,5 +52,6 @@ func ValidateProtocolParam(value string) (string, error) {
 }
 
 func ValidatePrefixParam(value string) (string, error) {
+	value = strings.Replace(value, "m", "/", 1)
 	return ValidateLengthAndCharset(value, 80, "1234567890abcdef.:/")
 }
