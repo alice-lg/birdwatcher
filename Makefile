@@ -23,8 +23,15 @@ LOCAL_RPMS=RPMS
 UNAME=$(shell uname)
 ifeq ($(UNAME), Darwin)
   TARGET=osx
-else
+endif
+ifeq  ($(UNAME), FreeBSD)
+  TARGET=freebsd
+endif
+ifeq  ($(UNAME), Linux)
   TARGET=linux
+endif
+ifneq ($(UNAME),$(filter $(UNAME),Darwin FreeBSD Linux))
+  $(error error: Unkown OS )
 endif
 
 all: $(TARGET)
@@ -35,6 +42,9 @@ osx:
 
 linux:
 	GO111MODULE=on GOARCH=$(ARCH) GOOS=linux go build -o $(PROG)-linux-$(ARCH)
+
+freebsd:
+	GO111MODULE=on GOARCH=$(ARCH) GOOS=freebsd go build -o $(PROG)-freebsd-$(ARCH)
 
 
 build_server:
