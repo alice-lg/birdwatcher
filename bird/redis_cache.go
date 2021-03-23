@@ -1,12 +1,13 @@
 package bird
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"log"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 type RedisCache struct {
@@ -22,7 +23,8 @@ func NewRedisCache(config CacheConfig) (*RedisCache, error) {
 		DB:       config.RedisDb,
 	})
 
-	_, err := client.Ping().Result()
+	ctx := context.Background()
+	_, err := client.Ping(ctx).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +36,12 @@ func NewRedisCache(config CacheConfig) (*RedisCache, error) {
 	return cache, nil
 }
 
+// Get retrievs a birdwatcher `Parsed` result from
+// the redis cache.
 func (self *RedisCache) Get(key string) (Parsed, error) {
+	ctx := context.Background()
 	key = self.keyPrefix + key //"B" + IPVersion + "_" + key
-	data, err := self.client.Get(key).Result()
+	data, err := self.client.Get(ctx, key).Result()
 	if err != nil {
 		return NilParse, err
 	}
@@ -44,18 +49,20 @@ func (self *RedisCache) Get(key string) (Parsed, error) {
 	parsed := Parsed{}
 	err = json.Unmarshal([]byte(data), &parsed)
 
-	ttl, correct := parsed["ttl"].(time.Time)
-	if !correct {
-		return NilParse, errors.New("Invalid TTL value for key" + key)
+	ttl, err := parseCacheTTL(parsed["ttl"])
+	if err != nil {
+		return NilParse, fmt.Errorf("invalid TTL value for key: %s", key)
+	}
+	// Deal with the inband TTL if present
+	if !ttl.Equal(time.Time{}) && ttl.Before(time.Now()) {
+		return NilParse, err // TTL expired
 	}
 
-	if ttl.Before(time.Now()) {
-		return NilParse, err // TTL expired
-	} else {
-		return parsed, err // cache hit
-	}
+	return parsed, err // cache hit
 }
 
+// Set adds a birdwatcher `Parsed` result
+// to the redis cache.
 func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
 	switch {
 	case ttl == 0:
@@ -68,15 +75,39 @@ func (self *RedisCache) Set(key string, parsed Parsed, ttl int) error {
 			return err
 		}
 
-		_, err = self.client.Set(key, payload, time.Duration(ttl)*time.Minute).Result()
+		ctx := context.Background()
+		_, err = self.client.Set(
+			ctx, key, payload, time.Duration(ttl)*time.Minute).Result()
 		return err
 
 	default: // ttl negative - invalid
-		return errors.New("Negative TTL value for key" + key)
+		return fmt.Errorf("negative TTL value for key: %s", key)
 	}
 }
 
 func (self *RedisCache) Expire() int {
 	log.Printf("Cannot expire entries in RedisCache backend, redis does this automatically")
 	return 0
+}
+
+// Helperfunction to decode the cache ttl stored
+// in the cache - which will most likely just be
+// RFC3339 timestamp.
+func parseCacheTTL(cacheTTL interface{}) (time.Time, error) {
+	if cacheTTL == nil {
+		// We preseve the nil value as a zero value
+		return time.Time{}, nil
+	}
+
+	switch cacheTTL.(type) {
+	case string:
+		ttl, err := time.Parse(time.RFC3339, cacheTTL.(string))
+		if err != nil {
+			return time.Time{}, err
+		}
+		return ttl, nil
+	case time.Time:
+		return cacheTTL.(time.Time), nil
+	}
+	return time.Time{}, nil
 }

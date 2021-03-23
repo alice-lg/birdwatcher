@@ -2,6 +2,7 @@ package bird
 
 import (
 	"testing"
+	"time"
 )
 
 func Test_RedisCacheAccess(t *testing.T) {
@@ -20,6 +21,7 @@ func Test_RedisCacheAccess(t *testing.T) {
 		"foo": 23,
 		"bar": 42,
 		"baz": true,
+		"ttl": time.Now().Add(10 * time.Second),
 	}
 
 	t.Log("Setting redis cache...")
