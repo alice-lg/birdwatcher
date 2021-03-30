@@ -62,9 +62,9 @@ func init() {
 
 	regex.status.startLine = regexp.MustCompile(`^BIRD\s([0-9\.]+)\s*$`)
 	regex.status.routerID = regexp.MustCompile(`^Router\sID\sis\s([0-9\.]+)\s*$`)
-	regex.status.currentServer = regexp.MustCompile(`^Current\sserver\stime\sis\s([0-9\-]+\s[0-9\:]+)\s*$`)
-	regex.status.lastReboot = regexp.MustCompile(`^Last\sreboot\son\s([0-9\-]+\s[0-9\:]+)\s*$`)
-	regex.status.lastReconfig = regexp.MustCompile(`^Last\sreconfiguration\son\s([0-9\-]+\s[0-9\:]+)\s*$`)
+	regex.status.currentServer = regexp.MustCompile(`^Current\sserver\stime\sis\s([0-9\-]+\s[0-9\:\.]+)\s*$`)
+	regex.status.lastReboot = regexp.MustCompile(`^Last\sreboot\son\s([0-9\-]+\s[0-9\:\.]+)\s*$`)
+	regex.status.lastReconfig = regexp.MustCompile(`^Last\sreconfiguration\son\s([0-9\-]+\s[0-9\:\.]+)\s*$`)
 
 	regex.symbols.keyRx = regexp.MustCompile(`^([^\s]+)\s+(.+)\s*$`)
 
