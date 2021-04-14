@@ -15,6 +15,52 @@ func openFile(filename string) (*os.File, error) {
 	return os.Open(sample)
 }
 
+func TestParseStatus(t *testing.T) {
+	tests := []struct {
+		file     string
+		expected Parsed
+	}{
+		// Test for bird1.x status
+		{
+			"status1.sample",
+			Parsed{
+				"current_server": "2021-03-30 02:28:45",
+				"last_reboot":    "2021-03-30 02:28:19",
+				"last_reconfig":  "2021-03-30 02:28:19",
+				"message":        "Daemon is up and running",
+				"router_id":      "172.25.3.2",
+				"version":        "1.6.6",
+			},
+		},
+		// Test for bird2.x status
+		{
+			"status2.sample",
+			Parsed{
+				"current_server": "2021-03-30 02:23:32.330",
+				"last_reboot":    "2021-03-30 01:58:07.850",
+				"last_reconfig":  "2021-03-30 01:58:07.850",
+				"message":        "Daemon is up and running",
+				"router_id":      "172.25.3.2",
+				"version":        "2.0.7",
+			},
+		},
+	}
+
+	for _, test := range tests {
+		f, err := openFile(test.file)
+		if err != nil {
+			t.Error(err)
+		}
+		s := parseStatus(f)
+		f.Close()
+		status := s["status"].(Parsed)
+		if !reflect.DeepEqual(status, test.expected) {
+			t.Error("Parse status: ", status, "expected: ", test.expected)
+		}
+
+	}
+}
+
 func TestParseBgpRoutes(t *testing.T) {
 
 	inputs := []string{
