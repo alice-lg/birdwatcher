@@ -22,7 +22,7 @@ of the config.
 You will need to have go installed to build the package.
 Please make sure your go version is `>= 1.9`.
 
-Running `go get github.com/alice-lg/birdwatcher` will give you
+Running `go install github.com/alice-lg/birdwatcher@latest` will give you
 a binary. You might need to cross-compile it for your
 bird-running servive (`GOARCH` and `GOOS` are your friends).
 
