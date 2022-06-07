@@ -44,6 +44,18 @@ func TestParseStatus(t *testing.T) {
 				"version":        "2.0.7",
 			},
 		},
+		// Test with advanced version
+		{
+			"status3.sample",
+			Parsed{
+				"current_server": "2022-06-07 08:28:16",
+				"last_reboot":    "2022-06-03 12:35:43",
+				"last_reconfig":  "2022-06-03 12:35:43",
+				"message":        "Daemon is up and running",
+				"router_id":      "1.2.3.4",
+				"version":        "v2.0.9-11-g207ac485",
+			},
+		},
 	}
 
 	for _, test := range tests {
