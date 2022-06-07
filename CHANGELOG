@@ -1,3 +1,18 @@
+2.2.3
+
+* Fixed parsing of bird version in status
+
+2.2.2
+
+* Minor patches, Readme updates
+* Quotes for pipe, protocol and table names
+
+2.2.1
+
+* Fixed status parsing (PR 37)
+* Added FreeBSD compatibility
+
+
 2.2.0
 
 * Fixed hardcoded paths to birdc
