@@ -87,7 +87,7 @@ func init() {
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
 	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*([^,]+),\s*([^,]+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
-	regex.routes.prefixBird2 = regexp.MustCompile(`^(` + re_prefix + `)?\s+unicast\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
+	regex.routes.prefixBird2 = regexp.MustCompile(`^(` + re_prefix + `)?\s+(?:unicast|blackhole)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
 	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+(` + re_ip + `)\s+on\s+(` + re_ifname + `)\s*$`)
 	regex.routes.interfaceBird2 = regexp.MustCompile(`^\s+dev\s+(` + re_ifname + `)\s*$`)
 }
