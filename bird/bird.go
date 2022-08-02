@@ -468,7 +468,7 @@ func RoutesTable(useCache bool, table string) (Parsed, bool) {
 
 func RoutesTableFiltered(useCache bool, table string) (Parsed, bool) {
 	table = remapTable(table)
-	cmd := routesQuery("table '" + table + "' filtered")
+	cmd := routesQuery("table '" + table + "' all filtered")
 	return RunAndParse(
 		useCache,
 		GetCacheKey("RoutesTableFiltered", table),
