@@ -1,3 +1,7 @@
+2.2.4
+
+* Fixes missing details for routes/table/.../filtered
+
 2.2.3
 
 * Fixed parsing of bird version in status
