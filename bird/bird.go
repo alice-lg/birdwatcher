@@ -49,15 +49,15 @@ func InitializeCache() {
 			log.Println("Could not initialize redis cache, falling back to memory cache:", err)
 		}
 	} else { // initialize the MemoryCache
-		maxEntries := CacheConf.MaxEntries
-		maxEntriesDefault := 100
-		if maxEntries == 0 {
-			log.Println("MaxEntries not set, using default value:", maxEntriesDefault)
-			maxEntries = maxEntriesDefault
+		maxKeys := CacheConf.MaxKeys
+		maxKeysDefault := 100
+		if maxKeys == 0 {
+			log.Println("MaxKeys not set, using default value:", maxKeysDefault)
+			maxKeys = maxKeysDefault
 		}
 
-		cache = NewMemoryCache(maxEntries)
-		log.Println("Initialized MemoryCache with maxEntries:", maxEntries)
+		cache = NewMemoryCache(maxKeys)
+		log.Println("Initialized MemoryCache with maxKeys:", maxKeys)
 	}
 }
 

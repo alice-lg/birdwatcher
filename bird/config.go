@@ -32,5 +32,5 @@ type CacheConfig struct {
 	RedisPassword string `toml:"redis_password"`
 	RedisDb       int    `toml:"redis_db"`
 
-	MaxEntries int `toml:"max_entries"`
+	MaxKeys int `toml:"max_keys"`
 }
