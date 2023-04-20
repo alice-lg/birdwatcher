@@ -1,3 +1,9 @@
+2.2.5
+
+* Fixes a problem where the cache can run out of memory.
+  The number of entries is now limited by the `max_keys`
+  setting in the `[cache_config]` section.
+
 2.2.4
 
 * Fixes missing details for routes/table/.../filtered
