@@ -49,13 +49,19 @@ func InitializeCache() {
 			log.Println("Could not initialize redis cache, falling back to memory cache:", err)
 		}
 	} else { // initialize the MemoryCache
-		cache, err = NewMemoryCache()
-		if err != nil {
-			log.Fatal("Could not initialize MemoryCache:", err)
+		maxEntries := CacheConf.MaxEntries
+		maxEntriesDefault := 100
+		if maxEntries == 0 {
+			log.Println("MaxEntries not set, using default value:", maxEntriesDefault)
+			maxEntries = maxEntriesDefault
 		}
+
+		cache = NewMemoryCache(maxEntries)
+		log.Println("Initialized MemoryCache with maxEntries:", maxEntries)
 	}
 }
 
+// ExpireCache is a convenience method to expire the cache.
 func ExpireCache() int {
 	return cache.Expire()
 }
@@ -73,12 +79,12 @@ func toCache(key string, val Parsed) bool {
 		ttl = 5 // five minutes
 	}
 
-	if err := cache.Set(key, val, ttl); err == nil {
-		return true
-	} else {
+	if err := cache.Set(key, val, ttl); err != nil {
 		log.Println(err)
 		return false
 	}
+
+	return true
 }
 
 /* Convenience method to retrieve entries from the cache.

@@ -4,9 +4,9 @@ import (
 	"testing"
 )
 
-func Test_MemoryCacheAccess(t *testing.T) {
+func TestMemoryCacheAccess(t *testing.T) {
 
-	cache, err := NewMemoryCache()
+	cache := NewMemoryCache(100)
 
 	parsed := Parsed{
 		"foo": 23,
@@ -15,13 +15,12 @@ func Test_MemoryCacheAccess(t *testing.T) {
 	}
 
 	t.Log("Setting memory cache...")
-	err = cache.Set("testkey", parsed, 5)
-	if err != nil {
+	if err := cache.Set("testkey", parsed, 5); err != nil {
 		t.Error(err)
 	}
 
 	t.Log("Fetching from memory cache...")
-	parsed, err = cache.Get("testkey")
+	parsed, err := cache.Get("testkey")
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,10 +29,8 @@ func Test_MemoryCacheAccess(t *testing.T) {
 	t.Log(parsed)
 }
 
-func Test_MemoryCacheAccessKeyMissing(t *testing.T) {
-
-	cache, err := NewMemoryCache()
-
+func TestMemoryCacheAccessKeyMissing(t *testing.T) {
+	cache := NewMemoryCache(100)
 	parsed, err := cache.Get("test_missing_key")
 	if !IsSpecial(parsed) {
 		t.Error(err)
@@ -42,7 +39,7 @@ func Test_MemoryCacheAccessKeyMissing(t *testing.T) {
 	t.Log(parsed)
 }
 
-func Test_MemoryCacheRoutes(t *testing.T) {
+func TestMemoryCacheRoutes(t *testing.T) {
 	f, err := openFile("routes_bird1_ipv4.sample")
 	if err != nil {
 		t.Error(err)
@@ -55,10 +52,9 @@ func Test_MemoryCacheRoutes(t *testing.T) {
 		t.Fatal("Error getting routes")
 	}
 
-	cache, err := NewMemoryCache()
+	cache := NewMemoryCache(100)
 
-	err = cache.Set("routes_protocol_test", parsed, 5)
-	if err != nil {
+	if err := cache.Set("routes_protocol_test", parsed, 5); err != nil {
 		t.Error(err)
 	}
 
@@ -72,4 +68,38 @@ func Test_MemoryCacheRoutes(t *testing.T) {
 		t.Error("Error getting routes")
 	}
 	t.Log("Retrieved routes:", len(routes))
+}
+
+func TestMemoryCacheMaxEntries(t *testing.T) {
+	cache := NewMemoryCache(2)
+
+	parsed := Parsed{
+		"foo": 23,
+		"bar": 42,
+	}
+
+	// Set 3 entries
+	if err := cache.Set("testkey1", parsed, 5); err != nil {
+		t.Error(err)
+	}
+	if err := cache.Set("testkey2", parsed, 5); err != nil {
+		t.Error(err)
+	}
+	if err := cache.Set("testkey3", parsed, 5); err != nil {
+		t.Error(err)
+	}
+
+	// Check that the first entry is gone
+	_, err := cache.Get("testkey1")
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+	// Check that the second entry is still there
+	value, err := cache.Get("testkey2")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if value["foo"] != 23 {
+		t.Error("Expected 23, got", value["foo"])
+	}
 }
