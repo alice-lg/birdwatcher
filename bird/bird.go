@@ -50,7 +50,7 @@ func InitializeCache() {
 		}
 	} else { // initialize the MemoryCache
 		maxKeys := CacheConf.MaxKeys
-		maxKeysDefault := 100
+		maxKeysDefault := 60
 		if maxKeys == 0 {
 			log.Println("MaxKeys not set, using default value:", maxKeysDefault)
 			maxKeys = maxKeysDefault
