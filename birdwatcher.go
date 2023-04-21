@@ -150,7 +150,16 @@ func main() {
 	bird6 := flag.Bool("6", false, "Use bird6 instead of bird")
 	workerPoolSize := flag.Int("worker-pool-size", 8, "Number of go routines used to parse routing tables concurrently")
 	configfile := flag.String("config", "/etc/birdwatcher/birdwatcher.conf", "Configuration file location")
+
+	// Profiling
+	memoryProfile := flag.String("memprofile", "", "write memory profile to this file")
+
 	flag.Parse()
+
+	// Start memory profiling if filename is present
+	if *memoryProfile != "" {
+		go startMemoryProfile(*memoryProfile)
+	}
 
 	bird.WorkerPoolSize = *workerPoolSize
 
