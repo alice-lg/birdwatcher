@@ -34,6 +34,8 @@ ifneq ($(UNAME),$(filter $(UNAME),Darwin FreeBSD Linux))
   $(error error: Unkown OS )
 endif
 
+LDFLAGS_STATIC=-ldflags="-extldflags '-static'"
+
 all: $(TARGET)
 	@echo "Built $(VERSION) @ $(TARGET)"
 
@@ -45,6 +47,12 @@ linux:
 
 freebsd:
 	GO111MODULE=on GOARCH=$(ARCH) GOOS=freebsd go build -o $(PROG)-freebsd-$(ARCH)
+
+linux_static:
+	CGO_ENABLED=0 GOOS=linux GOARCH=$(ARCH) \
+		go build $(CFLAGS) \
+		-a $(LDFLAGS_STATIC) \
+		-o $(PROG)-linux-$(ARCH)
 
 
 build_server:
