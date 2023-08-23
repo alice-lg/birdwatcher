@@ -113,7 +113,7 @@ You can run the birdwatcher for BIRD2 with docker:
 
     docker pull alicelg/birdwatcher:latest
 
-    docker run -p 29184:29184 -v /var/run/bird.ctl:/usr/local/var/run/bird.ctl -it --rm birdwatcher:latest
+    docker run -p 29184:29184 -v /run/bird/bird.ctl:/run/bird/bird.ctl -it --rm birdwatcher:latest
 
 
 Or build your own image:
