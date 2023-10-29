@@ -73,7 +73,7 @@ func ExpireCache() int {
  */
 func toCache(key string, val Parsed) bool {
 	var ttl int
-	if ClientConf.CacheTtl > 0 {
+	if ClientConf.CacheTtl >= 0 {
 		ttl = ClientConf.CacheTtl
 	} else {
 		ttl = 5 // five minutes
