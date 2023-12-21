@@ -309,14 +309,19 @@ func Symbols(useCache bool) (Parsed, bool) {
 	return RunAndParse(useCache, GetCacheKey("Symbols"), "symbols", parseSymbols, nil)
 }
 
-func routesQuery(filter string) string {
+func routesQuery(filter string, ipVersionArgs ...string) string {
 	cmd := "route " + filter
 	if getBirdVersion() < 2 {
 		return cmd
 	}
 
+	ipVersion := IPVersion
+	if len(ipVersionArgs) > 0 {
+		ipVersion = ipVersionArgs[0]
+	}
+
 	// Add ipversion filter
-	return cmd + " where net.type = NET_IP" + IPVersion
+	return cmd + " where net.type = NET_IP" + ipVersion
 }
 
 func remapTable(table string) string {
@@ -497,7 +502,13 @@ func RoutesTableCount(useCache bool, table string) (Parsed, bool) {
 
 func RoutesLookupTable(useCache bool, net string, table string) (Parsed, bool) {
 	table = remapTable(table)
-	cmd := routesQuery("for " + net + " table '" + table + "' all")
+	query_arg := "for " + net + " table '" + table + "' all"
+	var cmd string
+	if strings.ContainsAny(net, ":") {
+		cmd = routesQuery(query_arg, "6")
+	} else {
+		cmd = routesQuery(query_arg, "4")
+	}
 	return RunAndParse(
 		useCache,
 		GetCacheKey("RoutesLookupTable", net, table),
@@ -507,7 +518,13 @@ func RoutesLookupTable(useCache bool, net string, table string) (Parsed, bool) {
 }
 
 func RoutesLookupProtocol(useCache bool, net string, protocol string) (Parsed, bool) {
-	cmd := routesQuery("for " + net + " protocol '" + protocol + "' all")
+	query_arg := "for " + net + " protocol '" + protocol + "' all"
+	var cmd string
+	if strings.ContainsAny(net, ":") {
+		cmd = routesQuery(query_arg, "6")
+	} else {
+		cmd = routesQuery(query_arg, "4")
+	}
 	return RunAndParse(
 		useCache,
 		GetCacheKey("RoutesLookupProtocol", net, protocol),
