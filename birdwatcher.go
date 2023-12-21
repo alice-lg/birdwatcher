@@ -94,6 +94,10 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 		r.GET("/route/net/:net", endpoints.Endpoint(endpoints.RouteNet))
 		r.GET("/route/net/:net/table/:table", endpoints.Endpoint(endpoints.RouteNetTable))
 	}
+	if isModuleEnabled("route_net_mask", whitelist) {
+		r.GET("/route/net/:net/mask/:mask", endpoints.Endpoint(endpoints.RouteNetMask))
+		r.GET("/route/net/:net/mask/:mask/table/:table", endpoints.Endpoint(endpoints.RouteNetMaskTable))
+	}
 	if isModuleEnabled("routes_pipe_filtered_count", whitelist) {
 		r.GET("/routes/pipe/filtered/count", endpoints.Endpoint(endpoints.PipeRoutesFilteredCount))
 	}
