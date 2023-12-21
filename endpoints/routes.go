@@ -132,16 +132,16 @@ func RouteNetMask(r *http.Request, ps httprouter.Params, useCache bool) (bird.Pa
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesLookupTable(useCache, net, "master")
-}
-
-func RouteNetTable(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
-	net, err := ValidatePrefixParam(ps.ByName("net"))
+	mask, err := ValidateNetMaskParam(ps.ByName("mask"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	mask, err := ValidateNetMaskParam(ps.ByName("mask"))
+	return bird.RoutesLookupTable(useCache, net+"/"+mask, "master")
+}
+
+func RouteNetTable(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
+	net, err := ValidatePrefixParam(ps.ByName("net"))
 	if err != nil {
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
@@ -151,7 +151,7 @@ func RouteNetTable(r *http.Request, ps httprouter.Params, useCache bool) (bird.P
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
-	return bird.RoutesLookupTable(useCache, net+"/"+mask, table)
+	return bird.RoutesLookupTable(useCache, net, table)
 }
 
 func RouteNetMaskTable(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
