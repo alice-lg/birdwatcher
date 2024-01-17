@@ -4,6 +4,8 @@
   The number of entries is now limited by the `max_keys`
   setting in the `[cache_config]` section.
 
+* Fixed setting the `ttl` to `0` does not disable the MemoryCache 
+
 2.2.4
 
 * Fixes missing details for routes/table/.../filtered
