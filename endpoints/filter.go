@@ -53,3 +53,7 @@ func ValidateProtocolParam(value string) (string, error) {
 func ValidatePrefixParam(value string) (string, error) {
 	return ValidateLengthAndCharset(value, 80, "1234567890abcdef.:/")
 }
+
+func ValidateNetMaskParam(value string) (string, error) {
+	return ValidateLengthAndCharset(value, 3, "1234567890")
+}
