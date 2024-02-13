@@ -3,28 +3,54 @@
 # Birdwatcher - Your friendly alice looking glass data source
 #
 
-FROM golang:1.13 AS app
+# Build birdwatcher
+FROM golang:1.13 AS birdwatcher
 
 WORKDIR /src/birdwatcher
-ADD vendor .
-ADD go.mod .
-ADD go.sum .
-RUN go mod download
-
-# Add sourcecode
 ADD . .
+RUN go mod download
+RUN make linux_static
 
-# Build birdwatcher
-RUN make
+# Build bird
+FROM alpine:latest AS bird
+WORKDIR /src
+RUN apk add --no-cache \
+	gcc \
+	make \
+	musl-dev \
+	autoconf \
+	automake \
+	flex \
+	bison \
+	git \
+	coreutils \
+	linux-headers \
+	ncurses-static \
+	readline-dev \
+	readline-static
 
-# Add birdwatcher to bird
-FROM ehlers/bird2
+# Clone the latest version 2 tag of the bird repository
+RUN git clone \
+	--branch $(git ls-remote --tags https://gitlab.nic.cz/labs/bird | awk -F'/' '{print $3}' | grep '^v2\.' | grep -v '{}' | sort -V | tail -n 1) \
+	https://gitlab.nic.cz/labs/bird.git
+WORKDIR /src/bird
+RUN autoreconf && \
+	LDFLAGS="-static -static-libgcc" \
+		./configure \
+		--prefix=/ \
+		--exec-prefix=/usr \
+		--runstatedir=/run/bird && \
+	make -j
 
-COPY --from=app /src/birdwatcher/birdwatcher-linux-amd64 /usr/bin/birdwatcher
-ADD etc/birdwatcher/birdwatcher.conf /etc/birdwatcher/birdwatcher.conf
+# Final stage
+FROM scratch
+
+COPY --from=bird /src/bird/birdcl /usr/bin/birdc
+COPY --from=birdwatcher /src/birdwatcher/birdwatcher-linux-amd64 /usr/bin/birdwatcher
+COPY --from=birdwatcher /src/birdwatcher/etc/birdwatcher/birdwatcher.conf /etc/birdwatcher/birdwatcher.conf
 
 EXPOSE 29184/tcp
 EXPOSE 29186/tcp
 
-ENTRYPOINT ["/usr/bin/birdwatcher", "-config", "/etc/birdwatcher/birdwatcher.conf"]
+CMD ["/usr/bin/birdwatcher", "-config", "/etc/birdwatcher/birdwatcher.conf"]
 
