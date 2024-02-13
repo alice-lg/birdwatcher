@@ -52,5 +52,5 @@ COPY --from=birdwatcher /src/birdwatcher/etc/birdwatcher/birdwatcher.conf /etc/b
 EXPOSE 29184/tcp
 EXPOSE 29186/tcp
 
-ENTRYPOINT ["/usr/bin/birdwatcher", "-config", "/etc/birdwatcher/birdwatcher.conf"]
+CMD ["/usr/bin/birdwatcher", "-config", "/etc/birdwatcher/birdwatcher.conf"]
 
