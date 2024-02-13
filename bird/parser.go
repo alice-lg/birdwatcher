@@ -568,7 +568,7 @@ func parseProtocol(lines string) Parsed {
 			ipVersion = m[1]
 		}
 
-		if isCorrectChannel(ipVersion) {
+		if isCorrectChannel(ipVersion) || ClientConf.Dualstack {
 			parseLine(line, handlers)
 		}
 	}
