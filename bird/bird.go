@@ -311,7 +311,12 @@ func Symbols(useCache bool) (Parsed, bool) {
 
 func routesQuery(filter string) string {
 	cmd := "route " + filter
-	return cmd
+
+	if getBirdVersion() < 2 || ClientConf.Dualstack {
+		return cmd
+	}
+
+	return cmd + " where net.type = NET_IP" + IPVersion
 }
 
 func remapTable(table string) string {
