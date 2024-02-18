@@ -8,6 +8,7 @@ import (
 
 	"compress/gzip"
 	"encoding/json"
+	"net"
 	"net/http"
 
 	"github.com/alice-lg/birdwatcher/bird"
@@ -23,23 +24,31 @@ func CheckAccess(req *http.Request) error {
 		return nil // AllowFrom ALL
 	}
 
-	// Extract IP
-	tokens := strings.Split(req.RemoteAddr, ":")
-	ip := strings.Join(tokens[:len(tokens)-1], ":")
-	ip = strings.Replace(ip, "[", "", -1)
-	ip = strings.Replace(ip, "]", "", -1)
-
-	// Check Access
+	ipStr, _, err := net.SplitHostPort(req.RemoteAddr)
+	if err != nil {
+		log.Println("Error parsing IP address:", err)
+		return fmt.Errorf("error parsing source IP address")
+	}
+	clientIP := net.ParseIP(ipStr)
+	if clientIP == nil {
+		log.Println("Invalid IP address format:", ipStr)
+		return fmt.Errorf("invalid source IP address format")
+	}
 	for _, allowed := range Conf.AllowFrom {
-		if ip == allowed {
-			return nil
+		if _, allowedNet, err := net.ParseCIDR(allowed); err == nil {
+			if allowedNet.Contains(clientIP) {
+				return nil
+			}
+		} else if allowedIP := net.ParseIP(allowed); allowedIP != nil {
+			if allowedIP.Equal(clientIP) {
+				return nil
+			}
+		} else {
+			log.Printf("Invalid IP/CIDR format in configuration: %s\n", allowed);
 		}
 	}
-
-	// Log this request
-	log.Println("Rejecting access from:", ip)
-
-	return fmt.Errorf("%s is not allowed to access this service.", ip)
+	log.Println("Rejecting access from:", ipStr);
+	return fmt.Errorf("%s is not allowed to access this service", ipStr);
 }
 
 func CheckUseCache(req *http.Request) bool {
