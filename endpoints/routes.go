@@ -91,6 +91,20 @@ func TableAndPeerRoutes(r *http.Request, ps httprouter.Params, useCache bool) (b
 	return bird.RoutesTableAndPeer(useCache, table, peer)
 }
 
+func TableAndPeerRoutesCount(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
+	table, err := ValidateProtocolParam(ps.ByName("table"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+
+	peer, err := ValidatePrefixParam(ps.ByName("peer"))
+	if err != nil {
+		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+	}
+
+	return bird.RoutesTableAndPeerCount(useCache, table, peer)
+}
+
 func ProtoCount(r *http.Request, ps httprouter.Params, useCache bool) (bird.Parsed, bool) {
 	protocol, err := ValidateProtocolParam(ps.ByName("protocol"))
 	if err != nil {
