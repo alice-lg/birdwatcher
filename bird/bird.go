@@ -377,6 +377,17 @@ func RoutesTableAndPeer(useCache bool, table string, peer string) (Parsed, bool)
 		nil)
 }
 
+func RoutesTableAndPeerCount(useCache bool, table string, peer string) (Parsed, bool) {
+	table = remapTable(table)
+	cmd := "route table '" + table + "' all where from=" + peer + " count"
+	return RunAndParse(
+		useCache,
+		GetCacheKey("RoutesTableAndPeerCount", table, peer),
+		cmd,
+		parseRoutesCount,
+		nil)
+}
+
 func RoutesProtoCount(useCache bool, protocol string) (Parsed, bool) {
 	cmd := routesQuery("protocol '" + protocol + "' count")
 	return RunAndParse(

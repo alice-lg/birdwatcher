@@ -75,6 +75,9 @@ func makeRouter(config endpoints.ServerConfig) *httprouter.Router {
 	if isModuleEnabled("routes_count_table", whitelist) {
 		r.GET("/routes/count/table/:table", endpoints.Endpoint(endpoints.TableCount))
 	}
+	if isModuleEnabled("routes_count_table_peer", whitelist) {
+		r.GET("/routes/count/table/:table/peer/:peer", endpoints.Endpoint(endpoints.TableAndPeerRoutesCount))
+	}
 	if isModuleEnabled("routes_count_primary", whitelist) {
 		r.GET("/routes/count/primary/:protocol", endpoints.Endpoint(endpoints.ProtoPrimaryCount))
 	}
