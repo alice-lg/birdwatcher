@@ -14,6 +14,7 @@ type BirdConfig struct {
 	ConfigFilename string `toml:"config"`
 	BirdCmd        string `toml:"birdc"`
 	CacheTtl       int    `toml:"ttl"`
+	Dualstack      bool   `toml:"dualstack"`
 }
 
 type ParserConfig struct {
