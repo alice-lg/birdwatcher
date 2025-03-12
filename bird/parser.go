@@ -60,7 +60,7 @@ func init() {
 	const re_ip = `[0-9a-f\.\:]+`
 	const re_prefix = `[0-9a-f\.\:\/]+`
 
-	regex.status.startLine = regexp.MustCompile(`^BIRD\s(.+)\s*$`)
+	regex.status.startLine = regexp.MustCompile(`^BIRD\sv?([0-9\.]+)\s*$`)
 	regex.status.routerID = regexp.MustCompile(`^Router\sID\sis\s([0-9\.]+)\s*$`)
 	regex.status.currentServer = regexp.MustCompile(`^Current\sserver\stime\sis\s([0-9\-]+\s[0-9\:\.]+)\s*$`)
 	regex.status.lastReboot = regexp.MustCompile(`^Last\sreboot\son\s([0-9\-]+\s[0-9\:\.]+)\s*$`)
@@ -540,6 +540,10 @@ func parseRoutesCount(reader io.Reader) Parsed {
 func isCorrectChannel(currentIPVersion string) bool {
 	if len(currentIPVersion) == 0 {
 		return true
+	}
+
+	if getBirdVersion() == 2 {
+		return currentIPVersion == "4" || currentIPVersion == "6"
 	}
 
 	return currentIPVersion == IPVersion
