@@ -56,6 +56,18 @@ func TestParseStatus(t *testing.T) {
 				"version":        "v2.0.9-11-g207ac485",
 			},
 		},
+		// Test for bird3.x status
+		{
+			"status4.sample",
+			Parsed{
+				"current_server": "2025-03-31 16:39:47.927",
+				"last_reboot":    "2025-03-28 05:41:41.348",
+				"last_reconfig":  "2025-03-31 12:34:16.644",
+				"message":        "Daemon is up and running",
+				"router_id": 	  "1.2.3.4",
+				"version":        "3.0.1",
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -165,6 +177,10 @@ func TestParseRoutesAllIpv4Bird1(t *testing.T) {
 
 func TestParseRoutesAllIpv4Bird2(t *testing.T) {
 	runTestForIpv4WithFile("routes_bird2_ipv4.sample", t)
+}
+
+func TestParseRoutesAllIpv4Bird3(t *testing.T) {
+	runTestForIpv4WithFile("routes_bird3_ipv4.sample", t)
 }
 
 func runTestForIpv4WithFile(file string, t *testing.T) {
