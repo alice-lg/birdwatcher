@@ -1,0 +1,24 @@
+BIRD 3.0.1 ready.
+Name       Proto      Table      State  Since         Info
+rpki1      RPKI       ---        up     2025-03-28    Established
+rsred_collector BGP        ---        up     2025-03-28    Established
+as47160_pe02_par1_ip4 BGP        ---        up     15:14:04.445  Established
+as215596_pe02_par1_ip4 BGP        ---        up     15:14:04.875  Established
+as214390_pe02_par1_ip4 BGP        ---        start  15:14:00.692  Passive       Error: Neighbor lost
+as2027_pe02_par1_ip4 BGP        ---        up     15:14:04.945  Established
+as34019_pe02_par1_ip4 BGP        ---        start  15:14:00.692  Passive       Error: Neighbor lost
+as41652_pe02_par1_ip4 BGP        ---        up     15:14:04.888  Established
+as62000_pe02_par1_ip4 BGP        ---        up     15:14:04.961  Established
+as62443_pe02_par1_ip4 BGP        ---        up     15:14:06.322  Established
+as200259_pe02_par1_ip4 BGP        ---        start  15:14:00.692  Passive       Error: Neighbor lost
+as47160_pe02_par1_ip6 BGP        ---        up     15:14:06.246  Established
+as215596_pe02_par1_ip6 BGP        ---        up     15:14:06.020  Established
+as214390_pe02_par1_ip6 BGP        ---        start  15:14:00.698  Passive       Error: Neighbor lost
+as2027_pe02_par1_ip6 BGP        ---        up     15:14:06.008  Established
+as34019_pe02_par1_ip6 BGP        ---        start  15:14:00.698  Passive       Error: Neighbor lost
+as41652_pe02_par1_ip6 BGP        ---        up     15:14:06.105  Established
+as62000_pe02_par1_ip6 BGP        ---        up     15:14:06.182  Established
+as62443_pe02_par1_ip6 BGP        ---        up     15:14:07.598  Established
+as200259_pe02_par1_ip6 BGP        ---        start  15:14:00.698  Passive       Error: Neighbor lost
+device1    Device     ---        up     2025-03-28
+bfd1       BFD        ---        up     2025-03-28
