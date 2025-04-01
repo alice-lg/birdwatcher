@@ -191,6 +191,7 @@ func runTestForIpv4WithFile(file string, t *testing.T) {
 	defer f.Close()
 
 	result := parseRoutes(f)
+	log.Printf("%# v", pretty.Formatter(result))
 	routes, ok := result["routes"].([]Parsed)
 	if !ok {
 		t.Fatal("Error getting routes")
@@ -348,6 +349,10 @@ func TestParseRoutesAllIpv6Bird2(t *testing.T) {
 	runTestForIpv6WithFile("routes_bird2_ipv6.sample", t)
 }
 
+func TestParseRoutesAllIpv6Bird3(t *testing.T) {
+	runTestForIpv6WithFile("routes_bird3_ipv6.sample", t)
+}
+
 func runTestForIpv6WithFile(file string, t *testing.T) {
 	f, err := openFile(file)
 	if err != nil {
@@ -356,6 +361,7 @@ func runTestForIpv6WithFile(file string, t *testing.T) {
 	defer f.Close()
 
 	result := parseRoutes(f)
+	log.Printf("%# v", pretty.Formatter(result))
 	routes, ok := result["routes"].([]Parsed)
 	if !ok {
 		t.Fatal("Error getting routes")

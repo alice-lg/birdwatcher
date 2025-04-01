@@ -38,17 +38,17 @@ var (
 			countRx *regexp.Regexp
 		}
 		routes struct {
-			startDefinition   *regexp.Regexp
-			second            *regexp.Regexp
-			routeType         *regexp.Regexp
-			bgp               *regexp.Regexp
-			community         *regexp.Regexp
-			largeCommunity    *regexp.Regexp
-			extendedCommunity *regexp.Regexp
-			origin            *regexp.Regexp
-			prefixBird2       *regexp.Regexp
-			gatewayBird2      *regexp.Regexp
-			interfaceBird2    *regexp.Regexp
+			startDefinition   	*regexp.Regexp
+			second            	*regexp.Regexp
+			routeType         	*regexp.Regexp
+			bgp               	*regexp.Regexp
+			community         	*regexp.Regexp
+			largeCommunity    	*regexp.Regexp
+			extendedCommunity 	*regexp.Regexp
+			origin            	*regexp.Regexp
+			prefixBird2And3   	*regexp.Regexp
+			gatewayBird2And3  	*regexp.Regexp
+			interfaceBird2And3  *regexp.Regexp
 		}
 	}
 )
@@ -81,15 +81,15 @@ func init() {
 	regex.routes.startDefinition = regexp.MustCompile(`^(` + re_prefix + `)\s+via\s+(` + re_ip + `)\s+on\s+(` + re_ifname + `)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}|\?\).*`)
 	regex.protocol.short = regexp.MustCompile(`^(?:1002\-)?(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+([0-9\-]+\s+[0-9\:\.]+?|[0-9\-]+|[0-9\:\.]+)(?:\s*|\s+(.*)\s*?)$`)
 	regex.routes.second = regexp.MustCompile(`^\s+via\s+(` + re_ip + `)\s+on\s+(` + re_ifname + `)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `)){0,1}\]\s+(?:(\*)\s+){0,1}\((\d+)(?:\/\d+){0,1}\).*$`)
-	regex.routes.routeType = regexp.MustCompile(`^\s+Type:\s+(.*)\s*$`)
-	regex.routes.bgp = regexp.MustCompile(`^\s+BGP.(\w+):\s+(.+)\s*$`)
+	regex.routes.routeType = regexp.MustCompile(`^\s+(?:Type|source):\s+(.*)\s*$`)
+	regex.routes.bgp = regexp.MustCompile(`^\s+(?:(?i)bgp).(\w+):\s+(.+)\s*$`)
 	regex.routes.community = regexp.MustCompile(`^\((\d+),\s*(\d+)\)`)
 	regex.routes.largeCommunity = regexp.MustCompile(`^\((\d+),\s*(\d+),\s*(\d+)\)`)
 	regex.routes.extendedCommunity = regexp.MustCompile(`^\(([^,]+),\s*([^,]+),\s*([^,]+)\)`)
 	regex.routes.origin = regexp.MustCompile(`\([^\(]*\)\s*`)
-	regex.routes.prefixBird2 = regexp.MustCompile(`^(` + re_prefix + `)?\s+(?:unicast|blackhole)\s+\[([\w\.:]+)\s+([0-9\-\:\s]+)(?:\s+from\s+(` + re_prefix + `))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
-	regex.routes.gatewayBird2 = regexp.MustCompile(`^\s+via\s+(` + re_ip + `)\s+on\s+(` + re_ifname + `)\s*$`)
-	regex.routes.interfaceBird2 = regexp.MustCompile(`^\s+dev\s+(` + re_ifname + `)\s*$`)
+	regex.routes.prefixBird2And3 = regexp.MustCompile(`^(` + re_prefix + `)?\s+(?:unicast|blackhole)\s+\[([\w\.:]+)\s+([0-9\-\:\.\s]+)(?:\s+from\s+(` + re_prefix + `))?\]\s+(?:(\*)\s+)?\((\d+)(?:\/\d+)?(?:\/[^\)]*)?\).*$`)
+	regex.routes.gatewayBird2And3 = regexp.MustCompile(`^\s+via\s+(` + re_ip + `)\s+on\s+(` + re_ifname + `)\s*$`)
+	regex.routes.interfaceBird2And3 = regexp.MustCompile(`^\s+dev\s+(` + re_ifname + `)\s*$`)
 }
 
 func dirtyContains(l []string, e string) bool {
@@ -327,7 +327,7 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			continue
 		}
 
-		if regex.routes.prefixBird2.MatchString(line) {
+		if regex.routes.prefixBird2And3.MatchString(line) {
 			formerPrefix := ""
 			if len(route) > 0 {
 				routes = append(routes, route)
@@ -336,7 +336,7 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 				route = Parsed{}
 			}
 
-			parseMainRouteDetailBird2(regex.routes.prefixBird2.FindStringSubmatch(line), route, formerPrefix)
+			parseMainRouteDetailBird2(regex.routes.prefixBird2And3.FindStringSubmatch(line), route, formerPrefix)
 		} else if regex.routes.startDefinition.MatchString(line) {
 			if len(route) > 0 {
 				routes = append(routes, route)
@@ -344,8 +344,8 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			}
 
 			parseMainRouteDetail(regex.routes.startDefinition.FindStringSubmatch(line), route)
-		} else if regex.routes.gatewayBird2.MatchString(line) {
-			parseRoutesGatewayBird2(regex.routes.gatewayBird2.FindStringSubmatch(line), route)
+		} else if regex.routes.gatewayBird2And3.MatchString(line) {
+			parseRoutesGatewayBird2(regex.routes.gatewayBird2And3.FindStringSubmatch(line), route)
 		} else if regex.routes.second.MatchString(line) {
 			routes = append(routes, route)
 
@@ -372,7 +372,10 @@ func parseRouteLines(lines []string, position int, ch chan<- blockParsed) {
 			// The aforementioned behaviour was only observed for the *community fields
 			if strings.HasPrefix(line, "\x09BGP.community") ||
 				strings.HasPrefix(line, "\x09BGP.large_community") ||
-				strings.HasPrefix(line, "\x09BGP.ext_community") {
+				strings.HasPrefix(line, "\x09BGP.ext_community") ||
+				strings.HasPrefix(line, "\x09bgp_community") ||
+				strings.HasPrefix(line, "\x09bgp_large_community") ||
+				strings.HasPrefix(line, "\x09bgp_ext_community") {
 				joinLines()
 			}
 
@@ -469,7 +472,7 @@ func parseRoutesBgp(line string, bgp Parsed) {
 		parseRoutesLargeCommunities(groups, bgp)
 	} else if groups[1] == "ext_community" {
 		parseRoutesExtendedCommunities(groups, bgp)
-	} else if groups[1] == "as_path" {
+	} else if groups[1] == "as_path" || groups[1] == "path" {
 		bgp["as_path"] = strings.Split(groups[2], " ")
 	} else {
 		bgp[groups[1]] = groups[2]
