@@ -1,0 +1,46 @@
+BIRD 3.0.1 ready.
+2001:4860::/32       unicast [upstream1 11:50:09.000] * (100) [AS15169i]
+	via fe80:ffff:ffff::1 on eth2
+	preference: 500
+	igp_metric: 0
+	from: fe80:ffff:ffff::1
+	source: BGP
+	bgp_origin: IGP
+	bgp_path: 15169
+	bgp_next_hop: fe80:ffff:ffff::1
+	bgp_med: 0
+	bgp_local_pref: 500
+	bgp_community: (0,5464) (0,8339) (0,8741) (0,8823) (0,12387) (0,13101) (0,16097) (0,16316) (0,20546) (0,20686) (0,20723) (0,21083) (0,21385) (0,24940) (0,25504) (0,28876) (0,29545) (0,30058) (0,31103) (0,31400) (0,39090) (0,39392) (0,39912) (0,42473) (0,43957) (0,44453) (0,47297) (0,47692) (0,48200) (0,50629) (0,51191) (0,51839) (0,51852) (0,54113) (0,56719) (0,57957) (0,60517) (0,60574) (0,61303) (0,62297) (0,62336) (0,62359) (33891,33892) (33891,50673) (48793,48793) (50673,500)
+		(65101,11077) (65102,11000) (65103,724) (65104,150)
+	bgp_large_community: (48821, 0, 2000) (48821, 0, 2100)
+	bgp_ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
+	Internal route handling values: 0L 0G 0S id 1
+                     unicast [upstream2 13:07:26.000] (100/?) [AS15169i]
+	via fe80:ffff:ffff::2 on eth3
+	preference: 100
+	igp_metric: 0
+	from: fe80:ffff:ffff::2
+	source: BGP
+	bgp_origin: IGP
+	bgp_path: 50629 15169
+	bgp_next_hop: fe80:ffff:ffff::2
+	bgp_med: 71
+	bgp_local_pref: 100
+	bgp_community: (50629,200) (50629,201)
+	bgp_large_community: (48821, 0, 3000) (48821, 0, 3100)
+	bgp_ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
+	Internal route handling values: 0L 0G 0S id 2
+2001:678:1e0::/48    unicast [upstream2 20:31:39.000] * (100/?) [AS202739i]
+	via fe80:ffff:ffff::2 on eth2
+	preference: 5000
+	igp_metric: 0
+	from: 2001:678:1e0::2
+	source: BGP
+	bgp_origin: IGP
+	bgp_path: 202739
+	bgp_next_hop: 2001:678:1e0::2
+	bgp_local_pref: 5000
+	bgp_community: (48821,2000) (48821,2100)
+	bgp_large_community: (48821, 0, 2000) (48821, 0, 2100)
+	bgp_ext_community: (unknown 0x4300, 0, 1)
+	Internal route handling values: 0L 0G 0S id 3

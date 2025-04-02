@@ -1,0 +1,58 @@
+BIRD 3.0.1 ready.
+16.0.0.0/24      unicast [ID8503_AS1340 08:17:33.000] * (100) [AS1340i]
+	via 1.2.3.16 on eno7
+	preference: 100
+	igp_metric: 0
+	from: 1.2.3.16
+	source: BGP
+	bgp_origin: IGP
+	bgp_path: 1340
+	bgp_next_hop: 1.2.3.16
+	bgp_local_pref: 100
+	bgp_community: (0,5464) (0,8339) (0,8741) (0,8823) (0,12387) (0,13101) (0,16097) (0,16316) (0,20546) (0,20686) (0,20723) (0,21083) (0,21385) (0,24940) (0,25504) (0,28876) (0,29545) (0,30058) (0,31103) (0,31400) (0,39090) (0,39392) (0,39912) (0,42473) (0,43957) (0,44453) (0,47297) (0,47692) (0,48200) (0,50629) (0,51191) (0,51839) (0,51852) (0,54113) (0,56719) (0,57957) (0,60517) (0,60574) (0,61303) (0,62297) (0,62336) (0,62359) (33891,33892) (33891,50673) (48793,48793) (50673,500)
+		(65101,11077) (65102,11000) (65103,724) (65104,150)
+	bgp_large_community: (9033, 65666, 12) (9033, 65666, 9)
+	bgp_ext_community: (rt, 42, 1234) (generic, 0x43000000, 0x1)
+	Internal route handling values: 0L 0G 0S id 1
+200.0.0.0/24      unicast [ID8497_AS1339 08:17:31.000] * (100) [AS1339i]
+	via 1.2.3.15 on eno7
+	preference: 100
+	igp_metric: 0
+	from: 1.2.3.15
+	source: BGP
+	bgp_origin: IGP
+	bgp_path: 1339
+	bgp_next_hop: 1.2.3.15
+	bgp_local_pref: 100
+	bgp_community: (65011,40) (9033,3251)
+	bgp_large_community: (9033, 65666, 12) (9033, 65666, 9)
+	bgp_ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
+	Internal route handling values: 0L 0G 0S id 2
+                     unicast [ID8503_AS1340 08:17:33.000] (100/?) [AS1340i]
+	via 1.2.3.16 on eno8
+	preference: 100
+	igp_metric: 0
+	from: 1.2.3.16
+	source: BGP
+	bgp_origin: IGP
+	bgp_path: 1340
+	bgp_next_hop: 1.2.3.16
+	bgp_local_pref: 100
+	bgp_community: (65011,3) (9033,3251)
+	bgp_large_community: (9033, 65666, 12) (9033, 65666, 9)
+	bgp_ext_community: (ro, 21414, 52001) (ro, 21414, 52004) (ro, 21414, 64515)
+	Internal route handling values: 0L 0G 0S id 3
+16.0.0.0/24      unicast [ID8503_AS1340 08:17:33.000] * (100) [AS1340i]
+	via 1.2.3.16 on eno7
+	preference: 100
+	igp_metric: 0
+	from: 1.2.3.16
+	source: BGP
+	bgp_origin: IGP
+	bgp_path: 1340
+	bgp_next_hop: 1.2.3.16
+	bgp_local_pref: 100
+	bgp_community: (65011,3) (9033,3251)
+	bgp_large_community: (9033, 65666, 12) (9033, 65666, 9)
+	bgp_ext_community: (rt, 42, 1234) (generic, 0x43000000, 0x1)
+	Internal route handling values: 0L 0G 0S id 4
