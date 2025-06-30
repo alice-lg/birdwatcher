@@ -70,7 +70,7 @@ func init() {
 
 	regex.routeCount.countRx = regexp.MustCompile(`^(\d+)\s+of\s+(\d+)\s+routes.*$`)
 
-	regex.protocol.channel = regexp.MustCompile("Channel ipv([46])")
+	regex.protocol.channel = regexp.MustCompile("Channel (.*)")
 	// regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(BGP|RPKI|Pipe|BFD|Direct|Device|Kernel)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*?)\s*)?$`)
 	regex.protocol.protocol = regexp.MustCompile(`^(?:1002\-)?([^\s]+)\s+(\w+)\s+([^\s]+)\s+([^\s]+)\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|[^\s]+)(?:\s+(.*?)\s*)?$`)
 	regex.protocol.numericValue = regexp.MustCompile(`^\s+([^:]+):\s+([\d]+)\s*$`)
@@ -548,48 +548,77 @@ func isCorrectChannel(currentIPVersion string) bool {
 	return currentIPVersion == IPVersion
 }
 
+// ProtocolParserState encapsulates the state of the
+// parser and can be accessed by the handlers.
+type ProtocolParserState struct {
+	channel      string
+	result       Parsed
+	routeChanges Parsed
+	channels     Parsed
+}
+
+// NewProtocolParserState initializes the parser state.
+func NewProtocolParserState() *ProtocolParserState {
+	s := ProtocolParserState{
+		channel: "",
+		result: Parsed{
+			"channels": Parsed{},
+		},
+		routeChanges: Parsed{},
+		channels:     Parsed{},
+	}
+	return &s
+}
+
+// Sum routes over all channels. TODO: Check if this
+// is a valid approach. Otherwise: MAX(Routes)?
+func sumChannelRoutes(routes, channel Parsed) {
+	r, ok := channel["routes"].(Parsed)
+	if !ok {
+		return
+	}
+	for k, v := range r {
+		val, ok := routes[k].(int64)
+		if ok {
+			val = val + v.(int64)
+			routes[k] = val
+		} else {
+			routes[k] = v.(int64)
+		}
+	}
+}
+
 func parseProtocol(lines string) Parsed {
-	res := Parsed{}
-	routeChanges := Parsed{}
+	state := NewProtocolParserState()
 
 	handlers := []func(string) bool{
-		func(l string) bool { return parseProtocolHeader(l, res) },
-		func(l string) bool { return parseProtocolRouteLine(l, res) },
-		func(l string) bool { return parseProtocolRouteChanges(l, routeChanges) },
-		func(l string) bool { return parseProtocolNumberValuesRx(l, res) },
-		func(l string) bool { return parseProtocolStringValuesRx(l, res) },
+		func(l string) bool { return parseProtocolHeader(l, state) },
+		func(l string) bool { return parseProtocolRouteLine(l, state) },
+		func(l string) bool { return parseProtocolChannel(l, state) },
+		func(l string) bool { return parseProtocolRouteChanges(l, state) },
+		func(l string) bool { return parseProtocolNumberValuesRx(l, state) },
+		func(l string) bool { return parseProtocolStringValuesRx(l, state) },
 	}
-
-	ipVersion := ""
 
 	reader := strings.NewReader(lines)
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := scanner.Text()
-
-		if m := regex.protocol.channel.FindStringSubmatch(line); len(m) > 0 {
-			ipVersion = m[1]
-		}
-
-		if isCorrectChannel(ipVersion) || ClientConf.Dualstack {
-			parseLine(line, handlers)
-		}
+		parseLine(line, handlers)
 	}
 
-	res["route_changes"] = routeChanges
+	result := state.result
+	result["route_changes"] = state.routeChanges
 
-	if _, ok := res["routes"]; !ok {
-		routes := Parsed{}
-		routes["accepted"] = int64(0)
-		routes["filtered"] = int64(0)
-		routes["imported"] = int64(0)
-		routes["exported"] = int64(0)
-		routes["preferred"] = int64(0)
-
-		res["routes"] = routes
+	// Calculate routes count from both channels
+	routes := Parsed{}
+	for _, channel := range result["channels"].(Parsed) {
+		sumChannelRoutes(routes, channel.(Parsed))
 	}
 
-	return res
+	result["routes"] = routes
+
+	return result
 }
 
 func parseLine(line string, handlers []func(string) bool) {
@@ -600,11 +629,23 @@ func parseLine(line string, handlers []func(string) bool) {
 	}
 }
 
-func parseProtocolHeader(line string, res Parsed) bool {
+func parseProtocolChannel(line string, state *ProtocolParserState) bool {
+	if m := regex.protocol.channel.FindStringSubmatch(line); len(m) > 0 {
+		state.channel = m[1]
+		state.result["channels"].(Parsed)[m[1]] = Parsed{}
+		return true
+	}
+
+	return false
+}
+
+func parseProtocolHeader(line string, state *ProtocolParserState) bool {
 	groups := regex.protocol.protocol.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
+
+	res := state.result
 
 	res["protocol"] = groups[1]
 	res["bird_protocol"] = groups[2]
@@ -612,20 +653,28 @@ func parseProtocolHeader(line string, res Parsed) bool {
 	res["state"] = groups[4]
 	res["state_changed"] = groups[5]
 	res["connection"] = groups[6] // TODO eliminate
+
 	if groups[2] == "Pipe" {
 		res["peer_table"] = groups[6][3:]
 	}
+
 	return true
 }
 
-func parseProtocolRouteLine(line string, res Parsed) bool {
+func parseProtocolRouteLine(line string, state *ProtocolParserState) bool {
+	channel, ok := state.result["channels"].(Parsed)[state.channel].(Parsed)
+	if !ok {
+		return false
+	}
+
 	groups := regex.protocol.routes.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
 
 	routes := parseProtocolRoutes(groups[1])
-	res["routes"] = routes
+	channel["routes"] = routes
+
 	return true
 }
 
@@ -636,7 +685,7 @@ func setChangeCount(name string, value string, res Parsed) {
 	res[name] = parseInt(value)
 }
 
-func parseProtocolRouteChanges(line string, res Parsed) bool {
+func parseProtocolRouteChanges(line string, state *ProtocolParserState) bool {
 	groups := regex.protocol.routeChanges.FindStringSubmatch(line)
 	if groups == nil {
 		return false
@@ -650,29 +699,30 @@ func parseProtocolRouteChanges(line string, res Parsed) bool {
 	setChangeCount("accepted", groups[7], updates)
 
 	key := strings.ToLower(groups[1]) + "_" + groups[2]
-	res[key] = updates
+
+	state.routeChanges[key] = updates
 	return true
 }
 
-func parseProtocolNumberValuesRx(line string, res Parsed) bool {
+func parseProtocolNumberValuesRx(line string, state *ProtocolParserState) bool {
 	groups := regex.protocol.numericValue.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
 
 	key := treatKey(groups[1])
-	res[key] = parseInt(groups[2])
+	state.result[key] = parseInt(groups[2])
 	return true
 }
 
-func parseProtocolStringValuesRx(line string, res Parsed) bool {
+func parseProtocolStringValuesRx(line string, state *ProtocolParserState) bool {
 	groups := regex.protocol.stringValue.FindStringSubmatch(line)
 	if groups == nil {
 		return false
 	}
 
 	key := treatKey(groups[1])
-	res[key] = groups[2]
+	state.result[key] = groups[2]
 	return true
 }
 

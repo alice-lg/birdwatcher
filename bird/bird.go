@@ -2,6 +2,7 @@ package bird
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"reflect"
@@ -401,7 +402,7 @@ func PipeRoutesFilteredCount(useCache bool, pipe string, table string, neighborA
 	table = remapTable(table)
 	cmd := "route table '" + table +
 		"' noexport '" + pipe +
-		"' where from=" + neighborAddress + " count"
+		"' where from='" + neighborAddress + "' count"
 	return RunAndParse(
 		useCache,
 		GetCacheKey("PipeRoutesFilteredCount", table, pipe, neighborAddress),
@@ -412,7 +413,30 @@ func PipeRoutesFilteredCount(useCache bool, pipe string, table string, neighborA
 
 func PipeRoutesFiltered(useCache bool, pipe string, table string) (Parsed, bool) {
 	table = remapTable(table)
-	cmd := routesQuery("table '" + table + "' noexport '" + pipe + "' all")
+	cmd := "route table '" + table + "' noexport '" + pipe + "' all"
+	return RunAndParse(
+		useCache,
+		GetCacheKey("PipeRoutesFiltered", table, pipe),
+		cmd,
+		parseRoutes,
+		nil)
+}
+
+// PipeRoutesFilteredFrom returns the result of the
+// show route command:
+//
+// show route all table <t> noexport <p> protocol <r>
+//
+// <r> is the id of the peer belonging to the table <t>
+func PipeRoutesFilteredProtocol(
+	useCache bool,
+	pipe string,
+	table string,
+	protocol string,
+) (Parsed, bool) {
+	table = remapTable(table)
+	cmd := "route table '" + table + "' noexport '" + pipe + "' protocol '" + protocol + "' all"
+	fmt.Println("CMD:", cmd)
 	return RunAndParse(
 		useCache,
 		GetCacheKey("PipeRoutesFiltered", table, pipe),

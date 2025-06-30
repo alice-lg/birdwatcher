@@ -192,6 +192,14 @@ func PipeRoutesFiltered(r *http.Request, ps httprouter.Params, useCache bool) (b
 		return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
 	}
 
+	if len(qs["protocol"]) > 0 {
+		protocol, err := ValidateProtocolParam(qs["protocol"][0])
+		if err != nil {
+			return bird.Parsed{"error": fmt.Sprintf("%s", err)}, false
+		}
+		return bird.PipeRoutesFilteredProtocol(useCache, pipe, table, protocol)
+	}
+
 	return bird.PipeRoutesFiltered(useCache, pipe, table)
 }
 
