@@ -23,23 +23,22 @@ RUN apk add --no-cache \
 	flex \
 	bison \
 	git \
+	curl \
 	coreutils \
 	linux-headers \
 	ncurses-static \
 	readline-dev \
 	readline-static
 
-# Clone the latest version 2 tag of the bird repository
-RUN git clone \
-	--branch $(git ls-remote --tags https://gitlab.nic.cz/labs/bird | awk -F'/' '{print $3}' | grep '^v2\.' | grep -v '{}' | sort -V | tail -n 1) \
-	https://gitlab.nic.cz/labs/bird.git
-WORKDIR /src/bird
-RUN autoreconf && \
-	LDFLAGS="-static -static-libgcc" \
-		./configure \
-		--prefix=/ \
-		--exec-prefix=/usr \
-		--runstatedir=/run/bird && \
+# Fetch and build the latest version 2 of the BIRD release
+RUN \
+	birdRev=$(git ls-remote --tags https://gitlab.nic.cz/labs/bird | awk -F'/' '{print $3}' | grep '^v2\.' | grep -v '{}' | sort -V | tail -n 1 | sed -e 's/v//') && \
+  curl -Lo - "https://bird.network.cz/download/bird-${birdRev}.tar.gz" | tar -C /src -zxvf - && \
+  mv /src/bird-${birdRev} /src/bird && cd /src/bird && \
+	LDFLAGS="-static -static-libgcc" ./configure \
+	 		--prefix=/ \
+	 		--exec-prefix=/usr \
+	 		--runstatedir=/run/bird && \
 	make -j
 
 # Final stage
