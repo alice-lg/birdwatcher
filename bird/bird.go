@@ -197,17 +197,20 @@ func RunAndParse(useCache bool, key string, cmd string, parser func(io.Reader) P
 		}
 	}
 
-	if !checkRateLimit() {
-		wg.Done()
+	// Always remove the command and release waiters, even if parsing or
+	// updating the cache panics. Only the owner of this queue entry cleans it up.
+	defer func() {
 		RunQueue.Delete(cmd)
+		wg.Done()
+	}()
+
+	if !checkRateLimit() {
 		return NilParse, false
 	}
 
 	out, err := Run(cmd)
 	if err != nil {
 		// ignore errors for now
-		wg.Done()
-		RunQueue.Delete(cmd)
 		return BirdError, false
 	}
 
@@ -218,9 +221,6 @@ func RunAndParse(useCache bool, key string, cmd string, parser func(io.Reader) P
 	}
 
 	toCache(cmd, parsed)
-
-	wg.Done()
-	RunQueue.Delete(cmd)
 
 	return parsed, false
 }

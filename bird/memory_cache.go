@@ -31,9 +31,9 @@ func NewMemoryCache(maxKeys int) *MemoryCache {
 // Get a key from the cache.
 func (c *MemoryCache) Get(key string) (Parsed, error) {
 	c.Lock()
+	defer c.Unlock()
+
 	val, ok := c.m[key]
-	c.a[key] = time.Now().UTC() // Update access
-	c.Unlock()
 
 	if !ok { // cache miss
 		return NilParse, errors.New("Failed to retrive key '" + key + "' from MemoryCache.")
@@ -42,34 +42,40 @@ func (c *MemoryCache) Get(key string) (Parsed, error) {
 	// Check if the TTL is still valid
 	ttl, ok := val["ttl"].(time.Time)
 	if !ok {
+		delete(c.m, key)
+		delete(c.a, key)
 		return NilParse, errors.New("Invalid TTL value for key '" + key + "'")
 	}
 
-	if ttl.Before(time.Now()) {
+	now := time.Now().UTC()
+	if ttl.Before(now) {
+		delete(c.m, key)
+		delete(c.a, key)
 		return val, errors.New("TTL expired for key '" + key + "'") // TTL expired
 	}
 
+	c.a[key] = now  // Update access only for a valid cache hit
 	return val, nil // cache hit
 }
 
 // Set a key in the cache.
 func (c *MemoryCache) Set(key string, val Parsed, ttl int) error {
-	c.Lock()
-	defer c.Unlock()
-
-	// Check if the key exists, if not clear the oldest key if
-	// the number of entries exceeds maxKeys.
-	if _, ok := c.a[key]; !ok {
-		if len(c.a) >= c.maxKeys {
-			c.expireLRU()
-		}
-	}
-
 	if ttl == 0 {
 		return nil // do not cache
 	}
 	if ttl < 0 {
 		return errors.New("Negative TTL value for key" + key)
+	}
+
+	c.Lock()
+	defer c.Unlock()
+
+	// Check if the key exists, if not clear the oldest key if
+	// the number of entries exceeds maxKeys.
+	if _, ok := c.m[key]; !ok {
+		if len(c.m) >= c.maxKeys {
+			c.expireLRU()
+		}
 	}
 
 	cachedAt := time.Now().UTC()
@@ -87,17 +93,20 @@ func (c *MemoryCache) Set(key string, val Parsed, ttl int) error {
 
 // Expire oldest key in cache.
 // WARNING: this is not thread safe and a mutex
-// 		    should be acquired before calling this function.
+//
+//	should be acquired before calling this function.
 func (c *MemoryCache) expireLRU() {
 	oldestKey := ""
-	oldestTime := time.Now().UTC()
+	var oldestTime time.Time
+	found := false
 	for key := range c.m {
-		if c.a[key].Before(oldestTime) {
+		if !found || c.a[key].Before(oldestTime) {
 			oldestKey = key
 			oldestTime = c.a[key]
+			found = true
 		}
 	}
-	if oldestKey == "" {
+	if !found {
 		return // Nothing to do here.
 	}
 	delete(c.m, oldestKey)
@@ -112,18 +121,15 @@ func (c *MemoryCache) Expire() int {
 
 	now := time.Now().UTC()
 
-	expiredKeys := []string{}
+	count := 0
 	for key := range c.m {
 		ttl, ok := c.m[key]["ttl"].(time.Time)
 		if !ok || ttl.Before(now) {
-			expiredKeys = append(expiredKeys, key)
+			delete(c.m, key)
+			delete(c.a, key)
+			count++
 		}
 	}
 
-	for _, key := range expiredKeys {
-		delete(c.m, key)
-		delete(c.a, key)
-	}
-
-	return len(expiredKeys)
+	return count
 }
